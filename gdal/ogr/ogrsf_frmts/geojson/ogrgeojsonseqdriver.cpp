@@ -47,26 +47,30 @@ constexpr char RS = '\x1e';
 
 class OGRGeoJSONSeqDataSource final: public GDALDataset
 {
-        std::unique_ptr<OGRLayer> m_poLayer;
-        CPLString m_osTmpFile;
-        VSILFILE* m_fpOut = nullptr;
+    std::unique_ptr<OGRLayer> m_poLayer;
+    CPLString m_osTmpFile;
+    VSILFILE* m_fpOut = nullptr;
 
-    public:
-        OGRGeoJSONSeqDataSource();
-        ~OGRGeoJSONSeqDataSource();
+public:
+    OGRGeoJSONSeqDataSource();
+    ~OGRGeoJSONSeqDataSource();
 
-        int GetLayerCount() override { return m_poLayer ? 1 : 0; }
-        OGRLayer* GetLayer(int) override;
-        OGRLayer* ICreateLayer( const char* pszName,
-                                OGRSpatialReference* poSRS = nullptr,
-                                OGRwkbGeometryType eGType = wkbUnknown,
-                                char** papszOptions = nullptr ) override;
-        int TestCapability( const char* pszCap ) override;
+    int GetLayerCount() override {
+        return m_poLayer ? 1 : 0;
+    }
+    OGRLayer* GetLayer(int) override;
+    OGRLayer* ICreateLayer( const char* pszName,
+                            OGRSpatialReference* poSRS = nullptr,
+                            OGRwkbGeometryType eGType = wkbUnknown,
+                            char** papszOptions = nullptr ) override;
+    int TestCapability( const char* pszCap ) override;
 
-        bool Open( GDALOpenInfo* poOpenInfo, GeoJSONSourceType nSrcType);
-        bool Create( const char* pszName, char** papszOptions );
+    bool Open( GDALOpenInfo* poOpenInfo, GeoJSONSourceType nSrcType);
+    bool Create( const char* pszName, char** papszOptions );
 
-        VSILFILE* GetOutputFile() const { return m_fpOut; }
+    VSILFILE* GetOutputFile() const {
+        return m_fpOut;
+    }
 };
 
 /************************************************************************/
@@ -75,42 +79,46 @@ class OGRGeoJSONSeqDataSource final: public GDALDataset
 
 class OGRGeoJSONSeqLayer final: public OGRLayer
 {
-        OGRGeoJSONSeqDataSource* m_poDS = nullptr;
-        OGRFeatureDefn* m_poFeatureDefn = nullptr;
+    OGRGeoJSONSeqDataSource* m_poDS = nullptr;
+    OGRFeatureDefn* m_poFeatureDefn = nullptr;
 
-        VSILFILE* m_fp = nullptr;
-        OGRGeoJSONBaseReader m_oReader;
-        CPLString m_osFIDColumn;
+    VSILFILE* m_fp = nullptr;
+    OGRGeoJSONBaseReader m_oReader;
+    CPLString m_osFIDColumn;
 
-        std::string m_osBuffer;
-        std::string m_osFeatureBuffer;
-        size_t m_nPosInBuffer = 0;
-        size_t m_nBufferValidSize = 0;
+    std::string m_osBuffer;
+    std::string m_osFeatureBuffer;
+    size_t m_nPosInBuffer = 0;
+    size_t m_nBufferValidSize = 0;
 
-        vsi_l_offset m_nFileSize = 0;
-        GIntBig m_nIter = 0;
+    vsi_l_offset m_nFileSize = 0;
+    GIntBig m_nIter = 0;
 
-        bool m_bIsRSSeparated = false;
+    bool m_bIsRSSeparated = false;
 
-        GIntBig m_nTotalFeatures = 0;
-        GIntBig m_nNextFID = 0;
+    GIntBig m_nTotalFeatures = 0;
+    GIntBig m_nNextFID = 0;
 
-        json_object* GetNextObject(bool bLooseIdentification);
+    json_object* GetNextObject(bool bLooseIdentification);
 
-    public:
-        OGRGeoJSONSeqLayer(OGRGeoJSONSeqDataSource* poDS,
-                           const char* pszName,
-                           VSILFILE* fp);
-        ~OGRGeoJSONSeqLayer();
+public:
+    OGRGeoJSONSeqLayer(OGRGeoJSONSeqDataSource* poDS,
+                       const char* pszName,
+                       VSILFILE* fp);
+    ~OGRGeoJSONSeqLayer();
 
-        bool Init(bool bLooseIdentification);
+    bool Init(bool bLooseIdentification);
 
-        void ResetReading() override;
-        OGRFeature* GetNextFeature() override;
-        OGRFeatureDefn* GetLayerDefn() override { return m_poFeatureDefn; }
-        const char* GetFIDColumn() override { return m_osFIDColumn.c_str(); }
-        GIntBig GetFeatureCount(int) override;
-        int TestCapability(const char*) override;
+    void ResetReading() override;
+    OGRFeature* GetNextFeature() override;
+    OGRFeatureDefn* GetLayerDefn() override {
+        return m_poFeatureDefn;
+    }
+    const char* GetFIDColumn() override {
+        return m_osFIDColumn.c_str();
+    }
+    GIntBig GetFeatureCount(int) override;
+    int TestCapability(const char*) override;
 };
 
 /************************************************************************/
@@ -119,23 +127,27 @@ class OGRGeoJSONSeqLayer final: public OGRLayer
 
 class OGRGeoJSONSeqWriteLayer final: public OGRLayer
 {
-  public:
+public:
     OGRGeoJSONSeqWriteLayer( OGRGeoJSONSeqDataSource* poDS,
                              const char* pszName,
                              CSLConstList papszOptions,
                              OGRCoordinateTransformation* poCT);
     ~OGRGeoJSONSeqWriteLayer();
 
-    OGRFeatureDefn* GetLayerDefn() override { return m_poFeatureDefn; }
+    OGRFeatureDefn* GetLayerDefn() override {
+        return m_poFeatureDefn;
+    }
 
     void ResetReading() override { }
-    OGRFeature* GetNextFeature() override { return nullptr; }
+    OGRFeature* GetNextFeature() override {
+        return nullptr;
+    }
     OGRErr ICreateFeature( OGRFeature* poFeature ) override;
     OGRErr CreateField( OGRFieldDefn* poField, int bApproxOK ) override;
     int TestCapability( const char* pszCap ) override;
 
-  private:
-    OGRGeoJSONSeqDataSource* m_poDS = nullptr;    
+private:
+    OGRGeoJSONSeqDataSource* m_poDS = nullptr;
     OGRFeatureDefn* m_poFeatureDefn = nullptr;
 
     OGRCoordinateTransformation* m_poCT = nullptr;
@@ -182,9 +194,9 @@ OGRLayer* OGRGeoJSONSeqDataSource::GetLayer(int nIndex)
 /************************************************************************/
 
 OGRLayer* OGRGeoJSONSeqDataSource::ICreateLayer( const char* pszNameIn,
-                                              OGRSpatialReference* poSRS,
-                                              OGRwkbGeometryType /*eGType*/,
-                                              char** papszOptions )
+        OGRSpatialReference* poSRS,
+        OGRwkbGeometryType /*eGType*/,
+        char** papszOptions )
 {
     if( nullptr == m_fpOut )
     {
@@ -205,7 +217,7 @@ OGRLayer* OGRGeoJSONSeqDataSource::ICreateLayer( const char* pszNameIn,
     if( poSRS == nullptr )
     {
         CPLError(CE_Warning, CPLE_AppDefined,
-                    "No SRS set on layer. Assuming it is long/lat on WGS84 ellipsoid");
+                 "No SRS set on layer. Assuming it is long/lat on WGS84 ellipsoid");
     }
     else
     {
@@ -213,7 +225,8 @@ OGRLayer* OGRGeoJSONSeqDataSource::ICreateLayer( const char* pszNameIn,
         oSRSWGS84.SetWellKnownGeogCS( "WGS84" );
         oSRSWGS84.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
         const char* const apszOptions[] = {
-            "IGNORE_DATA_AXIS_TO_SRS_AXIS_MAPPING=YES", nullptr };
+            "IGNORE_DATA_AXIS_TO_SRS_AXIS_MAPPING=YES", nullptr
+        };
         if( !poSRS->IsSame(&oSRSWGS84, apszOptions) )
         {
             poCT = OGRCreateCoordinateTransformation( poSRS, &oSRSWGS84 );
@@ -283,7 +296,7 @@ OGRGeoJSONSeqLayer::~OGRGeoJSONSeqLayer()
 bool OGRGeoJSONSeqLayer::Init(bool bLooseIdentification)
 {
     if( STARTS_WITH(m_poDS->GetDescription(), "/vsimem/") ||
-        !STARTS_WITH(m_poDS->GetDescription(), "/vsi") )
+            !STARTS_WITH(m_poDS->GetDescription(), "/vsi") )
     {
         VSIFSeekL(m_fp, 0, SEEK_END);
         m_nFileSize = VSIFTellL(m_fp);
@@ -322,10 +335,10 @@ void OGRGeoJSONSeqLayer::ResetReading()
     VSIFSeekL(m_fp, 0, SEEK_SET);
     // Undocumented: for testing purposes only
     const size_t nBufferSize = static_cast<size_t>(std::max(1,
-        atoi(CPLGetConfigOption("OGR_GEOJSONSEQ_CHUNK_SIZE", "40960"))));
+                               atoi(CPLGetConfigOption("OGR_GEOJSONSEQ_CHUNK_SIZE", "40960"))));
     const size_t nBufferSizeValidated =
         nBufferSize > static_cast<size_t>(100 * 1000 * 1000) ?
-            static_cast<size_t>(100 * 1000 * 1000) : nBufferSize;
+        static_cast<size_t>(100 * 1000 * 1000) : nBufferSize;
     m_osBuffer.resize(nBufferSizeValidated);
     m_osFeatureBuffer.clear();
     m_nPosInBuffer = nBufferSizeValidated;
@@ -363,11 +376,11 @@ json_object* OGRGeoJSONSeqLayer::GetNextObject(bool bLooseIdentification)
             m_nIter ++;
 
             if( m_nFileSize > 0 &&
-                (m_nBufferValidSize < m_osBuffer.size() ||
-                 (m_nIter % 100) == 0) )
+                    (m_nBufferValidSize < m_osBuffer.size() ||
+                     (m_nIter % 100) == 0) )
             {
                 CPLDebug("GeoJSONSeq", "First pass: %.2f %%",
-                        100.0 * VSIFTellL(m_fp) / m_nFileSize);
+                         100.0 * VSIFTellL(m_fp) / m_nFileSize);
             }
             if( m_nPosInBuffer >= m_nBufferValidSize )
             {
@@ -377,7 +390,7 @@ json_object* OGRGeoJSONSeqLayer::GetNextObject(bool bLooseIdentification)
 
         // Find next feature separator in buffer
         const size_t nNextSepPos = m_osBuffer.find(
-            m_bIsRSSeparated ? RS : '\n', m_nPosInBuffer);
+                                       m_bIsRSSeparated ? RS : '\n', m_nPosInBuffer);
         if( nNextSepPos != std::string::npos )
         {
             m_osFeatureBuffer.append(m_osBuffer.data() + m_nPosInBuffer,
@@ -392,7 +405,7 @@ json_object* OGRGeoJSONSeqLayer::GetNextObject(bool bLooseIdentification)
             if( m_osFeatureBuffer.size() > 100 * 1024 * 1024 )
             {
                 CPLError(CE_Failure, CPLE_NotSupported,
-                            "Too large feature");
+                         "Too large feature");
                 return nullptr;
             }
             m_nPosInBuffer = m_nBufferValidSize;
@@ -403,8 +416,8 @@ json_object* OGRGeoJSONSeqLayer::GetNextObject(bool bLooseIdentification)
         }
 
         while( !m_osFeatureBuffer.empty() &&
-               (m_osFeatureBuffer.back() == '\r' ||
-                m_osFeatureBuffer.back() == '\n')  )
+                (m_osFeatureBuffer.back() == '\r' ||
+                 m_osFeatureBuffer.back() == '\n')  )
         {
             m_osFeatureBuffer.resize(m_osFeatureBuffer.size()-1);
         }
@@ -443,7 +456,7 @@ OGRFeature* OGRGeoJSONSeqLayer::GetNextFeature()
         if( type == GeoJSONObject::eFeature )
         {
             poFeature = m_oReader.ReadFeature(
-                this, poObject, m_osFeatureBuffer.c_str() );
+                            this, poObject, m_osFeatureBuffer.c_str() );
             json_object_put(poObject);
         }
         else if( type == GeoJSONObject::eFeatureCollection ||
@@ -455,7 +468,7 @@ OGRFeature* OGRGeoJSONSeqLayer::GetNextFeature()
         else
         {
             OGRGeometry* poGeom = m_oReader.ReadGeometry(poObject,
-                                                         GetSpatialRef());
+                                  GetSpatialRef());
             json_object_put(poObject);
             if( !poGeom )
             {
@@ -471,9 +484,9 @@ OGRFeature* OGRGeoJSONSeqLayer::GetNextFeature()
             m_nNextFID ++;
         }
         if( (m_poFilterGeom == nullptr ||
-            FilterGeometry(poFeature->GetGeomFieldRef(m_iGeomFieldFilter)) )
-            && (m_poAttrQuery == nullptr ||
-                m_poAttrQuery->Evaluate(poFeature)) )
+                FilterGeometry(poFeature->GetGeomFieldRef(m_iGeomFieldFilter)) )
+                && (m_poAttrQuery == nullptr ||
+                    m_poAttrQuery->Evaluate(poFeature)) )
         {
             return poFeature;
         }
@@ -503,7 +516,7 @@ int OGRGeoJSONSeqLayer::TestCapability(const char* pszCap)
     if( EQUAL(pszCap, OLCStringsAsUTF8) )
         return true;
     if( m_poFilterGeom == nullptr && m_poAttrQuery == nullptr &&
-        EQUAL(pszCap, OLCFastFeatureCount) )
+            EQUAL(pszCap, OLCFastFeatureCount) )
     {
         return true;
     }
@@ -515,10 +528,10 @@ int OGRGeoJSONSeqLayer::TestCapability(const char* pszCap)
 /************************************************************************/
 
 OGRGeoJSONSeqWriteLayer::OGRGeoJSONSeqWriteLayer(
-                                        OGRGeoJSONSeqDataSource* poDS,
-                                        const char* pszName,
-                                        CSLConstList papszOptions,
-                                        OGRCoordinateTransformation* poCT):
+    OGRGeoJSONSeqDataSource* poDS,
+    const char* pszName,
+    CSLConstList papszOptions,
+    OGRCoordinateTransformation* poCT):
     m_poDS(poDS)
 {
     SetDescription(pszName);
@@ -531,9 +544,9 @@ OGRGeoJSONSeqWriteLayer::OGRGeoJSONSeqWriteLayer(
     m_oWriteOptions.SetRFC7946Settings();
     m_oWriteOptions.SetIDOptions(papszOptions);
     m_oWriteOptions.nCoordPrecision = atoi(
-        CSLFetchNameValueDef(papszOptions, "COORDINATE_PRECISION", "7"));
+                                          CSLFetchNameValueDef(papszOptions, "COORDINATE_PRECISION", "7"));
     m_oWriteOptions.nSignificantFigures = atoi(
-        CSLFetchNameValueDef(papszOptions, "SIGNIFICANT_FIGURES", "-1"));
+            CSLFetchNameValueDef(papszOptions, "SIGNIFICANT_FIGURES", "-1"));
 
     m_bRS = EQUAL(CPLGetExtension(poDS->GetDescription()), "GEOJSONS");
     const char* pszRS = CSLFetchNameValue(papszOptions, "RS");
@@ -582,7 +595,7 @@ OGRErr OGRGeoJSONSeqWriteLayer::ICreateFeature( OGRFeature* poFeature )
             OGREnvelope sEnvelope;
             poNewGeom->getEnvelope(&sEnvelope);
             if( sEnvelope.MinX < -180.0 || sEnvelope.MaxX > 180.0 ||
-                sEnvelope.MinY < -90.0 || sEnvelope.MaxY > 90.0 )
+                    sEnvelope.MinY < -90.0 || sEnvelope.MaxY > 90.0 )
             {
                 CPLError(CE_Failure, CPLE_AppDefined,
                          "Geometry extent outside of [-180.0,180.0]x[-90.0,90.0] bounds");
@@ -615,7 +628,7 @@ OGRErr OGRGeoJSONSeqWriteLayer::ICreateFeature( OGRFeature* poFeature )
 /************************************************************************/
 
 OGRErr OGRGeoJSONSeqWriteLayer::CreateField( OGRFieldDefn* poField,
-                                             int /* bApproxOK */  )
+        int /* bApproxOK */  )
 {
     m_poFeatureDefn->AddFieldDefn( poField );
     return OGRERR_NONE;
@@ -669,9 +682,9 @@ bool OGRGeoJSONSeqDataSource::Open( GDALOpenInfo* poOpenInfo,
     {
         m_osTmpFile = CPLSPrintf("/vsimem/geojsonseq/%p", this);
         fp = VSIFileFromMemBuffer( m_osTmpFile.c_str(),
-            reinterpret_cast<GByte*>(CPLStrdup(poOpenInfo->pszFilename)),
-            strlen(poOpenInfo->pszFilename),
-            true );
+                                   reinterpret_cast<GByte*>(CPLStrdup(poOpenInfo->pszFilename)),
+                                   strlen(poOpenInfo->pszFilename),
+                                   true );
     }
     else if( nSrcType == eGeoJSONSourceService )
     {
@@ -689,9 +702,9 @@ bool OGRGeoJSONSeqDataSource::Open( GDALOpenInfo* poOpenInfo,
             {
                 m_osTmpFile = CPLSPrintf("/vsimem/geojsonseq/%p", this);
                 fp = VSIFileFromMemBuffer( m_osTmpFile.c_str(),
-                    reinterpret_cast<GByte*>(pszStoredContent),
-                    strlen(pszStoredContent),
-                    true );
+                                           reinterpret_cast<GByte*>(pszStoredContent),
+                                           strlen(pszStoredContent),
+                                           true );
             }
         }
         else
@@ -705,7 +718,7 @@ bool OGRGeoJSONSeqDataSource::Open( GDALOpenInfo* poOpenInfo,
                                                    papsOptions );
 
             if( nullptr == pResult
-                || 0 == pResult->nDataLen || 0 != CPLGetLastErrorNo() )
+                    || 0 == pResult->nDataLen || 0 != CPLGetLastErrorNo() )
             {
                 CPLHTTPDestroyResult( pResult );
                 return false;
@@ -714,17 +727,17 @@ bool OGRGeoJSONSeqDataSource::Open( GDALOpenInfo* poOpenInfo,
             if( 0 != pResult->nStatus )
             {
                 CPLError( CE_Failure, CPLE_AppDefined,
-                        "Curl reports error: %d: %s",
-                        pResult->nStatus, pResult->pszErrBuf );
+                          "Curl reports error: %d: %s",
+                          pResult->nStatus, pResult->pszErrBuf );
                 CPLHTTPDestroyResult( pResult );
                 return false;
             }
 
             m_osTmpFile = CPLSPrintf("/vsimem/geojsonseq/%p", this);
             fp = VSIFileFromMemBuffer( m_osTmpFile.c_str(),
-                pResult->pabyData,
-                pResult->nDataLen,
-                true );
+                                       pResult->pabyData,
+                                       pResult->nDataLen,
+                                       true );
             pResult->pabyData = nullptr;
             pResult->nDataLen = 0;
             CPLHTTPDestroyResult( pResult );
@@ -763,16 +776,16 @@ bool OGRGeoJSONSeqDataSource::Open( GDALOpenInfo* poOpenInfo,
 /************************************************************************/
 
 bool OGRGeoJSONSeqDataSource::Create( const char* pszName,
-                                     char** /* papszOptions */ )
+                                      char** /* papszOptions */ )
 {
     CPLAssert( nullptr == m_fpOut );
 
     if( strcmp(pszName, "/dev/stdout") == 0 )
         pszName = "/vsistdout/";
 
-/* -------------------------------------------------------------------- */
-/*      Create the output file.                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create the output file.                                         */
+    /* -------------------------------------------------------------------- */
     m_fpOut = VSIFOpenExL( pszName, "w", true );
     if( nullptr == m_fpOut )
     {
@@ -791,13 +804,13 @@ bool OGRGeoJSONSeqDataSource::Create( const char* pszName,
 /************************************************************************/
 
 static int OGRGeoJSONSeqDriverIdentifyInternal( GDALOpenInfo* poOpenInfo,
-                                                GeoJSONSourceType& nSrcType )
+        GeoJSONSourceType& nSrcType )
 {
     nSrcType = GeoJSONSeqGetSourceType( poOpenInfo );
     if( nSrcType == eGeoJSONSourceUnknown )
         return FALSE;
     if( nSrcType == eGeoJSONSourceService &&
-        !STARTS_WITH_CI(poOpenInfo->pszFilename, "GeoJSONSeq:") )
+            !STARTS_WITH_CI(poOpenInfo->pszFilename, "GeoJSONSeq:") )
     {
         return -1;
     }
@@ -848,11 +861,11 @@ static GDALDataset* OGRGeoJSONSeqDriverOpen( GDALOpenInfo* poOpenInfo )
 /************************************************************************/
 
 static GDALDataset *OGRGeoJSONSeqDriverCreate( const char * pszName,
-                                            int /* nBands */,
-                                            int /* nXSize */,
-                                            int /* nYSize */,
-                                            GDALDataType /* eDT */,
-                                            char **papszOptions )
+        int /* nBands */,
+        int /* nXSize */,
+        int /* nYSize */,
+        GDALDataType /* eDT */,
+        char **papszOptions )
 {
     OGRGeoJSONSeqDataSource* poDS = new OGRGeoJSONSeqDataSource();
 
@@ -883,17 +896,17 @@ void RegisterOGRGeoJSONSeq()
     poDriver->SetMetadataItem( GDAL_DMD_HELPTOPIC, "drv_geojsonseq.html" );
 
     poDriver->SetMetadataItem( GDAL_DS_LAYER_CREATIONOPTIONLIST,
-"<LayerCreationOptionList>"
-"  <Option name='RS' type='boolean' description='whether to prefix records with RS=0x1e character' default='NO'/>"
-"  <Option name='COORDINATE_PRECISION' type='int' description='Number of decimal for coordinates. Default is 7'/>"
-"  <Option name='SIGNIFICANT_FIGURES' type='int' description='Number of significant figures for floating-point values' default='17'/>"
-"  <Option name='ID_FIELD' type='string' description='Name of the source field that must be used as the id member of Feature features'/>"
-"  <Option name='ID_TYPE' type='string-select' description='Type of the id member of Feature features'>"
-"    <Value>AUTO</Value>"
-"    <Value>String</Value>"
-"    <Value>Integer</Value>"
-"  </Option>"
-"</LayerCreationOptionList>");
+                               "<LayerCreationOptionList>"
+                               "  <Option name='RS' type='boolean' description='whether to prefix records with RS=0x1e character' default='NO'/>"
+                               "  <Option name='COORDINATE_PRECISION' type='int' description='Number of decimal for coordinates. Default is 7'/>"
+                               "  <Option name='SIGNIFICANT_FIGURES' type='int' description='Number of significant figures for floating-point values' default='17'/>"
+                               "  <Option name='ID_FIELD' type='string' description='Name of the source field that must be used as the id member of Feature features'/>"
+                               "  <Option name='ID_TYPE' type='string-select' description='Type of the id member of Feature features'>"
+                               "    <Value>AUTO</Value>"
+                               "    <Value>String</Value>"
+                               "    <Value>Integer</Value>"
+                               "  </Option>"
+                               "</LayerCreationOptionList>");
 
     poDriver->SetMetadataItem( GDAL_DCAP_VIRTUALIO, "YES" );
     poDriver->SetMetadataItem( GDAL_DMD_CREATIONFIELDDATATYPES,
