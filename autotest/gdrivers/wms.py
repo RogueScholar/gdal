@@ -29,16 +29,14 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
+import hashlib
 import os
 import shutil
 from time import sleep
-import hashlib
-from osgeo import gdal
-
 
 import gdaltest
 import pytest
+from osgeo import gdal
 
 ###############################################################################
 # Verify we have the driver.
