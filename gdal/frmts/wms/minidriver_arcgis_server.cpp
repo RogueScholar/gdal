@@ -42,10 +42,14 @@ static double GetBBoxCoord(const GDALWMSImageRequestInfo &iri, char what)
 {
     switch (what)
     {
-    case 'x': return std::min(iri.m_x0, iri.m_x1);
-    case 'y': return std::min(iri.m_y0, iri.m_y1);
-    case 'X': return std::max(iri.m_x0, iri.m_x1);
-    case 'Y': return std::max(iri.m_y0, iri.m_y1);
+    case 'x':
+        return std::min(iri.m_x0, iri.m_x1);
+    case 'y':
+        return std::min(iri.m_y0, iri.m_y1);
+    case 'X':
+        return std::max(iri.m_x0, iri.m_x1);
+    case 'Y':
+        return std::max(iri.m_y0, iri.m_y1);
     }
     return 0.0;
 }
@@ -102,15 +106,15 @@ void WMSMiniDriver_AGS::GetCapabilities(WMSMiniDriverCapabilities *caps)
 }
 
 CPLErr WMSMiniDriver_AGS::TiledImageRequest(WMSHTTPRequest &request,
-                                            const GDALWMSImageRequestInfo &iri,
-                                            CPL_UNUSED const GDALWMSTiledImageRequestInfo &tiri)
+        const GDALWMSImageRequestInfo &iri,
+        CPL_UNUSED const GDALWMSTiledImageRequestInfo &tiri)
 {
     CPLString &url = request.URL;
     url = m_base_url;
 
     // Assume map service if exportImage is not explicitly requested.
     if( (url.ifind("/export?") == std::string::npos) &&
-        (url.ifind("/exportImage?") == std::string::npos) )
+            (url.ifind("/exportImage?") == std::string::npos) )
     {
         url += "/export?";
     }
@@ -119,13 +123,13 @@ CPLErr WMSMiniDriver_AGS::TiledImageRequest(WMSHTTPRequest &request,
     url += "f=image";
     char *pszEscapedValue = CPLEscapeString(m_layers, -1, CPLES_URL);
     url += CPLOPrintf("&bbox=%.8f%%2C%.8f%%2C%.8f%%2C%.8f",
-                GetBBoxCoord(iri, m_bbox_order[0]), GetBBoxCoord(iri, m_bbox_order[1]),
-                GetBBoxCoord(iri, m_bbox_order[2]), GetBBoxCoord(iri, m_bbox_order[3]))
-        + CPLOPrintf("&size=%d%%2C%d", iri.m_sx, iri.m_sy)
-        + CPLOPrintf("&imageSR=%s", m_irs.c_str())
-        + CPLOPrintf("&bboxSR=%s", m_irs.c_str())
-        + CPLOPrintf("&format=%s", m_image_format.c_str())
-        + CPLOPrintf("&layers=%s", pszEscapedValue);
+                      GetBBoxCoord(iri, m_bbox_order[0]), GetBBoxCoord(iri, m_bbox_order[1]),
+                      GetBBoxCoord(iri, m_bbox_order[2]), GetBBoxCoord(iri, m_bbox_order[3]))
+           + CPLOPrintf("&size=%d%%2C%d", iri.m_sx, iri.m_sy)
+           + CPLOPrintf("&imageSR=%s", m_irs.c_str())
+           + CPLOPrintf("&bboxSR=%s", m_irs.c_str())
+           + CPLOPrintf("&format=%s", m_image_format.c_str())
+           + CPLOPrintf("&layers=%s", pszEscapedValue);
     CPLFree(pszEscapedValue);
 
     if( !m_transparent.empty() )
@@ -152,10 +156,10 @@ CPLErr WMSMiniDriver_AGS::TiledImageRequest(WMSHTTPRequest &request,
 }
 
 void WMSMiniDriver_AGS::GetTiledImageInfo(CPLString &url,
-                                          const GDALWMSImageRequestInfo &iri,
-                                          CPL_UNUSED const GDALWMSTiledImageRequestInfo &tiri,
-                                          int nXInBlock,
-                                          int nYInBlock)
+        const GDALWMSImageRequestInfo &iri,
+        CPL_UNUSED const GDALWMSTiledImageRequestInfo &tiri,
+        int nXInBlock,
+        int nYInBlock)
 {
     url = m_base_url;
 
@@ -184,8 +188,8 @@ void WMSMiniDriver_AGS::GetTiledImageInfo(CPLString &url,
     }
 
     if( m_layers.find("hide") != std::string::npos
-        || m_layers.find("include") != std::string::npos
-        || m_layers.find("exclude") != std::string::npos )
+            || m_layers.find("include") != std::string::npos
+            || m_layers.find("exclude") != std::string::npos )
     {
         layers = "top";
     }
@@ -193,7 +197,7 @@ void WMSMiniDriver_AGS::GetTiledImageInfo(CPLString &url,
     url += "&layers=" + layers;
     url += "&tolerance=" + m_identification_tolerance;
     url += CPLOPrintf("&mapExtent=%.8f%%2C%.8f%%2C%.8f%%2C%.8f",
-        GetBBoxCoord(iri, m_bbox_order[0]), GetBBoxCoord(iri, m_bbox_order[1]),
-        GetBBoxCoord(iri, m_bbox_order[2]), GetBBoxCoord(iri, m_bbox_order[3]))
-        + CPLOPrintf("&imageDisplay=%d%%2C%d%%2C96", iri.m_sx, iri.m_sy);
+                      GetBBoxCoord(iri, m_bbox_order[0]), GetBBoxCoord(iri, m_bbox_order[1]),
+                      GetBBoxCoord(iri, m_bbox_order[2]), GetBBoxCoord(iri, m_bbox_order[3]))
+           + CPLOPrintf("&imageDisplay=%d%%2C%d%%2C96", iri.m_sx, iri.m_sy);
 }
