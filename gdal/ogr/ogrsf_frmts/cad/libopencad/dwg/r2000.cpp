@@ -88,18 +88,18 @@ int DWGFileR2000::ReadHeader( OpenOptions eOptions )
 
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     if( memcmp( bufferPre, DWGConstants::HeaderVariablesStart,
-                           DWGConstants::SentinelLength ) )
+                DWGConstants::SentinelLength ) )
     {
         DebugMsg( "File is corrupted (wrong pointer to HEADER_VARS section,"
-                          "or HEADERVARS starting sentinel corrupted.)" );
+                  "or HEADERVARS starting sentinel corrupted.)" );
 
         return CADErrorCodes::HEADER_SECTION_READ_FAILED;
     }
 #endif
 
     readSize = pFileIO->Read( &dHeaderVarsSectionLength, dSizeOfSectionSize );
-        DebugMsg( "Header variables section length: %d\n",
-                  static_cast<int>(dHeaderVarsSectionLength) );
+    DebugMsg( "Header variables section length: %d\n",
+              static_cast<int>(dHeaderVarsSectionLength) );
     if(readSize != dSizeOfSectionSize || dHeaderVarsSectionLength > 65536) //NOTE: maybe header section may be bigger
     {
         DebugMsg( "File is corrupted (HEADER_VARS section length too big)" );
@@ -269,7 +269,7 @@ int DWGFileR2000::ReadHeader( OpenOptions eOptions )
 
     oHeader.addValue( CADHeader::CECOLOR, buffer.ReadBITSHORT() );
 
-    oHeader.addValue( CADHeader::HANDSEED, buffer.ReadHANDLE() ); 
+    oHeader.addValue( CADHeader::HANDSEED, buffer.ReadHANDLE() );
 
     oHeader.addValue( CADHeader::CLAYER, buffer.ReadHANDLE() );
     oHeader.addValue( CADHeader::TEXTSTYLE, buffer.ReadHANDLE() );
@@ -655,7 +655,7 @@ int DWGFileR2000::ReadHeader( OpenOptions eOptions )
 
     int returnCode = CADErrorCodes::SUCCESS;
     unsigned short dSectionCRC = validateEntityCRC( buffer,
-        static_cast<unsigned int>(dHeaderVarsSectionLength + dSizeOfSectionSize), "HEADERVARS" );
+                                 static_cast<unsigned int>(dHeaderVarsSectionLength + dSizeOfSectionSize), "HEADERVARS" );
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     (void)dSectionCRC;
 #else
@@ -668,10 +668,10 @@ int DWGFileR2000::ReadHeader( OpenOptions eOptions )
     pFileIO->Read( bufferPre, DWGConstants::SentinelLength );
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     if( memcmp( bufferPre, DWGConstants::HeaderVariablesEnd,
-                         DWGConstants::SentinelLength ) )
+                DWGConstants::SentinelLength ) )
     {
         std::cerr << "File is corrupted (HEADERVARS section ending sentinel "
-                          "doesn't match.)\n";
+                  "doesn't match.)\n";
         returnCode = CADErrorCodes::HEADER_SECTION_READ_FAILED;
     }
 #endif
@@ -691,10 +691,10 @@ int DWGFileR2000::ReadClasses( enum OpenOptions eOptions )
         pFileIO->Read( bufferPre, DWGConstants::SentinelLength );
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
         if( memcmp( bufferPre, DWGConstants::DSClassesStart,
-                               DWGConstants::SentinelLength ) )
+                    DWGConstants::SentinelLength ) )
         {
             std::cerr << "File is corrupted (wrong pointer to CLASSES section,"
-                    "or CLASSES starting sentinel corrupted.)\n";
+                      "or CLASSES starting sentinel corrupted.)\n";
 
             return CADErrorCodes::CLASSES_SECTION_READ_FAILED;
         }
@@ -702,7 +702,7 @@ int DWGFileR2000::ReadClasses( enum OpenOptions eOptions )
 
         pFileIO->Read( &dSectionSize, dSizeOfSectionSize );
         DebugMsg("Classes section length: %d\n",
-                  static_cast<int>(dSectionSize) );
+                 static_cast<int>(dSectionSize) );
         if(dSectionSize > 65535) {
             DebugMsg("File is corrupted (CLASSES section is too large: %d\n",
                      static_cast<int>(dSectionSize));
@@ -738,8 +738,8 @@ int DWGFileR2000::ReadClasses( enum OpenOptions eOptions )
 
         buffer.Seek(dSectionBitSize, CADBuffer::BEG);
         unsigned short dSectionCRC = validateEntityCRC( buffer,
-                    static_cast<unsigned int>(dSectionSize + dSizeOfSectionSize),
-                                                        "CLASSES" );
+                                     static_cast<unsigned int>(dSectionSize + dSizeOfSectionSize),
+                                     "CLASSES" );
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
         (void)dSectionCRC;
 #else
@@ -753,10 +753,10 @@ int DWGFileR2000::ReadClasses( enum OpenOptions eOptions )
         pFileIO->Read( bufferPre, DWGConstants::SentinelLength );
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
         if( memcmp( bufferPre, DWGConstants::DSClassesEnd,
-                               DWGConstants::SentinelLength ) )
+                    DWGConstants::SentinelLength ) )
         {
             std::cerr << "File is corrupted (CLASSES section ending sentinel "
-                    "doesn't match.)\n";
+                      "doesn't match.)\n";
             return CADErrorCodes::CLASSES_SECTION_READ_FAILED;
         }
 #endif
@@ -821,30 +821,30 @@ int DWGFileR2000::CreateFileMap()
             else
             {
                 if( (tmpOffset.first >= 0 &&
-                     std::numeric_limits<long>::max() - tmpOffset.first > previousObjHandleOffset.first) ||
-                    (tmpOffset.first < 0 && 
-                     std::numeric_limits<long>::min() - tmpOffset.first <= previousObjHandleOffset.first) )
+                        std::numeric_limits<long>::max() - tmpOffset.first > previousObjHandleOffset.first) ||
+                        (tmpOffset.first < 0 &&
+                         std::numeric_limits<long>::min() - tmpOffset.first <= previousObjHandleOffset.first) )
                 {
                     previousObjHandleOffset.first += tmpOffset.first;
                 }
                 if( (tmpOffset.second >= 0 &&
-                     std::numeric_limits<long>::max() - tmpOffset.second > previousObjHandleOffset.second) ||
-                    (tmpOffset.second < 0 &&
-                     std::numeric_limits<long>::min() - tmpOffset.second <= previousObjHandleOffset.second) )
+                        std::numeric_limits<long>::max() - tmpOffset.second > previousObjHandleOffset.second) ||
+                        (tmpOffset.second < 0 &&
+                         std::numeric_limits<long>::min() - tmpOffset.second <= previousObjHandleOffset.second) )
                 {
                     previousObjHandleOffset.second += tmpOffset.second;
                 }
             }
 #ifdef _DEBUG
             assert( mapObjects.find( previousObjHandleOffset.first ) ==
-                                                                mapObjects.end() );
+                    mapObjects.end() );
 #endif //_DEBUG
             mapObjects.insert( previousObjHandleOffset );
             ++nRecordsInSection;
         }
 
         unsigned short dSectionCRC = validateEntityCRC( buffer,
-                    static_cast<unsigned int>(dSectionSize), "OBJECTMAP", true );
+                                     static_cast<unsigned int>(dSectionSize), "OBJECTMAP", true );
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
         (void)dSectionCRC;
 #else
@@ -955,7 +955,7 @@ CADObject * DWGFileR2000::GetObject( long dHandle, bool bHandlesOnly )
         stCommonEntityData.bbEntMode        = objectBuffer.Read2B();
         stCommonEntityData.nNumReactors     = objectBuffer.ReadBITLONG();
         if(stCommonEntityData.nNumReactors < 0 ||
-           stCommonEntityData.nNumReactors > 5000)
+                stCommonEntityData.nNumReactors > 5000)
         {
             return nullptr;
         }
@@ -975,135 +975,135 @@ CADObject * DWGFileR2000::GetObject( long dHandle, bool bHandlesOnly )
 
         switch( dObjectType )
         {
-            case CADObject::BLOCK:
-                return getBlock( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::BLOCK:
+            return getBlock( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::ELLIPSE:
-                return getEllipse( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::ELLIPSE:
+            return getEllipse( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::MLINE:
-                return getMLine( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::MLINE:
+            return getMLine( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::SOLID:
-                return getSolid( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::SOLID:
+            return getSolid( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::POINT:
-                return getPoint( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::POINT:
+            return getPoint( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::POLYLINE3D:
-                return getPolyLine3D( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::POLYLINE3D:
+            return getPolyLine3D( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::RAY:
-                return getRay( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::RAY:
+            return getRay( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::XLINE:
-                return getXLine( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::XLINE:
+            return getXLine( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::LINE:
-                return getLine( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::LINE:
+            return getLine( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::TEXT:
-                return getText( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::TEXT:
+            return getText( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::VERTEX3D:
-                return getVertex3D( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::VERTEX3D:
+            return getVertex3D( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::CIRCLE:
-                return getCircle( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::CIRCLE:
+            return getCircle( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::ENDBLK:
-                return getEndBlock( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::ENDBLK:
+            return getEndBlock( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::POLYLINE2D:
-                return getPolyline2D( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::POLYLINE2D:
+            return getPolyline2D( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::ATTRIB:
-                return getAttributes( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::ATTRIB:
+            return getAttributes( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::ATTDEF:
-                return getAttributesDefn( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::ATTDEF:
+            return getAttributesDefn( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::LWPOLYLINE:
-                return getLWPolyLine( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::LWPOLYLINE:
+            return getLWPolyLine( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::ARC:
-                return getArc( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::ARC:
+            return getArc( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::SPLINE:
-                return getSpline( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::SPLINE:
+            return getSpline( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::POLYLINE_PFACE:
-                return getPolylinePFace( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::POLYLINE_PFACE:
+            return getPolylinePFace( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::IMAGE:
-                return getImage( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::IMAGE:
+            return getImage( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::FACE3D:
-                return get3DFace( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::FACE3D:
+            return get3DFace( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::VERTEX_MESH:
-                return getVertexMesh( dObjectSize, stCommonEntityData, objectBuffer);
+        case CADObject::VERTEX_MESH:
+            return getVertexMesh( dObjectSize, stCommonEntityData, objectBuffer);
 
-            case CADObject::VERTEX_PFACE:
-                return getVertexPFace( dObjectSize, stCommonEntityData,
-                                       objectBuffer);
+        case CADObject::VERTEX_PFACE:
+            return getVertexPFace( dObjectSize, stCommonEntityData,
+                                   objectBuffer);
 
-            case CADObject::MTEXT:
-                return getMText( dObjectSize, stCommonEntityData,
+        case CADObject::MTEXT:
+            return getMText( dObjectSize, stCommonEntityData,
+                             objectBuffer);
+
+        case CADObject::DIMENSION_RADIUS:
+        case CADObject::DIMENSION_DIAMETER:
+        case CADObject::DIMENSION_ALIGNED:
+        case CADObject::DIMENSION_ANG_3PT:
+        case CADObject::DIMENSION_ANG_2LN:
+        case CADObject::DIMENSION_ORDINATE:
+        case CADObject::DIMENSION_LINEAR:
+            return getDimension( dObjectType, dObjectSize, stCommonEntityData,
                                  objectBuffer);
 
-            case CADObject::DIMENSION_RADIUS:
-            case CADObject::DIMENSION_DIAMETER:
-            case CADObject::DIMENSION_ALIGNED:
-            case CADObject::DIMENSION_ANG_3PT:
-            case CADObject::DIMENSION_ANG_2LN:
-            case CADObject::DIMENSION_ORDINATE:
-            case CADObject::DIMENSION_LINEAR:
-                return getDimension( dObjectType, dObjectSize, stCommonEntityData,
-                                     objectBuffer);
+        case CADObject::INSERT:
+            return getInsert( dObjectType, dObjectSize, stCommonEntityData,
+                              objectBuffer);
 
-            case CADObject::INSERT:
-                return getInsert( dObjectType, dObjectSize, stCommonEntityData,
-                                  objectBuffer);
-
-            default:
-                return getEntity( dObjectType, dObjectSize, stCommonEntityData,
-                                  objectBuffer);
+        default:
+            return getEntity( dObjectType, dObjectSize, stCommonEntityData,
+                              objectBuffer);
         }
     }
     else
     {
         switch( dObjectType )
         {
-            case CADObject::DICTIONARY:
-                return getDictionary( dObjectSize, objectBuffer);
+        case CADObject::DICTIONARY:
+            return getDictionary( dObjectSize, objectBuffer);
 
-            case CADObject::LAYER:
-                return getLayerObject( dObjectSize, objectBuffer);
+        case CADObject::LAYER:
+            return getLayerObject( dObjectSize, objectBuffer);
 
-            case CADObject::LAYER_CONTROL_OBJ:
-                return getLayerControl( dObjectSize, objectBuffer);
+        case CADObject::LAYER_CONTROL_OBJ:
+            return getLayerControl( dObjectSize, objectBuffer);
 
-            case CADObject::BLOCK_CONTROL_OBJ:
-                return getBlockControl( dObjectSize, objectBuffer);
+        case CADObject::BLOCK_CONTROL_OBJ:
+            return getBlockControl( dObjectSize, objectBuffer);
 
-            case CADObject::BLOCK_HEADER:
-                return getBlockHeader( dObjectSize, objectBuffer);
+        case CADObject::BLOCK_HEADER:
+            return getBlockHeader( dObjectSize, objectBuffer);
 
-            case CADObject::LTYPE_CONTROL_OBJ:
-                return getLineTypeControl( dObjectSize, objectBuffer);
+        case CADObject::LTYPE_CONTROL_OBJ:
+            return getLineTypeControl( dObjectSize, objectBuffer);
 
-            case CADObject::LTYPE1:
-                return getLineType1( dObjectSize, objectBuffer);
+        case CADObject::LTYPE1:
+            return getLineType1( dObjectSize, objectBuffer);
 
-            case CADObject::IMAGEDEF:
-                return getImageDef( dObjectSize, objectBuffer);
+        case CADObject::IMAGEDEF:
+            return getImageDef( dObjectSize, objectBuffer);
 
-            case CADObject::IMAGEDEFREACTOR:
-                return getImageDefReactor( dObjectSize, objectBuffer);
+        case CADObject::IMAGEDEFREACTOR:
+            return getImageDefReactor( dObjectSize, objectBuffer);
 
-            case CADObject::XRECORD:
-                return getXRecord( dObjectSize, objectBuffer);
+        case CADObject::XRECORD:
+            return getXRecord( dObjectSize, objectBuffer);
         }
     }
 
@@ -1115,7 +1115,7 @@ CADGeometry * DWGFileR2000::GetGeometry( size_t iLayerIndex, long dHandle, long 
     CADGeometry * poGeometry = nullptr;
     unique_ptr<CADObject> pCADEntityObject( GetObject( dHandle ) );
     CADEntityObject* readedObject =
-                dynamic_cast<CADEntityObject *>( pCADEntityObject.get() );
+        dynamic_cast<CADEntityObject *>( pCADEntityObject.get() );
 
     if( !readedObject )
     {
@@ -1124,452 +1124,452 @@ CADGeometry * DWGFileR2000::GetGeometry( size_t iLayerIndex, long dHandle, long 
 
     switch( readedObject->getType() )
     {
-        case CADObject::ARC:
+    case CADObject::ARC:
+    {
+        CADArc * arc = new CADArc();
+        CADArcObject * cadArc = static_cast<CADArcObject *>(
+                                    readedObject);
+
+        arc->setPosition( cadArc->vertPosition );
+        arc->setExtrusion( cadArc->vectExtrusion );
+        arc->setRadius( cadArc->dfRadius );
+        arc->setThickness( cadArc->dfThickness );
+        arc->setStartingAngle( cadArc->dfStartAngle );
+        arc->setEndingAngle( cadArc->dfEndAngle );
+
+        poGeometry = arc;
+        break;
+    }
+
+    case CADObject::POINT:
+    {
+        CADPoint3D * point = new CADPoint3D();
+        CADPointObject * cadPoint = static_cast<CADPointObject *>(
+                                        readedObject);
+
+        point->setPosition( cadPoint->vertPosition );
+        point->setExtrusion( cadPoint->vectExtrusion );
+        point->setXAxisAng( cadPoint->dfXAxisAng );
+        point->setThickness( cadPoint->dfThickness );
+
+        poGeometry = point;
+        break;
+    }
+
+    case CADObject::POLYLINE3D:
+    {
+        CADPolyline3D * polyline = new CADPolyline3D();
+        CADPolyline3DObject * cadPolyline3D = static_cast<CADPolyline3DObject *>(
+                readedObject);
+
+        // TODO: code can be much simplified if CADHandle will be used.
+        // to do so, == and ++ operators should be implemented.
+        unique_ptr<CADVertex3DObject> vertex;
+        long currentVertexH = cadPolyline3D->hVertexes[0].getAsLong();
+        while( currentVertexH != 0 )
         {
-            CADArc * arc = new CADArc();
-            CADArcObject * cadArc = static_cast<CADArcObject *>(
-                    readedObject);
+            CADObject *poCADVertexObject = GetObject( currentVertexH );
+            vertex.reset( dynamic_cast<CADVertex3DObject *>( poCADVertexObject ) );
 
-            arc->setPosition( cadArc->vertPosition );
-            arc->setExtrusion( cadArc->vectExtrusion );
-            arc->setRadius( cadArc->dfRadius );
-            arc->setThickness( cadArc->dfThickness );
-            arc->setStartingAngle( cadArc->dfStartAngle );
-            arc->setEndingAngle( cadArc->dfEndAngle );
-
-            poGeometry = arc;
-            break;
-        }
-
-        case CADObject::POINT:
-        {
-            CADPoint3D * point = new CADPoint3D();
-            CADPointObject * cadPoint = static_cast<CADPointObject *>(
-                    readedObject);
-
-            point->setPosition( cadPoint->vertPosition );
-            point->setExtrusion( cadPoint->vectExtrusion );
-            point->setXAxisAng( cadPoint->dfXAxisAng );
-            point->setThickness( cadPoint->dfThickness );
-
-            poGeometry = point;
-            break;
-        }
-
-        case CADObject::POLYLINE3D:
-        {
-            CADPolyline3D * polyline = new CADPolyline3D();
-            CADPolyline3DObject * cadPolyline3D = static_cast<CADPolyline3DObject *>(
-                    readedObject);
-
-            // TODO: code can be much simplified if CADHandle will be used.
-            // to do so, == and ++ operators should be implemented.
-            unique_ptr<CADVertex3DObject> vertex;
-            long currentVertexH = cadPolyline3D->hVertexes[0].getAsLong();
-            while( currentVertexH != 0 )
+            if( !vertex )
             {
-                CADObject *poCADVertexObject = GetObject( currentVertexH );
-                vertex.reset( dynamic_cast<CADVertex3DObject *>( poCADVertexObject ) );
-
-                if( !vertex )
-                {
-                    delete poCADVertexObject;
-                    break;
-                }
-
-                currentVertexH = vertex->stCed.hObjectHandle.getAsLong();
-                polyline->addVertex( vertex->vertPosition );
-                if( vertex->stCed.bNoLinks == true )
-                {
-                    ++currentVertexH;
-                }
-                else
-                {
-                    currentVertexH = vertex->stChed.hNextEntity.getAsLong(
-                                vertex->stCed.hObjectHandle );
-                }
-
-                // Last vertex is reached. Read it and break reading.
-                if( currentVertexH == cadPolyline3D->hVertexes[1].getAsLong() )
-                {
-                    CADObject *poCADVertex3DObject = GetObject( currentVertexH );
-                    vertex.reset( dynamic_cast<CADVertex3DObject *>(
-                                          poCADVertex3DObject) );
-                    if( vertex)
-                    {
-                        polyline->addVertex( vertex->vertPosition );
-                    }
-                    else
-                    {
-                        delete poCADVertex3DObject;
-                    }
-                    break;
-                }
+                delete poCADVertexObject;
+                break;
             }
 
-            poGeometry = polyline;
-            break;
-        }
-
-        case CADObject::LWPOLYLINE:
-        {
-            CADLWPolyline * lwPolyline = new CADLWPolyline();
-            CADLWPolylineObject * cadlwPolyline = static_cast<CADLWPolylineObject *>(
-                    readedObject);
-
-            lwPolyline->setBulges( cadlwPolyline->adfBulges );
-            lwPolyline->setClosed( cadlwPolyline->bClosed );
-            lwPolyline->setConstWidth( cadlwPolyline->dfConstWidth );
-            lwPolyline->setElevation( cadlwPolyline->dfElevation );
-            for( const CADVector& vertex : cadlwPolyline->avertVertexes )
-                lwPolyline->addVertex( vertex );
-            lwPolyline->setVectExtrusion( cadlwPolyline->vectExtrusion );
-            lwPolyline->setWidths( cadlwPolyline->astWidths );
-
-            poGeometry = lwPolyline;
-            break;
-        }
-
-        case CADObject::CIRCLE:
-        {
-            CADCircle * circle = new CADCircle();
-            CADCircleObject * cadCircle = static_cast<CADCircleObject *>(
-                    readedObject);
-
-            circle->setPosition( cadCircle->vertPosition );
-            circle->setExtrusion( cadCircle->vectExtrusion );
-            circle->setRadius( cadCircle->dfRadius );
-            circle->setThickness( cadCircle->dfThickness );
-
-            poGeometry = circle;
-            break;
-        }
-
-        case CADObject::ATTRIB:
-        {
-            CADAttrib * attrib = new CADAttrib();
-            CADAttribObject * cadAttrib = static_cast<CADAttribObject *>(
-                    readedObject );
-
-            attrib->setPosition( cadAttrib->vertInsetionPoint );
-            attrib->setExtrusion( cadAttrib->vectExtrusion );
-            attrib->setRotationAngle( cadAttrib->dfRotationAng );
-            attrib->setAlignmentPoint( cadAttrib->vertAlignmentPoint );
-            attrib->setElevation( cadAttrib->dfElevation );
-            attrib->setHeight( cadAttrib->dfHeight );
-            attrib->setObliqueAngle( cadAttrib->dfObliqueAng );
-            attrib->setPositionLocked( cadAttrib->bLockPosition );
-            attrib->setTag( cadAttrib->sTag );
-            attrib->setTextValue( cadAttrib->sTextValue );
-            attrib->setThickness( cadAttrib->dfThickness );
-
-            poGeometry = attrib;
-            break;
-        }
-
-        case CADObject::ATTDEF:
-        {
-            CADAttdef * attdef = new CADAttdef();
-            CADAttdefObject * cadAttrib = static_cast<CADAttdefObject*>(
-                    readedObject );
-
-            attdef->setPosition( cadAttrib->vertInsetionPoint );
-            attdef->setExtrusion( cadAttrib->vectExtrusion );
-            attdef->setRotationAngle( cadAttrib->dfRotationAng );
-            attdef->setAlignmentPoint( cadAttrib->vertAlignmentPoint );
-            attdef->setElevation( cadAttrib->dfElevation );
-            attdef->setHeight( cadAttrib->dfHeight );
-            attdef->setObliqueAngle( cadAttrib->dfObliqueAng );
-            attdef->setPositionLocked( cadAttrib->bLockPosition );
-            attdef->setTag( cadAttrib->sTag );
-            attdef->setTextValue( cadAttrib->sTextValue );
-            attdef->setThickness( cadAttrib->dfThickness );
-            attdef->setPrompt( cadAttrib->sPrompt );
-
-            poGeometry = attdef;
-            break;
-        }
-
-        case CADObject::ELLIPSE:
-        {
-            CADEllipse * ellipse = new CADEllipse();
-            CADEllipseObject * cadEllipse = static_cast<CADEllipseObject *>(
-                    readedObject);
-
-            ellipse->setPosition( cadEllipse->vertPosition );
-            ellipse->setSMAxis( cadEllipse->vectSMAxis );
-            ellipse->setAxisRatio( cadEllipse->dfAxisRatio );
-            ellipse->setEndingAngle( cadEllipse->dfEndAngle );
-            ellipse->setStartingAngle( cadEllipse->dfBegAngle );
-
-            poGeometry = ellipse;
-            break;
-        }
-
-        case CADObject::LINE:
-        {
-            CADLineObject * cadLine = static_cast<CADLineObject *>(
-                    readedObject);
-
-            CADPoint3D ptBeg( cadLine->vertStart, cadLine->dfThickness );
-            CADPoint3D ptEnd( cadLine->vertEnd, cadLine->dfThickness );
-
-            CADLine * line = new CADLine( ptBeg, ptEnd );
-
-            poGeometry = line;
-            break;
-        }
-
-        case CADObject::RAY:
-        {
-            CADRay * ray = new CADRay();
-            CADRayObject * cadRay = static_cast<CADRayObject *>(
-                    readedObject);
-
-            ray->setVectVector( cadRay->vectVector );
-            ray->setPosition( cadRay->vertPosition );
-
-            poGeometry = ray;
-            break;
-        }
-
-        case CADObject::SPLINE:
-        {
-            CADSpline * spline = new CADSpline();
-            CADSplineObject * cadSpline = static_cast<CADSplineObject *>(
-                    readedObject);
-
-            spline->setScenario( cadSpline->dScenario );
-            spline->setDegree( cadSpline->dDegree );
-            if( spline->getScenario() == 2 )
+            currentVertexH = vertex->stCed.hObjectHandle.getAsLong();
+            polyline->addVertex( vertex->vertPosition );
+            if( vertex->stCed.bNoLinks == true )
             {
-                spline->setFitTollerance( cadSpline->dfFitTol );
-            }
-            else if( spline->getScenario() == 1 )
-            {
-                spline->setRational( cadSpline->bRational );
-                spline->setClosed( cadSpline->bClosed );
-                spline->setWeight( cadSpline->bWeight );
-            }
-            for( double weight : cadSpline->adfCtrlPointsWeight )
-                spline->addControlPointsWeight( weight );
-
-            for( const CADVector& pt : cadSpline->averFitPoints )
-                spline->addFitPoint( pt );
-
-            for( const CADVector& pt : cadSpline->avertCtrlPoints )
-                spline->addControlPoint( pt );
-
-            poGeometry = spline;
-            break;
-        }
-
-        case CADObject::TEXT:
-        {
-            CADText * text = new CADText();
-            CADTextObject * cadText = static_cast<CADTextObject *>(
-                    readedObject);
-
-            text->setPosition( cadText->vertInsetionPoint );
-            text->setTextValue( cadText->sTextValue );
-            text->setRotationAngle( cadText->dfRotationAng );
-            text->setObliqueAngle( cadText->dfObliqueAng );
-            text->setThickness( cadText->dfThickness );
-            text->setHeight( cadText->dfElevation );
-
-            poGeometry = text;
-            break;
-        }
-
-        case CADObject::SOLID:
-        {
-            CADSolid * solid = new CADSolid();
-            CADSolidObject * cadSolid = static_cast<CADSolidObject *>(
-                    readedObject);
-
-            solid->setElevation( cadSolid->dfElevation );
-            solid->setThickness( cadSolid->dfThickness );
-            for( const CADVector& corner : cadSolid->avertCorners )
-                solid->addCorner( corner );
-            solid->setExtrusion( cadSolid->vectExtrusion );
-
-            poGeometry = solid;
-            break;
-        }
-
-        case CADObject::IMAGE:
-        {
-            CADImageObject * cadImage = static_cast<CADImageObject *>(
-                    readedObject);
-
-            CADObject *pCADImageDefObject = GetObject( cadImage->hImageDef.getAsLong() );
-            unique_ptr<CADImageDefObject> cadImageDef(
-                dynamic_cast<CADImageDefObject *>( pCADImageDefObject ) );
-
-            if(cadImageDef)
-            {
-                CADImage * image = new CADImage();
-                image->setClippingBoundaryType( cadImage->dClipBoundaryType );
-                image->setFilePath( cadImageDef->sFilePath );
-                image->setVertInsertionPoint( cadImage->vertInsertion );
-                CADVector imageSize( cadImage->dfSizeX, cadImage->dfSizeY );
-                image->setImageSize( imageSize );
-                CADVector imageSizeInPx( cadImageDef->dfXImageSizeInPx, cadImageDef->dfYImageSizeInPx );
-                image->setImageSizeInPx( imageSizeInPx );
-                CADVector pixelSizeInACADUnits( cadImageDef->dfXPixelSize, cadImageDef->dfYPixelSize );
-                image->setPixelSizeInACADUnits( pixelSizeInACADUnits );
-                image->setResolutionUnits(
-                    static_cast<CADImage::ResolutionUnit>( cadImageDef->dResUnits ) );
-                bool bTransparency = (cadImage->dDisplayProps & 0x08) != 0;
-                image->setOptions( bTransparency,
-                                   cadImage->bClipping,
-                                   cadImage->dBrightness,
-                                   cadImage->dContrast );
-                for( const CADVector& clipPt : cadImage->avertClippingPolygonVertexes )
-                {
-                    image->addClippingPoint( clipPt );
-                }
-
-                poGeometry = image;
+                ++currentVertexH;
             }
             else
             {
-                delete pCADImageDefObject;
+                currentVertexH = vertex->stChed.hNextEntity.getAsLong(
+                                     vertex->stCed.hObjectHandle );
             }
-            break;
-        }
 
-        case CADObject::MLINE:
-        {
-            CADMLine * mline = new CADMLine();
-            CADMLineObject * cadmLine = static_cast<CADMLineObject *>(
-                    readedObject);
-
-            mline->setScale( cadmLine->dfScale );
-            mline->setOpened( cadmLine->dOpenClosed == 1 ? true : false );
-            for( const CADMLineVertex& vertex : cadmLine->avertVertexes )
-                mline->addVertex( vertex.vertPosition );
-
-            poGeometry = mline;
-            break;
-        }
-
-        case CADObject::MTEXT:
-        {
-            CADMText * mtext = new CADMText();
-            CADMTextObject * cadmText = static_cast<CADMTextObject *>(
-                    readedObject);
-
-            mtext->setTextValue( cadmText->sTextValue );
-            mtext->setXAxisAng( cadmText->vectXAxisDir.getX() ); //TODO: is this needed?
-
-            mtext->setPosition( cadmText->vertInsertionPoint );
-            mtext->setExtrusion( cadmText->vectExtrusion );
-
-            mtext->setHeight( cadmText->dfTextHeight );
-            mtext->setRectWidth( cadmText->dfRectWidth );
-            mtext->setExtents( cadmText->dfExtents );
-            mtext->setExtentsWidth( cadmText->dfExtentsWidth );
-
-            poGeometry = mtext;
-            break;
-        }
-
-        case CADObject::POLYLINE_PFACE:
-        {
-            CADPolylinePFace * polyline = new CADPolylinePFace();
-            CADPolylinePFaceObject * cadpolyPface = static_cast<CADPolylinePFaceObject *>(
-                    readedObject);
-
-            // TODO: code can be much simplified if CADHandle will be used.
-            // to do so, == and ++ operators should be implemented.
-            unique_ptr<CADVertexPFaceObject> vertex;
-            auto dCurrentEntHandle = cadpolyPface->hVertexes[0].getAsLong();
-            auto dLastEntHandle = cadpolyPface->hVertexes[1].getAsLong();
-            while( true )
+            // Last vertex is reached. Read it and break reading.
+            if( currentVertexH == cadPolyline3D->hVertexes[1].getAsLong() )
             {
-                CADObject *pCADVertexPFaceObject = GetObject( dCurrentEntHandle );
-                vertex.reset( dynamic_cast<CADVertexPFaceObject *>(
-                                      pCADVertexPFaceObject ) );
-                /* TODO: this check is excessive, but if something goes wrong way -
-             * some part of geometries will be parsed. */
-                if( !vertex )
+                CADObject *poCADVertex3DObject = GetObject( currentVertexH );
+                vertex.reset( dynamic_cast<CADVertex3DObject *>(
+                                  poCADVertex3DObject) );
+                if( vertex)
                 {
-                    delete pCADVertexPFaceObject;
-                    break;
+                    polyline->addVertex( vertex->vertPosition );
                 }
+                else
+                {
+                    delete poCADVertex3DObject;
+                }
+                break;
+            }
+        }
 
-                polyline->addVertex( vertex->vertPosition );
+        poGeometry = polyline;
+        break;
+    }
 
-                /* FIXME: somehow one more vertex which isnot presented is read.
-             * so, checking the number of added vertexes */
-                /*TODO: is this needed - check on real data
+    case CADObject::LWPOLYLINE:
+    {
+        CADLWPolyline * lwPolyline = new CADLWPolyline();
+        CADLWPolylineObject * cadlwPolyline = static_cast<CADLWPolylineObject *>(
+                readedObject);
+
+        lwPolyline->setBulges( cadlwPolyline->adfBulges );
+        lwPolyline->setClosed( cadlwPolyline->bClosed );
+        lwPolyline->setConstWidth( cadlwPolyline->dfConstWidth );
+        lwPolyline->setElevation( cadlwPolyline->dfElevation );
+        for( const CADVector& vertex : cadlwPolyline->avertVertexes )
+            lwPolyline->addVertex( vertex );
+        lwPolyline->setVectExtrusion( cadlwPolyline->vectExtrusion );
+        lwPolyline->setWidths( cadlwPolyline->astWidths );
+
+        poGeometry = lwPolyline;
+        break;
+    }
+
+    case CADObject::CIRCLE:
+    {
+        CADCircle * circle = new CADCircle();
+        CADCircleObject * cadCircle = static_cast<CADCircleObject *>(
+                                          readedObject);
+
+        circle->setPosition( cadCircle->vertPosition );
+        circle->setExtrusion( cadCircle->vectExtrusion );
+        circle->setRadius( cadCircle->dfRadius );
+        circle->setThickness( cadCircle->dfThickness );
+
+        poGeometry = circle;
+        break;
+    }
+
+    case CADObject::ATTRIB:
+    {
+        CADAttrib * attrib = new CADAttrib();
+        CADAttribObject * cadAttrib = static_cast<CADAttribObject *>(
+                                          readedObject );
+
+        attrib->setPosition( cadAttrib->vertInsetionPoint );
+        attrib->setExtrusion( cadAttrib->vectExtrusion );
+        attrib->setRotationAngle( cadAttrib->dfRotationAng );
+        attrib->setAlignmentPoint( cadAttrib->vertAlignmentPoint );
+        attrib->setElevation( cadAttrib->dfElevation );
+        attrib->setHeight( cadAttrib->dfHeight );
+        attrib->setObliqueAngle( cadAttrib->dfObliqueAng );
+        attrib->setPositionLocked( cadAttrib->bLockPosition );
+        attrib->setTag( cadAttrib->sTag );
+        attrib->setTextValue( cadAttrib->sTextValue );
+        attrib->setThickness( cadAttrib->dfThickness );
+
+        poGeometry = attrib;
+        break;
+    }
+
+    case CADObject::ATTDEF:
+    {
+        CADAttdef * attdef = new CADAttdef();
+        CADAttdefObject * cadAttrib = static_cast<CADAttdefObject*>(
+                                          readedObject );
+
+        attdef->setPosition( cadAttrib->vertInsetionPoint );
+        attdef->setExtrusion( cadAttrib->vectExtrusion );
+        attdef->setRotationAngle( cadAttrib->dfRotationAng );
+        attdef->setAlignmentPoint( cadAttrib->vertAlignmentPoint );
+        attdef->setElevation( cadAttrib->dfElevation );
+        attdef->setHeight( cadAttrib->dfHeight );
+        attdef->setObliqueAngle( cadAttrib->dfObliqueAng );
+        attdef->setPositionLocked( cadAttrib->bLockPosition );
+        attdef->setTag( cadAttrib->sTag );
+        attdef->setTextValue( cadAttrib->sTextValue );
+        attdef->setThickness( cadAttrib->dfThickness );
+        attdef->setPrompt( cadAttrib->sPrompt );
+
+        poGeometry = attdef;
+        break;
+    }
+
+    case CADObject::ELLIPSE:
+    {
+        CADEllipse * ellipse = new CADEllipse();
+        CADEllipseObject * cadEllipse = static_cast<CADEllipseObject *>(
+                                            readedObject);
+
+        ellipse->setPosition( cadEllipse->vertPosition );
+        ellipse->setSMAxis( cadEllipse->vectSMAxis );
+        ellipse->setAxisRatio( cadEllipse->dfAxisRatio );
+        ellipse->setEndingAngle( cadEllipse->dfEndAngle );
+        ellipse->setStartingAngle( cadEllipse->dfBegAngle );
+
+        poGeometry = ellipse;
+        break;
+    }
+
+    case CADObject::LINE:
+    {
+        CADLineObject * cadLine = static_cast<CADLineObject *>(
+                                      readedObject);
+
+        CADPoint3D ptBeg( cadLine->vertStart, cadLine->dfThickness );
+        CADPoint3D ptEnd( cadLine->vertEnd, cadLine->dfThickness );
+
+        CADLine * line = new CADLine( ptBeg, ptEnd );
+
+        poGeometry = line;
+        break;
+    }
+
+    case CADObject::RAY:
+    {
+        CADRay * ray = new CADRay();
+        CADRayObject * cadRay = static_cast<CADRayObject *>(
+                                    readedObject);
+
+        ray->setVectVector( cadRay->vectVector );
+        ray->setPosition( cadRay->vertPosition );
+
+        poGeometry = ray;
+        break;
+    }
+
+    case CADObject::SPLINE:
+    {
+        CADSpline * spline = new CADSpline();
+        CADSplineObject * cadSpline = static_cast<CADSplineObject *>(
+                                          readedObject);
+
+        spline->setScenario( cadSpline->dScenario );
+        spline->setDegree( cadSpline->dDegree );
+        if( spline->getScenario() == 2 )
+        {
+            spline->setFitTollerance( cadSpline->dfFitTol );
+        }
+        else if( spline->getScenario() == 1 )
+        {
+            spline->setRational( cadSpline->bRational );
+            spline->setClosed( cadSpline->bClosed );
+            spline->setWeight( cadSpline->bWeight );
+        }
+        for( double weight : cadSpline->adfCtrlPointsWeight )
+            spline->addControlPointsWeight( weight );
+
+        for( const CADVector& pt : cadSpline->averFitPoints )
+            spline->addFitPoint( pt );
+
+        for( const CADVector& pt : cadSpline->avertCtrlPoints )
+            spline->addControlPoint( pt );
+
+        poGeometry = spline;
+        break;
+    }
+
+    case CADObject::TEXT:
+    {
+        CADText * text = new CADText();
+        CADTextObject * cadText = static_cast<CADTextObject *>(
+                                      readedObject);
+
+        text->setPosition( cadText->vertInsetionPoint );
+        text->setTextValue( cadText->sTextValue );
+        text->setRotationAngle( cadText->dfRotationAng );
+        text->setObliqueAngle( cadText->dfObliqueAng );
+        text->setThickness( cadText->dfThickness );
+        text->setHeight( cadText->dfElevation );
+
+        poGeometry = text;
+        break;
+    }
+
+    case CADObject::SOLID:
+    {
+        CADSolid * solid = new CADSolid();
+        CADSolidObject * cadSolid = static_cast<CADSolidObject *>(
+                                        readedObject);
+
+        solid->setElevation( cadSolid->dfElevation );
+        solid->setThickness( cadSolid->dfThickness );
+        for( const CADVector& corner : cadSolid->avertCorners )
+            solid->addCorner( corner );
+        solid->setExtrusion( cadSolid->vectExtrusion );
+
+        poGeometry = solid;
+        break;
+    }
+
+    case CADObject::IMAGE:
+    {
+        CADImageObject * cadImage = static_cast<CADImageObject *>(
+                                        readedObject);
+
+        CADObject *pCADImageDefObject = GetObject( cadImage->hImageDef.getAsLong() );
+        unique_ptr<CADImageDefObject> cadImageDef(
+            dynamic_cast<CADImageDefObject *>( pCADImageDefObject ) );
+
+        if(cadImageDef)
+        {
+            CADImage * image = new CADImage();
+            image->setClippingBoundaryType( cadImage->dClipBoundaryType );
+            image->setFilePath( cadImageDef->sFilePath );
+            image->setVertInsertionPoint( cadImage->vertInsertion );
+            CADVector imageSize( cadImage->dfSizeX, cadImage->dfSizeY );
+            image->setImageSize( imageSize );
+            CADVector imageSizeInPx( cadImageDef->dfXImageSizeInPx, cadImageDef->dfYImageSizeInPx );
+            image->setImageSizeInPx( imageSizeInPx );
+            CADVector pixelSizeInACADUnits( cadImageDef->dfXPixelSize, cadImageDef->dfYPixelSize );
+            image->setPixelSizeInACADUnits( pixelSizeInACADUnits );
+            image->setResolutionUnits(
+                static_cast<CADImage::ResolutionUnit>( cadImageDef->dResUnits ) );
+            bool bTransparency = (cadImage->dDisplayProps & 0x08) != 0;
+            image->setOptions( bTransparency,
+                               cadImage->bClipping,
+                               cadImage->dBrightness,
+                               cadImage->dContrast );
+            for( const CADVector& clipPt : cadImage->avertClippingPolygonVertexes )
+            {
+                image->addClippingPoint( clipPt );
+            }
+
+            poGeometry = image;
+        }
+        else
+        {
+            delete pCADImageDefObject;
+        }
+        break;
+    }
+
+    case CADObject::MLINE:
+    {
+        CADMLine * mline = new CADMLine();
+        CADMLineObject * cadmLine = static_cast<CADMLineObject *>(
+                                        readedObject);
+
+        mline->setScale( cadmLine->dfScale );
+        mline->setOpened( cadmLine->dOpenClosed == 1 ? true : false );
+        for( const CADMLineVertex& vertex : cadmLine->avertVertexes )
+            mline->addVertex( vertex.vertPosition );
+
+        poGeometry = mline;
+        break;
+    }
+
+    case CADObject::MTEXT:
+    {
+        CADMText * mtext = new CADMText();
+        CADMTextObject * cadmText = static_cast<CADMTextObject *>(
+                                        readedObject);
+
+        mtext->setTextValue( cadmText->sTextValue );
+        mtext->setXAxisAng( cadmText->vectXAxisDir.getX() ); //TODO: is this needed?
+
+        mtext->setPosition( cadmText->vertInsertionPoint );
+        mtext->setExtrusion( cadmText->vectExtrusion );
+
+        mtext->setHeight( cadmText->dfTextHeight );
+        mtext->setRectWidth( cadmText->dfRectWidth );
+        mtext->setExtents( cadmText->dfExtents );
+        mtext->setExtentsWidth( cadmText->dfExtentsWidth );
+
+        poGeometry = mtext;
+        break;
+    }
+
+    case CADObject::POLYLINE_PFACE:
+    {
+        CADPolylinePFace * polyline = new CADPolylinePFace();
+        CADPolylinePFaceObject * cadpolyPface = static_cast<CADPolylinePFaceObject *>(
+                readedObject);
+
+        // TODO: code can be much simplified if CADHandle will be used.
+        // to do so, == and ++ operators should be implemented.
+        unique_ptr<CADVertexPFaceObject> vertex;
+        auto dCurrentEntHandle = cadpolyPface->hVertexes[0].getAsLong();
+        auto dLastEntHandle = cadpolyPface->hVertexes[1].getAsLong();
+        while( true )
+        {
+            CADObject *pCADVertexPFaceObject = GetObject( dCurrentEntHandle );
+            vertex.reset( dynamic_cast<CADVertexPFaceObject *>(
+                              pCADVertexPFaceObject ) );
+            /* TODO: this check is excessive, but if something goes wrong way -
+            * some part of geometries will be parsed. */
+            if( !vertex )
+            {
+                delete pCADVertexPFaceObject;
+                break;
+            }
+
+            polyline->addVertex( vertex->vertPosition );
+
+            /* FIXME: somehow one more vertex which isnot presented is read.
+            * so, checking the number of added vertexes */
+            /*TODO: is this needed - check on real data
             if ( polyline->hVertexes.size() == cadpolyPface->nNumVertexes )
             {
-                delete( vertex );
-                break;
+            delete( vertex );
+            break;
             }*/
 
-                if( vertex->stCed.bNoLinks )
-                    ++dCurrentEntHandle;
-                else
-                    dCurrentEntHandle = vertex->stChed.hNextEntity.getAsLong( vertex->stCed.hObjectHandle );
+            if( vertex->stCed.bNoLinks )
+                ++dCurrentEntHandle;
+            else
+                dCurrentEntHandle = vertex->stChed.hNextEntity.getAsLong( vertex->stCed.hObjectHandle );
 
-                if( dCurrentEntHandle == dLastEntHandle )
+            if( dCurrentEntHandle == dLastEntHandle )
+            {
+                CADObject *pCADVertexPFaceObjectV = GetObject( dCurrentEntHandle );
+                vertex.reset( dynamic_cast<CADVertexPFaceObject *>(
+                                  pCADVertexPFaceObjectV) );
+                if(vertex)
                 {
-                    CADObject *pCADVertexPFaceObjectV = GetObject( dCurrentEntHandle );
-                    vertex.reset( dynamic_cast<CADVertexPFaceObject *>(
-                                          pCADVertexPFaceObjectV) );
-                    if(vertex)
-                    {
-                        polyline->addVertex( vertex->vertPosition );
-                    }
-                    else
-                    {
-                        delete pCADVertexPFaceObjectV;
-                    }
-                    break;
+                    polyline->addVertex( vertex->vertPosition );
                 }
+                else
+                {
+                    delete pCADVertexPFaceObjectV;
+                }
+                break;
             }
-
-            poGeometry = polyline;
-            break;
         }
 
-        case CADObject::XLINE:
-        {
-            CADXLine * xline = new CADXLine();
-            CADXLineObject * cadxLine = static_cast<CADXLineObject *>(
-                    readedObject);
+        poGeometry = polyline;
+        break;
+    }
 
-            xline->setVectVector( cadxLine->vectVector );
-            xline->setPosition( cadxLine->vertPosition );
+    case CADObject::XLINE:
+    {
+        CADXLine * xline = new CADXLine();
+        CADXLineObject * cadxLine = static_cast<CADXLineObject *>(
+                                        readedObject);
 
-            poGeometry = xline;
-            break;
-        }
+        xline->setVectVector( cadxLine->vectVector );
+        xline->setPosition( cadxLine->vertPosition );
 
-        case CADObject::FACE3D:
-        {
-            CADFace3D * face = new CADFace3D();
-            CAD3DFaceObject * cad3DFace = static_cast<CAD3DFaceObject *>(
-                    readedObject);
+        poGeometry = xline;
+        break;
+    }
 
-            for( const CADVector& corner : cad3DFace->avertCorners )
-                face->addCorner( corner );
-            face->setInvisFlags( cad3DFace->dInvisFlags );
+    case CADObject::FACE3D:
+    {
+        CADFace3D * face = new CADFace3D();
+        CAD3DFaceObject * cad3DFace = static_cast<CAD3DFaceObject *>(
+                                          readedObject);
 
-            poGeometry = face;
-            break;
-        }
+        for( const CADVector& corner : cad3DFace->avertCorners )
+            face->addCorner( corner );
+        face->setInvisFlags( cad3DFace->dInvisFlags );
 
-        case CADObject::POLYLINE_MESH:
-        case CADObject::VERTEX_MESH:
-        case CADObject::VERTEX_PFACE_FACE:
-        default:
-            std::cerr << "Asked geometry has unsupported type.\n";
-            poGeometry = new CADUnknown();
-            break;
+        poGeometry = face;
+        break;
+    }
+
+    case CADObject::POLYLINE_MESH:
+    case CADObject::VERTEX_MESH:
+    case CADObject::VERTEX_PFACE_FACE:
+    default:
+        std::cerr << "Asked geometry has unsupported type.\n";
+        poGeometry = new CADUnknown();
+        break;
     }
 
     if( poGeometry == nullptr )
@@ -1591,139 +1591,139 @@ CADGeometry * DWGFileR2000::GetGeometry( size_t iLayerIndex, long dHandle, long 
     // Casting object's EED to a vector of strings
     vector<string> asEED;
     for( auto citer = readedObject->stCed.aEED.cbegin();
-         citer != readedObject->stCed.aEED.cend(); ++citer )
+            citer != readedObject->stCed.aEED.cend(); ++citer )
     {
         string sEED = "";
         // Detect the type of EED entity
         switch( citer->acData[0] )
         {
-            case 0: // String
+        case 0: // String
+        {
+            if( citer->acData.size() > 1 )
             {
-                if( citer->acData.size() > 1 )
-                {
-                    unsigned char nStrSize = citer->acData[1];
-                    // +2 = skip CodePage, no idea how to use it anyway
+                unsigned char nStrSize = citer->acData[1];
+                // +2 = skip CodePage, no idea how to use it anyway
 
-                    if(nStrSize > 0)
-                    {
-                        for( size_t i = 0; i < nStrSize &&
+                if(nStrSize > 0)
+                {
+                    for( size_t i = 0; i < nStrSize &&
                             i + 4 < citer->acData.size(); ++i )
-                        {
-                            sEED += citer->acData[i + 4];
-                        }
+                    {
+                        sEED += citer->acData[i + 4];
                     }
                 }
-                break;
             }
-            case 1: // Invalid
+            break;
+        }
+        case 1: // Invalid
+        {
+            DebugMsg( "Error: EED obj type is 1, error in R2000::getGeometry()" );
+            break;
+        }
+        case 2: // { or }
+        {
+            if( citer->acData.size() > 1 )
             {
-                DebugMsg( "Error: EED obj type is 1, error in R2000::getGeometry()" );
-                break;
+                sEED += citer->acData[1] == 0 ? '{' : '}';
             }
-            case 2: // { or }
+            break;
+        }
+        case 3: // Layer table ref
+        {
+            // FIXME: get CADHandle and return getAsLong() result.
+            sEED += "Layer table ref (handle):";
+            for( size_t i = 0; i < 8 && i + 1 < citer->acData.size(); ++i )
             {
-                if( citer->acData.size() > 1 )
+                sEED += citer->acData[i + 1];
+            }
+            break;
+        }
+        case 4: // Binary chunk
+        {
+            if( citer->acData.size() > 1 )
+            {
+                unsigned char nChunkSize = citer->acData[1];
+                sEED += "Binary chunk (chars):";
+                if(nChunkSize > 0)
                 {
-                    sEED += citer->acData[1] == 0 ? '{' : '}';
-                }
-                break;
-            }
-            case 3: // Layer table ref
-            {
-                // FIXME: get CADHandle and return getAsLong() result.
-                sEED += "Layer table ref (handle):";
-                for( size_t i = 0; i < 8 && i + 1 < citer->acData.size(); ++i )
-                {
-                    sEED += citer->acData[i + 1];
-                }
-                break;
-            }
-            case 4: // Binary chunk
-            {
-                if( citer->acData.size() > 1 )
-                {
-                    unsigned char nChunkSize = citer->acData[1];
-                    sEED += "Binary chunk (chars):";
-                    if(nChunkSize > 0)
-                    {
-                        for( size_t i = 0; i < nChunkSize &&
+                    for( size_t i = 0; i < nChunkSize &&
                             i + 2 < citer->acData.size(); ++i )
-                        {
-                            sEED += citer->acData[i + 2];
-                        }
-                    }
-                    else
                     {
-                        sEED += "?";
+                        sEED += citer->acData[i + 2];
                     }
                 }
-                break;
-            }
-            case 5: // Entity handle ref
-            {
-                // FIXME: Get CADHandle and return getAsLong() result.
-                sEED += "Entity handle ref (handle):";
-                for( size_t i = 0; i < 8 && i + 1 < citer->acData.size(); ++i )
+                else
                 {
-                    sEED += citer->acData[i + 1];
+                    sEED += "?";
                 }
-                break;
             }
-            case 10:
-            case 11:
-            case 12:
-            case 13:
+            break;
+        }
+        case 5: // Entity handle ref
+        {
+            // FIXME: Get CADHandle and return getAsLong() result.
+            sEED += "Entity handle ref (handle):";
+            for( size_t i = 0; i < 8 && i + 1 < citer->acData.size(); ++i )
             {
-                sEED += "Point: {";
-                double dfX = 0, dfY = 0, dfZ = 0;
-                if(citer->acData.size() > 24)
-                {
-                    memcpy( & dfX, citer->acData.data() + 1, 8 );
-                    memcpy( & dfY, citer->acData.data() + 9, 8 );
-                    memcpy( & dfZ, citer->acData.data() + 17, 8 );
-                }
-                sEED += std::to_string( dfX );
-                sEED += ';';
-                sEED += std::to_string( dfY );
-                sEED += ';';
-                sEED += std::to_string( dfZ );
-                sEED += '}';
-                break;
+                sEED += citer->acData[i + 1];
             }
-            case 40:
-            case 41:
-            case 42:
+            break;
+        }
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        {
+            sEED += "Point: {";
+            double dfX = 0, dfY = 0, dfZ = 0;
+            if(citer->acData.size() > 24)
             {
-                sEED += "Double:";
-                double dfVal = 0;
-                if(citer->acData.size() > 8)
-                    memcpy( & dfVal, citer->acData.data() + 1, 8 );
-                sEED += std::to_string( dfVal );
-                break;
+                memcpy( & dfX, citer->acData.data() + 1, 8 );
+                memcpy( & dfY, citer->acData.data() + 9, 8 );
+                memcpy( & dfZ, citer->acData.data() + 17, 8 );
             }
-            case 70:
-            {
-                sEED += "Short:";
-                int16_t dVal = 0;
-                if(citer->acData.size() > 2)
-                    memcpy( & dVal, citer->acData.data() + 1, 2 );
-                sEED += std::to_string( dVal );
-                break;
-            }
-            case 71:
-            {
-                sEED += "Long Int:";
-                int32_t dVal = 0;
-                if(citer->acData.size() > 4)
-                    memcpy( & dVal, citer->acData.data() + 1, 4 );
-                sEED += std::to_string( dVal );
-                break;
-            }
-            default:
-            {
-                DebugMsg( "Error in parsing geometry EED: undefined typecode: %d",
-                          static_cast<int>(citer->acData[0]) );
-            }
+            sEED += std::to_string( dfX );
+            sEED += ';';
+            sEED += std::to_string( dfY );
+            sEED += ';';
+            sEED += std::to_string( dfZ );
+            sEED += '}';
+            break;
+        }
+        case 40:
+        case 41:
+        case 42:
+        {
+            sEED += "Double:";
+            double dfVal = 0;
+            if(citer->acData.size() > 8)
+                memcpy( & dfVal, citer->acData.data() + 1, 8 );
+            sEED += std::to_string( dfVal );
+            break;
+        }
+        case 70:
+        {
+            sEED += "Short:";
+            int16_t dVal = 0;
+            if(citer->acData.size() > 2)
+                memcpy( & dVal, citer->acData.data() + 1, 2 );
+            sEED += std::to_string( dVal );
+            break;
+        }
+        case 71:
+        {
+            sEED += "Long Int:";
+            int32_t dVal = 0;
+            if(citer->acData.size() > 4)
+                memcpy( & dVal, citer->acData.data() + 1, 4 );
+            sEED += std::to_string( dVal );
+            break;
+        }
+        default:
+        {
+            DebugMsg( "Error in parsing geometry EED: undefined typecode: %d",
+                      static_cast<int>(citer->acData[0]) );
+        }
         }
         asEED.emplace_back( sEED );
     }
@@ -1734,7 +1734,7 @@ CADGeometry * DWGFileR2000::GetGeometry( size_t iLayerIndex, long dHandle, long 
         vector<CADAttrib>           blockRefAttributes;
         CADObject *pCADInsertObject = GetObject( dBlockRefHandle );
         unique_ptr<CADInsertObject> spoBlockRef(
-                    dynamic_cast<CADInsertObject *>( pCADInsertObject ) );
+            dynamic_cast<CADInsertObject *>( pCADInsertObject ) );
 
         if( spoBlockRef )
         {
@@ -1748,7 +1748,7 @@ CADGeometry * DWGFileR2000::GetGeometry( size_t iLayerIndex, long dHandle, long 
                     CADObject *pCADAttDefObj = GetObject( dCurrentEntHandle, true );
 
                     CADEntityObject * attDefObj =
-                            dynamic_cast<CADEntityObject *>( pCADAttDefObj );
+                        dynamic_cast<CADEntityObject *>( pCADAttDefObj );
 
                     if( dCurrentEntHandle == dLastEntHandle )
                     {
@@ -1759,7 +1759,7 @@ CADGeometry * DWGFileR2000::GetGeometry( size_t iLayerIndex, long dHandle, long 
                         }
 
                         CADAttrib * attrib = static_cast<CADAttrib *>(
-                                GetGeometry( iLayerIndex, dCurrentEntHandle ) );
+                                                 GetGeometry( iLayerIndex, dCurrentEntHandle ) );
 
                         if( attrib )
                         {
@@ -1778,7 +1778,7 @@ CADGeometry * DWGFileR2000::GetGeometry( size_t iLayerIndex, long dHandle, long 
                             dCurrentEntHandle = attDefObj->stChed.hNextEntity.getAsLong( attDefObj->stCed.hObjectHandle );
 
                         CADAttrib * attrib = static_cast<CADAttrib *>(
-                                GetGeometry( iLayerIndex, dCurrentEntHandle ) );
+                                                 GetGeometry( iLayerIndex, dCurrentEntHandle ) );
 
                         if( attrib )
                         {
@@ -1825,8 +1825,8 @@ CADBlockObject * DWGFileR2000::getBlock(unsigned int dObjectSize,
 }
 
 CADEllipseObject * DWGFileR2000::getEllipse(unsigned int dObjectSize,
-                                            const CADCommonED& stCommonEntityData,
-                                            CADBuffer& buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer& buffer)
 {
     CADEllipseObject * ellipse = new CADEllipseObject();
 
@@ -1933,8 +1933,8 @@ CADPointObject * DWGFileR2000::getPoint(unsigned int dObjectSize,
 }
 
 CADPolyline3DObject * DWGFileR2000::getPolyLine3D(unsigned int dObjectSize,
-                                                  const CADCommonED& stCommonEntityData,
-                                                  CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADPolyline3DObject * polyline = new CADPolyline3DObject();
 
@@ -2120,8 +2120,8 @@ CADTextObject * DWGFileR2000::getText(unsigned int dObjectSize,
 }
 
 CADVertex3DObject * DWGFileR2000::getVertex3D(unsigned int dObjectSize,
-                                              const CADCommonED& stCommonEntityData,
-                                              CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADVertex3DObject * vertex = new CADVertex3DObject();
 
@@ -2141,8 +2141,8 @@ CADVertex3DObject * DWGFileR2000::getVertex3D(unsigned int dObjectSize,
 }
 
 CADCircleObject * DWGFileR2000::getCircle(unsigned int dObjectSize,
-                                          const CADCommonED& stCommonEntityData,
-                                          CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADCircleObject * circle = new CADCircleObject();
 
@@ -2172,8 +2172,8 @@ CADCircleObject * DWGFileR2000::getCircle(unsigned int dObjectSize,
 }
 
 CADEndblkObject * DWGFileR2000::getEndBlock(unsigned int dObjectSize,
-                                            const CADCommonED& stCommonEntityData,
-                                            CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADEndblkObject * endblk = new CADEndblkObject();
 
@@ -2188,8 +2188,8 @@ CADEndblkObject * DWGFileR2000::getEndBlock(unsigned int dObjectSize,
 }
 
 CADPolyline2DObject * DWGFileR2000::getPolyline2D(unsigned int dObjectSize,
-                                                  const CADCommonED& stCommonEntityData,
-                                                  CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADPolyline2DObject * polyline = new CADPolyline2DObject();
 
@@ -2229,8 +2229,8 @@ CADPolyline2DObject * DWGFileR2000::getPolyline2D(unsigned int dObjectSize,
 }
 
 CADAttribObject * DWGFileR2000::getAttributes(unsigned int dObjectSize,
-                                              const CADCommonED& stCommonEntityData,
-                                              CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADAttribObject * attrib = new CADAttribObject();
 
@@ -2295,8 +2295,8 @@ CADAttribObject * DWGFileR2000::getAttributes(unsigned int dObjectSize,
 }
 
 CADAttdefObject * DWGFileR2000::getAttributesDefn(unsigned int dObjectSize,
-                                                  const CADCommonED& stCommonEntityData,
-                                                  CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADAttdefObject * attdef = new CADAttdefObject();
 
@@ -2362,8 +2362,8 @@ CADAttdefObject * DWGFileR2000::getAttributesDefn(unsigned int dObjectSize,
 }
 
 CADLWPolylineObject * DWGFileR2000::getLWPolyLine(unsigned int dObjectSize,
-                                                  const CADCommonED& stCommonEntityData,
-                                                  CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADLWPolylineObject * polyline = new CADLWPolylineObject();
     polyline->setSize( dObjectSize );
@@ -2522,8 +2522,8 @@ CADArcObject * DWGFileR2000::getArc(unsigned int dObjectSize,
 }
 
 CADSplineObject * DWGFileR2000::getSpline(unsigned int dObjectSize,
-                                          const CADCommonED& stCommonEntityData,
-                                          CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADSplineObject * spline = new CADSplineObject();
     spline->setSize( dObjectSize );
@@ -2622,12 +2622,12 @@ CADSplineObject * DWGFileR2000::getSpline(unsigned int dObjectSize,
 }
 
 CADEntityObject * DWGFileR2000::getEntity(int dObjectType,
-                                          unsigned int dObjectSize,
-                                          const CADCommonED& stCommonEntityData,
-                                          CADBuffer &buffer)
+        unsigned int dObjectSize,
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADEntityObject * entity = new CADEntityObject(
-                    static_cast<CADObject::ObjectType>(dObjectType) );
+        static_cast<CADObject::ObjectType>(dObjectType) );
 
     entity->setSize( dObjectSize );
     entity->stCed = stCommonEntityData;
@@ -2643,12 +2643,12 @@ CADEntityObject * DWGFileR2000::getEntity(int dObjectType,
 }
 
 CADInsertObject * DWGFileR2000::getInsert(int dObjectType,
-                                          unsigned int dObjectSize,
-                                          const CADCommonED& stCommonEntityData,
-                                          CADBuffer &buffer)
+        unsigned int dObjectSize,
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADInsertObject * insert = new CADInsertObject(
-                            static_cast<CADObject::ObjectType>(dObjectType) );
+        static_cast<CADObject::ObjectType>(dObjectType) );
     insert->setSize( dObjectSize );
     insert->stCed = stCommonEntityData;
 
@@ -2697,7 +2697,7 @@ CADInsertObject * DWGFileR2000::getInsert(int dObjectType,
 }
 
 CADDictionaryObject * DWGFileR2000::getDictionary(unsigned int dObjectSize,
-                                                  CADBuffer &buffer)
+        CADBuffer &buffer)
 {
     /*
      * FIXME: ODA has a lot of mistypes in spec. for this objects,
@@ -2761,7 +2761,7 @@ CADDictionaryObject * DWGFileR2000::getDictionary(unsigned int dObjectSize,
 }
 
 CADLayerObject * DWGFileR2000::getLayerObject(unsigned int dObjectSize,
-                                              CADBuffer &buffer)
+        CADBuffer &buffer)
 {
     CADLayerObject * layer = new CADLayerObject();
 
@@ -2813,7 +2813,7 @@ CADLayerObject * DWGFileR2000::getLayerObject(unsigned int dObjectSize,
 }
 
 CADLayerControlObject * DWGFileR2000::getLayerControl(unsigned int dObjectSize,
-                                                      CADBuffer &buffer)
+        CADBuffer &buffer)
 {
     CADLayerControlObject * layerControl = new CADLayerControlObject();
 
@@ -2847,7 +2847,7 @@ CADLayerControlObject * DWGFileR2000::getLayerControl(unsigned int dObjectSize,
 }
 
 CADBlockControlObject * DWGFileR2000::getBlockControl(unsigned int dObjectSize,
-                                                      CADBuffer &buffer)
+        CADBuffer &buffer)
 {
     CADBlockControlObject * blockControl = new CADBlockControlObject();
 
@@ -2883,7 +2883,7 @@ CADBlockControlObject * DWGFileR2000::getBlockControl(unsigned int dObjectSize,
 }
 
 CADBlockHeaderObject * DWGFileR2000::getBlockHeader(unsigned int dObjectSize,
-                                                    CADBuffer &buffer)
+        CADBuffer &buffer)
 {
     CADBlockHeaderObject * blockHeader = new CADBlockHeaderObject();
 
@@ -2960,7 +2960,7 @@ CADBlockHeaderObject * DWGFileR2000::getBlockHeader(unsigned int dObjectSize,
 }
 
 CADLineTypeControlObject * DWGFileR2000::getLineTypeControl(unsigned int dObjectSize,
-                                                            CADBuffer &buffer)
+        CADBuffer &buffer)
 {
     CADLineTypeControlObject * ltypeControl = new CADLineTypeControlObject();
 
@@ -3151,8 +3151,8 @@ CADMLineObject * DWGFileR2000::getMLine(unsigned int dObjectSize,
 }
 
 CADPolylinePFaceObject * DWGFileR2000::getPolylinePFace(unsigned int dObjectSize,
-                                                        const CADCommonED& stCommonEntityData,
-                                                        CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADPolylinePFaceObject * polyline = new CADPolylinePFaceObject();
 
@@ -3245,8 +3245,8 @@ CADImageObject * DWGFileR2000::getImage(unsigned int dObjectSize,
 }
 
 CAD3DFaceObject * DWGFileR2000::get3DFace(unsigned int dObjectSize,
-                                          const CADCommonED& stCommonEntityData,
-                                          CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CAD3DFaceObject * face = new CAD3DFaceObject();
 
@@ -3286,8 +3286,8 @@ CAD3DFaceObject * DWGFileR2000::get3DFace(unsigned int dObjectSize,
 }
 
 CADVertexMeshObject * DWGFileR2000::getVertexMesh(unsigned int dObjectSize,
-                                                  const CADCommonED& stCommonEntityData,
-                                                  CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADVertexMeshObject * vertex = new CADVertexMeshObject();
 
@@ -3306,8 +3306,8 @@ CADVertexMeshObject * DWGFileR2000::getVertexMesh(unsigned int dObjectSize,
 }
 
 CADVertexPFaceObject * DWGFileR2000::getVertexPFace(unsigned int dObjectSize,
-                                                    const CADCommonED& stCommonEntityData,
-                                                    CADBuffer &buffer)
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADVertexPFaceObject * vertex = new CADVertexPFaceObject();
 
@@ -3362,9 +3362,9 @@ CADMTextObject * DWGFileR2000::getMText(unsigned int dObjectSize,
 }
 
 CADDimensionObject * DWGFileR2000::getDimension(short dObjectType,
-                                                unsigned int dObjectSize,
-                                                const CADCommonED& stCommonEntityData,
-                                                CADBuffer &buffer)
+        unsigned int dObjectSize,
+        const CADCommonED& stCommonEntityData,
+        CADBuffer &buffer)
 {
     CADCommonDimensionData stCDD;
 
@@ -3396,214 +3396,214 @@ CADDimensionObject * DWGFileR2000::getDimension(short dObjectType,
 
     switch( dObjectType )
     {
-        case CADObject::DIMENSION_ORDINATE:
-        {
-            CADDimensionOrdinateObject * dimension = new CADDimensionOrdinateObject();
+    case CADObject::DIMENSION_ORDINATE:
+    {
+        CADDimensionOrdinateObject * dimension = new CADDimensionOrdinateObject();
 
-            dimension->setSize( dObjectSize );
-            dimension->stCed = stCommonEntityData;
-            dimension->cdd   = stCDD;
+        dimension->setSize( dObjectSize );
+        dimension->stCed = stCommonEntityData;
+        dimension->cdd   = stCDD;
 
-            CADVector vert10pt = buffer.ReadVector();
-            dimension->vert10pt = vert10pt;
+        CADVector vert10pt = buffer.ReadVector();
+        dimension->vert10pt = vert10pt;
 
-            CADVector vert13pt = buffer.ReadVector();
-            dimension->vert13pt = vert13pt;
+        CADVector vert13pt = buffer.ReadVector();
+        dimension->vert13pt = vert13pt;
 
-            CADVector vert14pt = buffer.ReadVector();
-            dimension->vert14pt = vert14pt;
+        CADVector vert14pt = buffer.ReadVector();
+        dimension->vert14pt = vert14pt;
 
-            dimension->Flags2 = buffer.ReadCHAR();
+        dimension->Flags2 = buffer.ReadCHAR();
 
-            fillCommonEntityHandleData( dimension, buffer);
+        fillCommonEntityHandleData( dimension, buffer);
 
-            dimension->hDimstyle       = buffer.ReadHANDLE();
-            dimension->hAnonymousBlock = buffer.ReadHANDLE();
+        dimension->hDimstyle       = buffer.ReadHANDLE();
+        dimension->hAnonymousBlock = buffer.ReadHANDLE();
 
-            buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
-            dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
-            return dimension;
-        }
+        buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
+        dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
+        return dimension;
+    }
 
-        case CADObject::DIMENSION_LINEAR:
-        {
-            CADDimensionLinearObject * dimension = new CADDimensionLinearObject();
+    case CADObject::DIMENSION_LINEAR:
+    {
+        CADDimensionLinearObject * dimension = new CADDimensionLinearObject();
 
-            dimension->setSize( dObjectSize );
-            dimension->stCed = stCommonEntityData;
-            dimension->cdd   = stCDD;
+        dimension->setSize( dObjectSize );
+        dimension->stCed = stCommonEntityData;
+        dimension->cdd   = stCDD;
 
-            CADVector vert13pt = buffer.ReadVector();
-            dimension->vert13pt = vert13pt;
+        CADVector vert13pt = buffer.ReadVector();
+        dimension->vert13pt = vert13pt;
 
-            CADVector vert14pt = buffer.ReadVector();
-            dimension->vert14pt = vert14pt;
+        CADVector vert14pt = buffer.ReadVector();
+        dimension->vert14pt = vert14pt;
 
-            CADVector vert10pt = buffer.ReadVector();
-            dimension->vert10pt = vert10pt;
+        CADVector vert10pt = buffer.ReadVector();
+        dimension->vert10pt = vert10pt;
 
-            dimension->dfExtLnRot = buffer.ReadBITDOUBLE();
-            dimension->dfDimRot   = buffer.ReadBITDOUBLE();
+        dimension->dfExtLnRot = buffer.ReadBITDOUBLE();
+        dimension->dfDimRot   = buffer.ReadBITDOUBLE();
 
-            fillCommonEntityHandleData( dimension, buffer);
+        fillCommonEntityHandleData( dimension, buffer);
 
-            dimension->hDimstyle       = buffer.ReadHANDLE();
-            dimension->hAnonymousBlock = buffer.ReadHANDLE();
+        dimension->hDimstyle       = buffer.ReadHANDLE();
+        dimension->hAnonymousBlock = buffer.ReadHANDLE();
 
-            buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
-            dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
-            return dimension;
-        }
+        buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
+        dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
+        return dimension;
+    }
 
-        case CADObject::DIMENSION_ALIGNED:
-        {
-            CADDimensionAlignedObject * dimension = new CADDimensionAlignedObject();
+    case CADObject::DIMENSION_ALIGNED:
+    {
+        CADDimensionAlignedObject * dimension = new CADDimensionAlignedObject();
 
-            dimension->setSize( dObjectSize );
-            dimension->stCed = stCommonEntityData;
-            dimension->cdd   = stCDD;
+        dimension->setSize( dObjectSize );
+        dimension->stCed = stCommonEntityData;
+        dimension->cdd   = stCDD;
 
-            CADVector vert13pt = buffer.ReadVector();
-            dimension->vert13pt = vert13pt;
+        CADVector vert13pt = buffer.ReadVector();
+        dimension->vert13pt = vert13pt;
 
-            CADVector vert14pt = buffer.ReadVector();
-            dimension->vert14pt = vert14pt;
+        CADVector vert14pt = buffer.ReadVector();
+        dimension->vert14pt = vert14pt;
 
-            CADVector vert10pt = buffer.ReadVector();
-            dimension->vert10pt = vert10pt;
+        CADVector vert10pt = buffer.ReadVector();
+        dimension->vert10pt = vert10pt;
 
-            dimension->dfExtLnRot = buffer.ReadBITDOUBLE();
+        dimension->dfExtLnRot = buffer.ReadBITDOUBLE();
 
-            fillCommonEntityHandleData( dimension, buffer);
+        fillCommonEntityHandleData( dimension, buffer);
 
-            dimension->hDimstyle       = buffer.ReadHANDLE();
-            dimension->hAnonymousBlock = buffer.ReadHANDLE();
+        dimension->hDimstyle       = buffer.ReadHANDLE();
+        dimension->hAnonymousBlock = buffer.ReadHANDLE();
 
-            buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
-            dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
-            return dimension;
-        }
+        buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
+        dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
+        return dimension;
+    }
 
-        case CADObject::DIMENSION_ANG_3PT:
-        {
-            CADDimensionAngular3PtObject * dimension = new CADDimensionAngular3PtObject();
+    case CADObject::DIMENSION_ANG_3PT:
+    {
+        CADDimensionAngular3PtObject * dimension = new CADDimensionAngular3PtObject();
 
-            dimension->setSize( dObjectSize );
-            dimension->stCed = stCommonEntityData;
-            dimension->cdd   = stCDD;
+        dimension->setSize( dObjectSize );
+        dimension->stCed = stCommonEntityData;
+        dimension->cdd   = stCDD;
 
-            CADVector vert10pt = buffer.ReadVector();
-            dimension->vert10pt = vert10pt;
+        CADVector vert10pt = buffer.ReadVector();
+        dimension->vert10pt = vert10pt;
 
-            CADVector vert13pt = buffer.ReadVector();
-            dimension->vert13pt = vert13pt;
+        CADVector vert13pt = buffer.ReadVector();
+        dimension->vert13pt = vert13pt;
 
-            CADVector vert14pt = buffer.ReadVector();
-            dimension->vert14pt = vert14pt;
+        CADVector vert14pt = buffer.ReadVector();
+        dimension->vert14pt = vert14pt;
 
-            CADVector vert15pt = buffer.ReadVector();
-            dimension->vert15pt = vert15pt;
+        CADVector vert15pt = buffer.ReadVector();
+        dimension->vert15pt = vert15pt;
 
-            fillCommonEntityHandleData( dimension, buffer );
+        fillCommonEntityHandleData( dimension, buffer );
 
-            dimension->hDimstyle       = buffer.ReadHANDLE();
-            dimension->hAnonymousBlock = buffer.ReadHANDLE();
+        dimension->hDimstyle       = buffer.ReadHANDLE();
+        dimension->hAnonymousBlock = buffer.ReadHANDLE();
 
-            buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
-            dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
-            return dimension;
-        }
+        buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
+        dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
+        return dimension;
+    }
 
-        case CADObject::DIMENSION_ANG_2LN:
-        {
-            CADDimensionAngular2LnObject * dimension = new CADDimensionAngular2LnObject();
+    case CADObject::DIMENSION_ANG_2LN:
+    {
+        CADDimensionAngular2LnObject * dimension = new CADDimensionAngular2LnObject();
 
-            dimension->setSize( dObjectSize );
-            dimension->stCed = stCommonEntityData;
-            dimension->cdd   = stCDD;
+        dimension->setSize( dObjectSize );
+        dimension->stCed = stCommonEntityData;
+        dimension->cdd   = stCDD;
 
-            CADVector vert16pt = buffer.ReadVector();
-            dimension->vert16pt = vert16pt;
+        CADVector vert16pt = buffer.ReadVector();
+        dimension->vert16pt = vert16pt;
 
-            CADVector vert13pt = buffer.ReadVector();
-            dimension->vert13pt = vert13pt;
+        CADVector vert13pt = buffer.ReadVector();
+        dimension->vert13pt = vert13pt;
 
-            CADVector vert14pt = buffer.ReadVector();
-            dimension->vert14pt = vert14pt;
+        CADVector vert14pt = buffer.ReadVector();
+        dimension->vert14pt = vert14pt;
 
-            CADVector vert15pt = buffer.ReadVector();
-            dimension->vert15pt = vert15pt;
+        CADVector vert15pt = buffer.ReadVector();
+        dimension->vert15pt = vert15pt;
 
-            CADVector vert10pt = buffer.ReadVector();
-            dimension->vert10pt = vert10pt;
+        CADVector vert10pt = buffer.ReadVector();
+        dimension->vert10pt = vert10pt;
 
-            fillCommonEntityHandleData( dimension, buffer);
+        fillCommonEntityHandleData( dimension, buffer);
 
-            dimension->hDimstyle       = buffer.ReadHANDLE();
-            dimension->hAnonymousBlock = buffer.ReadHANDLE();
+        dimension->hDimstyle       = buffer.ReadHANDLE();
+        dimension->hAnonymousBlock = buffer.ReadHANDLE();
 
-            buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
-            dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
-            return dimension;
-        }
+        buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
+        dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
+        return dimension;
+    }
 
-        case CADObject::DIMENSION_RADIUS:
-        {
-            CADDimensionRadiusObject * dimension = new CADDimensionRadiusObject();
+    case CADObject::DIMENSION_RADIUS:
+    {
+        CADDimensionRadiusObject * dimension = new CADDimensionRadiusObject();
 
-            dimension->setSize( dObjectSize );
-            dimension->stCed = stCommonEntityData;
-            dimension->cdd   = stCDD;
+        dimension->setSize( dObjectSize );
+        dimension->stCed = stCommonEntityData;
+        dimension->cdd   = stCDD;
 
-            CADVector vert10pt = buffer.ReadVector();
-            dimension->vert10pt = vert10pt;
+        CADVector vert10pt = buffer.ReadVector();
+        dimension->vert10pt = vert10pt;
 
-            CADVector vert15pt = buffer.ReadVector();
-            dimension->vert15pt = vert15pt;
+        CADVector vert15pt = buffer.ReadVector();
+        dimension->vert15pt = vert15pt;
 
-            dimension->dfLeaderLen = buffer.ReadBITDOUBLE();
+        dimension->dfLeaderLen = buffer.ReadBITDOUBLE();
 
-            fillCommonEntityHandleData( dimension, buffer);
+        fillCommonEntityHandleData( dimension, buffer);
 
-            dimension->hDimstyle       = buffer.ReadHANDLE();
-            dimension->hAnonymousBlock = buffer.ReadHANDLE();
+        dimension->hDimstyle       = buffer.ReadHANDLE();
+        dimension->hAnonymousBlock = buffer.ReadHANDLE();
 
-            buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
-            dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
-            return dimension;
-        }
+        buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
+        dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
+        return dimension;
+    }
 
-        case CADObject::DIMENSION_DIAMETER:
-        {
-            CADDimensionDiameterObject * dimension = new CADDimensionDiameterObject();
+    case CADObject::DIMENSION_DIAMETER:
+    {
+        CADDimensionDiameterObject * dimension = new CADDimensionDiameterObject();
 
-            dimension->setSize( dObjectSize );
-            dimension->stCed = stCommonEntityData;
-            dimension->cdd   = stCDD;
+        dimension->setSize( dObjectSize );
+        dimension->stCed = stCommonEntityData;
+        dimension->cdd   = stCDD;
 
-            CADVector vert15pt = buffer.ReadVector();
-            dimension->vert15pt = vert15pt;
+        CADVector vert15pt = buffer.ReadVector();
+        dimension->vert15pt = vert15pt;
 
-            CADVector vert10pt = buffer.ReadVector();
-            dimension->vert10pt = vert10pt;
+        CADVector vert10pt = buffer.ReadVector();
+        dimension->vert10pt = vert10pt;
 
-            dimension->dfLeaderLen = buffer.ReadBITDOUBLE();
+        dimension->dfLeaderLen = buffer.ReadBITDOUBLE();
 
-            fillCommonEntityHandleData( dimension, buffer);
+        fillCommonEntityHandleData( dimension, buffer);
 
-            dimension->hDimstyle       = buffer.ReadHANDLE();
-            dimension->hAnonymousBlock = buffer.ReadHANDLE();
+        dimension->hDimstyle       = buffer.ReadHANDLE();
+        dimension->hAnonymousBlock = buffer.ReadHANDLE();
 
-            buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
-            dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
-            return dimension;
-        }
+        buffer.Seek((dObjectSize - 2) * 8, CADBuffer::BEG);
+        dimension->setCRC( validateEntityCRC( buffer, dObjectSize - 2, "DIM" ) );
+        return dimension;
+    }
     }
     return nullptr;
 }
 
 CADImageDefObject * DWGFileR2000::getImageDef(unsigned int dObjectSize,
-                                              CADBuffer &buffer)
+        CADBuffer &buffer)
 {
     CADImageDefObject * imagedef = new CADImageDefObject();
 
@@ -3758,7 +3758,7 @@ CADXRecordObject * DWGFileR2000::getXRecord(unsigned int dObjectSize, CADBuffer 
 }
 
 void DWGFileR2000::fillCommonEntityHandleData(CADEntityObject * pEnt,
-                                              CADBuffer& buffer)
+        CADBuffer& buffer)
 {
     if( pEnt->stCed.bbEntMode == 0 )
         pEnt->stChed.hOwner = buffer.ReadHANDLE();
@@ -3829,8 +3829,8 @@ int DWGFileR2000::ReadSectionLocators()
     {
         SectionLocatorRecord readedRecord;
         if( pFileIO->Read( & readedRecord.byRecordNumber, 1 ) != 1 ||
-            pFileIO->Read( & readedRecord.dSeeker, 4 ) != 4 ||
-            pFileIO->Read( & readedRecord.dSize, 4 ) != 4 )
+                pFileIO->Read( & readedRecord.dSeeker, 4 ) != 4 ||
+                pFileIO->Read( & readedRecord.dSize, 4 ) != 4 )
         {
             return CADErrorCodes::HEADER_SECTION_READ_FAILED;
         }
@@ -3849,10 +3849,10 @@ CADDictionary DWGFileR2000::GetNOD()
 {
     CADDictionary stNOD;
     unique_ptr<CADObject> pCADDictionaryObject( GetObject( oTables.GetTableHandle(
-                                  CADTables::NamedObjectsDict ).getAsLong() ) );
+                CADTables::NamedObjectsDict ).getAsLong() ) );
 
     CADDictionaryObject* spoNamedDictObj =
-            dynamic_cast<CADDictionaryObject*>( pCADDictionaryObject.get() );
+        dynamic_cast<CADDictionaryObject*>( pCADDictionaryObject.get() );
     if( !spoNamedDictObj )
     {
         return stNOD;
@@ -3861,7 +3861,7 @@ CADDictionary DWGFileR2000::GetNOD()
     for( size_t i = 0; i < spoNamedDictObj->sItemNames.size(); ++i )
     {
         unique_ptr<CADObject> spoDictRecord (
-                    GetObject( spoNamedDictObj->hItemHandles[i].getAsLong() ) );
+            GetObject( spoNamedDictObj->hItemHandles[i].getAsLong() ) );
 
         if( spoDictRecord == nullptr )
             continue; // Skip unreaded objects
@@ -3890,9 +3890,9 @@ CADDictionary DWGFileR2000::GetNOD()
 }
 
 unsigned short DWGFileR2000::validateEntityCRC(CADBuffer& buffer,
-                                               unsigned int dObjectSize,
-                                               const char * entityName,
-                                               bool bSwapEndianness )
+        unsigned int dObjectSize,
+        const char * entityName,
+        bool bSwapEndianness )
 {
     unsigned short CRC = static_cast<unsigned short>(buffer.ReadRAWSHORT());
     if(bSwapEndianness)
@@ -3903,20 +3903,20 @@ unsigned short DWGFileR2000::validateEntityCRC(CADBuffer& buffer,
     buffer.Seek(0, CADBuffer::BEG);
     const unsigned short initial = 0xC0C1;
     const unsigned short calculated =
-            CalculateCRC8(initial, static_cast<const char*>(buffer.GetRawBuffer()),
-                          static_cast<int>(dObjectSize) );
+        CalculateCRC8(initial, static_cast<const char*>(buffer.GetRawBuffer()),
+                      static_cast<int>(dObjectSize) );
     if( CRC != calculated )
     {
         DebugMsg( "Invalid CRC for %s object\nCRC read:0x%X calculated:0x%X\n",
-                                                  entityName, CRC, calculated );
+                  entityName, CRC, calculated );
         return 0; // If CRC equal 0 - this is error
     }
     return CRC;
 }
 
 bool DWGFileR2000::readBasicData(CADBaseControlObject *pBaseControlObject,
-                           unsigned int dObjectSize,
-                           CADBuffer &buffer)
+                                 unsigned int dObjectSize,
+                                 CADBuffer &buffer)
 {
     pBaseControlObject->setSize( dObjectSize );
     pBaseControlObject->nObjectSizeInBits = buffer.ReadRAWLONG();
@@ -3942,7 +3942,7 @@ bool DWGFileR2000::readBasicData(CADBaseControlObject *pBaseControlObject,
     pBaseControlObject->nNumReactors = buffer.ReadBITLONG();
     // TODO: Need reasonable nNumReactors limits.
     if(pBaseControlObject->nNumReactors < 0 ||
-       pBaseControlObject->nNumReactors > 5000)
+            pBaseControlObject->nNumReactors > 5000)
     {
         return false;
     }
