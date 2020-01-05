@@ -88,30 +88,26 @@ def wms_3():
     if not gdaltest.wms_srv1_ok:
         pytest.skip()
 
-    assert (
-        gdaltest.wms_ds.RasterXSize == 36000
-        and gdaltest.wms_ds.RasterYSize == 14500
-        and gdaltest.wms_ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (gdaltest.wms_ds.RasterXSize == 36000
+            and gdaltest.wms_ds.RasterYSize == 14500
+            and gdaltest.wms_ds.RasterCount == 3), "wrong size or bands"
 
     wkt = gdaltest.wms_ds.GetProjectionRef()
     assert wkt[:14] == 'GEOGCS["WGS 84', "Got wrong SRS: " + wkt
 
     gt = gdaltest.wms_ds.GetGeoTransform()
-    assert (
-        gt[0] == pytest.approx(-180, abs=0.00001)
-        and gt[3] == pytest.approx(85, abs=0.00001)
-        and gt[1] == pytest.approx(0.01, abs=0.00001)
-        and gt[2] == pytest.approx(0, abs=0.00001)
-        and gt[5] == pytest.approx(-0.01, abs=0.00001)
-        and gt[4] == pytest.approx(0, abs=0.00001)
-    ), "wrong geotransform"
+    assert (gt[0] == pytest.approx(-180, abs=0.00001)
+            and gt[3] == pytest.approx(85, abs=0.00001)
+            and gt[1] == pytest.approx(0.01, abs=0.00001)
+            and gt[2] == pytest.approx(0, abs=0.00001)
+            and gt[5] == pytest.approx(-0.01, abs=0.00001)
+            and gt[4] == pytest.approx(0, abs=0.00001)), "wrong geotransform"
 
-    assert gdaltest.wms_ds.GetRasterBand(1).GetOverviewCount() >= 1, "no overviews!"
+    assert gdaltest.wms_ds.GetRasterBand(
+        1).GetOverviewCount() >= 1, "no overviews!"
 
-    assert (
-        gdaltest.wms_ds.GetRasterBand(1).DataType >= gdal.GDT_Byte
-    ), "wrong band data type"
+    assert (gdaltest.wms_ds.GetRasterBand(1).DataType >=
+            gdal.GDT_Byte), "wrong band data type"
 
 
 ###############################################################################
@@ -136,7 +132,8 @@ def wms_4():
     msg = gdal.GetLastErrorMsg()
     gdal.ErrorReset()
 
-    if msg is not None and msg.find("Service denied due to system overload") != -1:
+    if msg is not None and msg.find(
+            "Service denied due to system overload") != -1:
         pytest.skip(msg)
 
     assert cs == 57182, "Wrong checksum: " + str(cs)
@@ -160,9 +157,8 @@ def test_wms_5():
 
     assert ds is not None, "open failed."
 
-    assert (
-        ds.RasterXSize == 2666666 and ds.RasterYSize == 1333333 and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 2666666 and ds.RasterYSize == 1333333
+            and ds.RasterCount == 3), "wrong size or bands"
 
     ds = None
 
@@ -185,11 +181,8 @@ def test_wms_6():
 
     assert ds is not None, "open failed."
 
-    assert (
-        ds.RasterXSize == 268435456
-        and ds.RasterYSize == 134217728
-        and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 268435456 and ds.RasterYSize == 134217728
+            and ds.RasterCount == 3), "wrong size or bands"
 
     ds = None
 
@@ -234,16 +227,11 @@ def test_wms_7():
 
     assert ds is not None, "open failed."
 
-    assert (
-        ds.RasterXSize == 268435456
-        and ds.RasterYSize == 134217728
-        and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 268435456 and ds.RasterYSize == 134217728
+            and ds.RasterCount == 3), "wrong size or bands"
 
-    assert (
-        ds.GetRasterBand(1).GetOverview(18).XSize == 512
-        and ds.GetRasterBand(1).GetOverview(18).YSize == 256
-    )
+    assert (ds.GetRasterBand(1).GetOverview(18).XSize == 512
+            and ds.GetRasterBand(1).GetOverview(18).YSize == 256)
 
     ds.GetRasterBand(1).GetOverview(18).ReadRaster(0, 0, 512, 256)
 
@@ -313,8 +301,7 @@ def test_wms_8():
     zero_tile = "/0/0/0.png"
     server_url_mask = server_url + "/${z}/${x}/${y}.png"
     ovr_upper_level = 16
-    tms = (
-        """<GDAL_WMS>
+    tms = ("""<GDAL_WMS>
     <Service name="TMS">
         <ServerUrl>%s</ServerUrl>
     </Service>
@@ -333,12 +320,9 @@ def test_wms_8():
     <BlockSizeY>256</BlockSizeY>
     <BandsCount>3</BandsCount>
     <Cache><Path>./tmp/gdalwmscache</Path></Cache>
-</GDAL_WMS>"""
-        % server_url_mask
-    )
+</GDAL_WMS>""" % server_url_mask)
 
-    tms_nocache = (
-        """<GDAL_WMS>
+    tms_nocache = ("""<GDAL_WMS>
     <Service name="TMS">
         <ServerUrl>%s</ServerUrl>
     </Service>
@@ -357,9 +341,7 @@ def test_wms_8():
     <BlockSizeY>256</BlockSizeY>
     <BandsCount>3</BandsCount>
     <Cache/> <!-- this is needed for GDAL_DEFAULT_WMS_CACHE_PATH to be triggered -->
-</GDAL_WMS>"""
-        % server_url_mask
-    )
+</GDAL_WMS>""" % server_url_mask)
 
     if gdaltest.gdalurlopen(server_url) is None:
         pytest.skip()
@@ -380,31 +362,32 @@ def test_wms_8():
     cache_subfolder = hashlib.md5(server_url_mask.encode("utf-8")).hexdigest()
 
     gdal.ErrorReset()
-    data = ds.GetRasterBand(1).GetOverview(ovr_upper_level).ReadRaster(0, 0, 512, 512)
+    data = ds.GetRasterBand(1).GetOverview(ovr_upper_level).ReadRaster(
+        0, 0, 512, 512)
     if gdal.GetLastErrorMsg() != "":
         if gdaltest.gdalurlopen(server_url + zero_tile) is None:
             pytest.skip()
 
     ds = None
 
-    file1 = hashlib.md5(
-        (server_url + wmstms_version + "/1/0/0.png").encode("utf-8")
-    ).hexdigest()
-    file2 = hashlib.md5(
-        (server_url + wmstms_version + "/1/1/0.png").encode("utf-8")
-    ).hexdigest()
-    file3 = hashlib.md5(
-        (server_url + wmstms_version + "/1/0/1.png").encode("utf-8")
-    ).hexdigest()
-    file4 = hashlib.md5(
-        (server_url + wmstms_version + "/1/1/1.png").encode("utf-8")
-    ).hexdigest()
+    file1 = hashlib.md5((server_url + wmstms_version +
+                         "/1/0/0.png").encode("utf-8")).hexdigest()
+    file2 = hashlib.md5((server_url + wmstms_version +
+                         "/1/1/0.png").encode("utf-8")).hexdigest()
+    file3 = hashlib.md5((server_url + wmstms_version +
+                         "/1/0/1.png").encode("utf-8")).hexdigest()
+    file4 = hashlib.md5((server_url + wmstms_version +
+                         "/1/1/1.png").encode("utf-8")).hexdigest()
 
     expected_files = [
-        "tmp/gdalwmscache/%s/%s/%s/%s" % (cache_subfolder, file1[0], file1[1], file1),
-        "tmp/gdalwmscache/%s/%s/%s/%s" % (cache_subfolder, file2[0], file2[1], file2),
-        "tmp/gdalwmscache/%s/%s/%s/%s" % (cache_subfolder, file3[0], file3[1], file3),
-        "tmp/gdalwmscache/%s/%s/%s/%s" % (cache_subfolder, file4[0], file4[1], file4),
+        "tmp/gdalwmscache/%s/%s/%s/%s" %
+        (cache_subfolder, file1[0], file1[1], file1),
+        "tmp/gdalwmscache/%s/%s/%s/%s" %
+        (cache_subfolder, file2[0], file2[1], file2),
+        "tmp/gdalwmscache/%s/%s/%s/%s" %
+        (cache_subfolder, file3[0], file3[1], file3),
+        "tmp/gdalwmscache/%s/%s/%s/%s" %
+        (cache_subfolder, file4[0], file4[1], file4),
     ]
     for expected_file in expected_files:
         try:
@@ -414,9 +397,8 @@ def test_wms_8():
 
     # Now, we should read from the cache
     ds = gdal.Open(tms)
-    cached_data = (
-        ds.GetRasterBand(1).GetOverview(ovr_upper_level).ReadRaster(0, 0, 512, 512)
-    )
+    cached_data = (ds.GetRasterBand(1).GetOverview(ovr_upper_level).ReadRaster(
+        0, 0, 512, 512))
     ds = None
 
     assert data == cached_data, "data != cached_data"
@@ -447,8 +429,7 @@ def test_wms_8():
     assert cs == 0, "cs != 0"
 
     # Check maxsize and expired tags
-    tms_expires = (
-        """<GDAL_WMS>
+    tms_expires = ("""<GDAL_WMS>
     <Service name="TMS">
         <ServerUrl>%s</ServerUrl>
     </Service>
@@ -467,9 +448,7 @@ def test_wms_8():
     <BlockSizeY>256</BlockSizeY>
     <BandsCount>3</BandsCount>
     <Cache><Path>./tmp/gdalwmscache</Path><Expires>1</Expires></Cache>
-</GDAL_WMS>"""
-        % server_url_mask
-    )
+</GDAL_WMS>""" % server_url_mask)
 
     mod_time = 0
     for expected_file in expected_files:
@@ -479,7 +458,8 @@ def test_wms_8():
 
     ds = gdal.Open(tms_expires)
     sleep(1.05)
-    data = ds.GetRasterBand(1).GetOverview(ovr_upper_level).ReadRaster(0, 0, 512, 512)
+    data = ds.GetRasterBand(1).GetOverview(ovr_upper_level).ReadRaster(
+        0, 0, 512, 512)
 
     # tiles should be overwritten by new ones
     for expected_file in expected_files:
@@ -594,12 +574,9 @@ def test_wms_12():
     name = "http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/"
     ds = gdal.Open(name)
     if ds is None:
-        if (
-            gdaltest.gdalurlopen(
+        if (gdaltest.gdalurlopen(
                 "http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/0/0/0.png"
-            )
-            is None
-        ):
+        ) is None):
             pytest.skip()
         pytest.fail("open of %s failed." % name)
 
@@ -614,12 +591,9 @@ def test_wms_12():
             name = subdatasets["SUBDATASET_%d_NAME" % (i + 1)]
             ds = gdal.Open(name)
             if ds is None:
-                if (
-                    gdaltest.gdalurlopen(
+                if (gdaltest.gdalurlopen(
                         "http://tilecache.osgeo.org/wms-c/Basic.py/1.0.0/basic/0/0/0.png"
-                    )
-                    is None
-                ):
+                ) is None):
                     pytest.skip()
                 pytest.fail("open of %s failed." % name)
             ds = None
@@ -651,37 +625,29 @@ def test_wms_14():
 
     if gdaltest.wms_drv is None:
         pytest.skip()
-    ds = gdal.Open(
-        """<GDAL_WMS>
+    ds = gdal.Open("""<GDAL_WMS>
   <Service name="VirtualEarth">
     <ServerUrl>http://a${server_num}.ortho.tiles.virtualearth.net/tiles/a${quadkey}.jpeg?g=90</ServerUrl>
   </Service>
-</GDAL_WMS>"""
-    )
+</GDAL_WMS>""")
     if ds is None:
         return " fail"
 
-    assert (
-        ds.RasterXSize == 134217728
-        and ds.RasterYSize == 134217728
-        and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 134217728 and ds.RasterYSize == 134217728
+            and ds.RasterCount == 3), "wrong size or bands"
 
     wkt = ds.GetProjectionRef()
     assert (
         'EXTENSION["PROJ4","+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs"]'
-        in wkt
-    ), ("Got wrong SRS: " + wkt)
+        in wkt), ("Got wrong SRS: " + wkt)
 
     gt = ds.GetGeoTransform()
-    assert (
-        abs(gt[0] - -20037508.34278924) <= 0.00001
-        and abs(gt[3] - 20037508.34278924) <= 0.00001
-        and gt[1] == pytest.approx(0.2985821417389697, abs=0.00001)
-        and gt[2] == pytest.approx(0, abs=0.00001)
-        and abs(gt[5] - -0.2985821417389697) <= 0.00001
-        and gt[4] == pytest.approx(0, abs=0.00001)
-    ), "wrong geotransform"
+    assert (abs(gt[0] - -20037508.34278924) <= 0.00001
+            and abs(gt[3] - 20037508.34278924) <= 0.00001
+            and gt[1] == pytest.approx(0.2985821417389697, abs=0.00001)
+            and gt[2] == pytest.approx(0, abs=0.00001)
+            and abs(gt[5] - -0.2985821417389697) <= 0.00001
+            and gt[4] == pytest.approx(0, abs=0.00001)), "wrong geotransform"
 
     assert ds.GetRasterBand(1).GetOverviewCount() == 18, "bad overview count"
 
@@ -713,24 +679,20 @@ def test_wms_15():
     if ds is None:
         return " fail"
 
-    assert (
-        ds.RasterXSize == 1073741824
-        and ds.RasterYSize == 1073741824
-        and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 1073741824 and ds.RasterYSize == 1073741824
+            and ds.RasterCount == 3), "wrong size or bands"
 
     wkt = ds.GetProjectionRef()
-    assert wkt.startswith('PROJCS["WGS 84 / Pseudo-Mercator"'), "Got wrong SRS: " + wkt
+    assert wkt.startswith(
+        'PROJCS["WGS 84 / Pseudo-Mercator"'), "Got wrong SRS: " + wkt
 
     gt = ds.GetGeoTransform()
-    assert (
-        gt[0] == pytest.approx(-20037508.342787001, abs=0.00001)
-        and gt[3] == pytest.approx(20037508.342787001, abs=0.00001)
-        and gt[1] == pytest.approx(0.037322767717361482, abs=0.00001)
-        and gt[2] == pytest.approx(0, abs=0.00001)
-        and gt[5] == pytest.approx(-0.037322767717361482, abs=0.00001)
-        and gt[4] == pytest.approx(0, abs=0.00001)
-    ), "wrong geotransform"
+    assert (gt[0] == pytest.approx(-20037508.342787001, abs=0.00001)
+            and gt[3] == pytest.approx(20037508.342787001, abs=0.00001)
+            and gt[1] == pytest.approx(0.037322767717361482, abs=0.00001)
+            and gt[2] == pytest.approx(0, abs=0.00001)
+            and gt[5] == pytest.approx(-0.037322767717361482, abs=0.00001)
+            and gt[4] == pytest.approx(0, abs=0.00001)), "wrong geotransform"
 
     assert ds.GetRasterBand(1).GetOverviewCount() == 22, "bad overview count"
 
@@ -791,21 +753,19 @@ def test_wms_16():
     val = ds.GetRasterBand(1).GetMetadataItem(pixel, "LocationInfo")
 
     # Some bug in GeoServer ?
-    if (
-        val is not None
-        and "java.lang.NoSuchMethodError: org.geoserver.wms.WMS.pixelToWorld" in val
-    ):
+    if (val is not None and
+            "java.lang.NoSuchMethodError: org.geoserver.wms.WMS.pixelToWorld"
+            in val):
         pytest.skip(val)
 
-    if val is not None and ("Gateway Time-out" in val or "HTTP error code : 5" in val):
+    if val is not None and ("Gateway Time-out" in val
+                            or "HTTP error code : 5" in val):
         pytest.skip()
 
     if val is None or val.find("<og:cat>86</og:cat>") == -1:
-        if (
-            "java.lang.NullPointerException" in val
-            or "504 Gateway Time-out" in val
-            or "java.lang.OutOfMemoryError" in val
-        ):
+        if ("java.lang.NullPointerException" in val
+                or "504 Gateway Time-out" in val
+                or "java.lang.OutOfMemoryError" in val):
             pytest.skip(val)
 
         print(val)
@@ -820,13 +780,12 @@ def test_wms_16():
     assert val2 == val, "expected a value"
 
     # Ask an overview band
-    val2 = ds.GetRasterBand(1).GetOverview(0).GetMetadataItem(pixel, "LocationInfo")
+    val2 = ds.GetRasterBand(1).GetOverview(0).GetMetadataItem(
+        pixel, "LocationInfo")
     if val2 != val:
-        if (
-            "java.lang.NullPointerException" in val2
-            or "504 Gateway Time-out" in val2
-            or "java.lang.OutOfMemoryError" in val2
-        ):
+        if ("java.lang.NullPointerException" in val2
+                or "504 Gateway Time-out" in val2
+                or "java.lang.OutOfMemoryError" in val2):
             pytest.skip(val2)
 
         print(val2)
@@ -876,19 +835,15 @@ def test_wms_18():
 
     assert ds is not None, "open failed."
 
-    assert (
-        ds.RasterXSize == 512 and ds.RasterYSize == 512 and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 512 and ds.RasterYSize == 512
+            and ds.RasterCount == 3), "wrong size or bands"
 
     # todo: add locationinfo test
 
     # add getting image test
-    if (
-        gdaltest.gdalurlopen(
+    if (gdaltest.gdalurlopen(
             "http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer"
-        )
-        is None
-    ):
+    ) is None):
         pytest.skip()
 
     expected_cs = 12824
@@ -903,9 +858,8 @@ def test_wms_18():
     ds = gdal.Open(fn)
 
     assert ds is not None, "open failed."
-    assert (
-        ds.RasterXSize == 512 and ds.RasterYSize == 512 and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 512 and ds.RasterYSize == 512
+            and ds.RasterCount == 3), "wrong size or bands"
     cs = ds.GetRasterBand(1).Checksum()
     assert cs == expected_cs, "Did not get expected checksum."
     ds = None
@@ -925,25 +879,18 @@ def test_wms_19():
     )
 
     if ds is None:
-        if (
-            gdaltest.gdalurlopen(
+        if (gdaltest.gdalurlopen(
                 "http://merovingio.c2rmf.cnrs.fr/fcgi-bin/iipsrv.fcgi?FIF=globe.256x256.tif&obj=Basic-Info"
-            )
-            is None
-        ):
+        ) is None):
             pytest.skip()
         pytest.fail("open failed.")
 
-    assert (
-        ds.RasterXSize == 86400 and ds.RasterYSize == 43200 and ds.RasterCount == 3
-    ), "wrong size or bands"
+    assert (ds.RasterXSize == 86400 and ds.RasterYSize == 43200
+            and ds.RasterCount == 3), "wrong size or bands"
 
     # Expected checksum seems to change over time. Hum...
-    cs = (
-        ds.GetRasterBand(1)
-        .GetOverview(ds.GetRasterBand(1).GetOverviewCount() - 1)
-        .Checksum()
-    )
+    cs = (ds.GetRasterBand(1).GetOverview(
+        ds.GetRasterBand(1).GetOverviewCount() - 1).Checksum())
     assert cs != 0, "Did not get expected checksum."
 
     ds = None
