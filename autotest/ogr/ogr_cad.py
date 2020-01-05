@@ -51,7 +51,7 @@ def test_ogr_cad_1():
     if gdaltest.cad_dr is None:
         pytest.skip()
 
-    
+
 ###############################################################################
 # Check driver properly opens simple file, reads correct feature (ellipse).
 
@@ -60,7 +60,8 @@ def test_ogr_cad_2():
     if gdaltest.cad_dr is None:
         pytest.skip()
 
-    gdaltest.cad_ds = gdal.OpenEx('data/cad/ellipse_r2000.dwg', allowed_drivers=['CAD'])
+    gdaltest.cad_ds = gdal.OpenEx(
+        'data/cad/ellipse_r2000.dwg', allowed_drivers=['CAD'])
 
     assert gdaltest.cad_ds is not None
 
@@ -74,7 +75,7 @@ def test_ogr_cad_2():
     defn = gdaltest.cad_layer.GetLayerDefn()
     assert defn.GetFieldCount() == 5, \
         ('did not get expected number of fields in defn. got %d'
-                             % defn.GetFieldCount())
+         % defn.GetFieldCount())
 
     fc = gdaltest.cad_layer.GetFeatureCount()
     assert fc == 1, ('did not get expected feature count, got %d' % fc)
@@ -87,12 +88,12 @@ def test_ogr_cad_2():
 
     assert feat.cadgeom_type == 'CADEllipse', \
         ('cad geometry type is wrong. Expected CADEllipse, got: %s'
-                             % feat.cadgeom_type)
+         % feat.cadgeom_type)
 
     assert feat.GetFID() == 0, 'did not get expected FID for feature 0.'
 
     assert feat.thickness == 0, ('did not get expected thickness. expected 0, got: %f'
-                             % feat.thickness)
+                                 % feat.thickness)
 
     assert feat.extentity_data is None, \
         'expected feature ExtendedEntityData to be null.'
@@ -100,7 +101,7 @@ def test_ogr_cad_2():
     expected_style = 'PEN(c:#FFFFFFFF,w:5px)'
     assert feat.GetStyleString() == expected_style, \
         ('got unexpected style string on feature 0:\n%s\ninstead of:\n%s.'
-                             % (feat.GetStyleString(), expected_style))
+         % (feat.GetStyleString(), expected_style))
 
     geom = feat.GetGeometryRef()
     assert geom is not None, 'cad geometry is None.'
@@ -120,7 +121,8 @@ def test_ogr_cad_3():
     if gdaltest.cad_dr is None:
         pytest.skip()
 
-    gdaltest.cad_ds = gdal.OpenEx('data/cad/triple_circles_r2000.dwg', allowed_drivers=['CAD'])
+    gdaltest.cad_ds = gdal.OpenEx(
+        'data/cad/triple_circles_r2000.dwg', allowed_drivers=['CAD'])
 
     assert gdaltest.cad_ds is not None
 
@@ -135,7 +137,7 @@ def test_ogr_cad_3():
     defn = gdaltest.cad_layer.GetLayerDefn()
     assert defn.GetFieldCount() == 5, \
         ('did not get expected number of fields in defn. got %d'
-                             % defn.GetFieldCount())
+         % defn.GetFieldCount())
 
     fc = gdaltest.cad_layer.GetFeatureCount()
     assert fc == 1, ('did not get expected feature count, got %d' % fc)
@@ -146,11 +148,11 @@ def test_ogr_cad_3():
 
     assert feat.cadgeom_type == 'CADCircle', \
         ('cad geometry type is wrong. Expected CADCircle, got: %s'
-                             % feat.cadgeom_type)
+         % feat.cadgeom_type)
 
     assert feat.thickness == 1.2, \
         ('did not get expected thickness. expected 1.2, got: %f'
-                             % feat.thickness)
+         % feat.thickness)
 
     assert feat.extentity_data is None, \
         'expected feature ExtendedEntityData to be null.'
@@ -158,7 +160,7 @@ def test_ogr_cad_3():
     expected_style = 'PEN(c:#FFFFFFFF,w:5px)'
     assert feat.GetStyleString() == expected_style, \
         ('Got unexpected style string on feature 0:\n%s\ninstead of:\n%s.'
-                             % (feat.GetStyleString(), expected_style))
+         % (feat.GetStyleString(), expected_style))
 
     geom = feat.GetGeometryRef()
     assert geom.GetGeometryType() == ogr.wkbCircularStringZ, \
@@ -172,7 +174,7 @@ def test_ogr_cad_3():
     defn = gdaltest.cad_layer.GetLayerDefn()
     assert defn.GetFieldCount() == 5, \
         ('did not get expected number of fields in defn. got %d'
-                             % defn.GetFieldCount())
+         % defn.GetFieldCount())
 
     fc = gdaltest.cad_layer.GetFeatureCount()
     assert fc == 1, ('did not get expected feature count, got %d' % fc)
@@ -183,11 +185,11 @@ def test_ogr_cad_3():
 
     assert feat.cadgeom_type == 'CADCircle', \
         ('cad geometry type is wrong. Expected CADCircle, got: %s'
-                             % feat.cadgeom_type)
+         % feat.cadgeom_type)
 
     assert feat.thickness == 0.8, \
         ('did not get expected thickness. expected 0.8, got: %f'
-                             % feat.thickness)
+         % feat.thickness)
 
     assert feat.extentity_data is None, \
         'expected feature ExtendedEntityData to be null.'
@@ -195,7 +197,7 @@ def test_ogr_cad_3():
     expected_style = 'PEN(c:#FFFFFFFF,w:5px)'
     assert feat.GetStyleString() == expected_style, \
         ('Got unexpected style string on feature 0:\n%s\ninstead of:\n%s.'
-                             % (feat.GetStyleString(), expected_style))
+         % (feat.GetStyleString(), expected_style))
 
     geom = feat.GetGeometryRef()
     assert geom.GetGeometryType() == ogr.wkbCircularStringZ, \
@@ -209,7 +211,7 @@ def test_ogr_cad_3():
     defn = gdaltest.cad_layer.GetLayerDefn()
     assert defn.GetFieldCount() == 5, \
         ('did not get expected number of fields in defn. got %d'
-                             % defn.GetFieldCount())
+         % defn.GetFieldCount())
 
     fc = gdaltest.cad_layer.GetFeatureCount()
     assert fc == 1, ('did not get expected feature count, got %d' % fc)
@@ -220,11 +222,11 @@ def test_ogr_cad_3():
 
     assert feat.cadgeom_type == 'CADCircle', \
         ('cad geometry type is wrong. Expected CADCircle, got: %s'
-                             % feat.cadgeom_type)
+         % feat.cadgeom_type)
 
     assert feat.thickness == 1.8, \
         ('did not get expected thickness. expected 1.8, got: %f'
-                             % feat.thickness)
+         % feat.thickness)
 
     assert feat.extentity_data is None, \
         'expected feature ExtendedEntityData to be null.'
@@ -232,7 +234,7 @@ def test_ogr_cad_3():
     expected_style = 'PEN(c:#FFFFFFFF,w:5px)'
     assert feat.GetStyleString() == expected_style, \
         ('Got unexpected style string on feature 0:\n%s\ninstead of:\n%s.'
-                             % (feat.GetStyleString(), expected_style))
+         % (feat.GetStyleString(), expected_style))
 
     geom = feat.GetGeometryRef()
     assert geom.GetGeometryType() == ogr.wkbCircularStringZ, \
@@ -248,7 +250,8 @@ def test_ogr_cad_4():
     if gdaltest.cad_dr is None:
         pytest.skip()
 
-    gdaltest.cad_ds = gdal.OpenEx('data/cad/point2d_r2000.dwg', allowed_drivers=['CAD'])
+    gdaltest.cad_ds = gdal.OpenEx(
+        'data/cad/point2d_r2000.dwg', allowed_drivers=['CAD'])
 
     assert gdaltest.cad_ds.GetLayerCount() == 1, 'expected exactly one layer.'
 
@@ -271,7 +274,8 @@ def test_ogr_cad_5():
     if gdaltest.cad_dr is None:
         pytest.skip()
 
-    gdaltest.cad_ds = gdal.OpenEx('data/cad/line_r2000.dwg', allowed_drivers=['CAD'])
+    gdaltest.cad_ds = gdal.OpenEx(
+        'data/cad/line_r2000.dwg', allowed_drivers=['CAD'])
 
     assert gdaltest.cad_ds.GetLayerCount() == 1, 'expected exactly one layer.'
 
@@ -295,14 +299,15 @@ def test_ogr_cad_6():
     if gdaltest.cad_dr is None:
         pytest.skip()
 
-    gdaltest.cad_ds = gdal.OpenEx('data/cad/text_mtext_attdef_r2000.dwg', allowed_drivers=['CAD'])
+    gdaltest.cad_ds = gdal.OpenEx(
+        'data/cad/text_mtext_attdef_r2000.dwg', allowed_drivers=['CAD'])
 
     assert gdaltest.cad_ds.GetLayerCount() == 1, 'expected exactly one layer.'
 
     gdaltest.cad_layer = gdaltest.cad_ds.GetLayer(0)
 
     assert gdaltest.cad_layer.GetFeatureCount() == 3, ('expected 3 features, got: %d'
-                             % gdaltest.cad_layer.GetFeatureCount())
+                                                       % gdaltest.cad_layer.GetFeatureCount())
 
     feat = gdaltest.cad_layer.GetNextFeature()
 
@@ -314,7 +319,7 @@ def test_ogr_cad_6():
                              % (feat.GetStyleString(), expected_style))
         return 'expected_fail'  # cannot sure iconv is buildin
 
-    
+
 ###############################################################################
 # Check MTEXT as TEXT geometry.
 
@@ -330,7 +335,7 @@ def test_ogr_cad_7():
     expected_style = 'LABEL(f:"Arial",t:"English letters",c:#FFFFFFFF)'
     assert feat.GetStyleString() == expected_style, \
         ('Got unexpected style string:\n%s\ninstead of:\n%s.'
-                             % (feat.GetStyleString(), expected_style))
+         % (feat.GetStyleString(), expected_style))
 
 ###############################################################################
 # Check ATTDEF as TEXT geometry.
@@ -342,12 +347,13 @@ def test_ogr_cad_8():
 
     feat = gdaltest.cad_layer.GetNextFeature()
 
-    assert not ogrtest.check_feature_geometry(feat, 'POINT(4.98953601938918 2.62670161690571 0)')
+    assert not ogrtest.check_feature_geometry(
+        feat, 'POINT(4.98953601938918 2.62670161690571 0)')
 
     expected_style = 'LABEL(f:"Arial",t:"TESTTAG",c:#FFFFFFFF)'
     assert feat.GetStyleString() == expected_style, \
         ('Got unexpected style string:\n%s\ninstead of:\n%s.'
-                             % (feat.GetStyleString(), expected_style))
+         % (feat.GetStyleString(), expected_style))
 
 ###############################################################################
 # Open a not handled DWG version
@@ -370,6 +376,3 @@ def test_ogr_cad_9():
 def test_ogr_cad_cleanup():
     gdaltest.cad_layer = None
     gdaltest.cad_ds = None
-
-
-
