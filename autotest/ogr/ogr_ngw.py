@@ -28,17 +28,17 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 ################################################################################
-
-from datetime import datetime
-import random
-import pytest
 import json
-import time
-from osgeo import osr
-from osgeo import ogr
-from osgeo import gdal
-import gdaltest
+import random
 import sys
+import time
+from datetime import datetime
+
+import gdaltest
+import pytest
+from osgeo import gdal
+from osgeo import ogr
+from osgeo import osr
 
 sys.path.append("../pymod")
 

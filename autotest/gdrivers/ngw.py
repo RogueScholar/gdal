@@ -28,15 +28,15 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
-from datetime import datetime
-import random
-import pytest
 import json
-import time
-import gdaltest
-import sys
+import random
 import shutil
+import sys
+import time
+from datetime import datetime
+
+import gdaltest
+import pytest
 from osgeo import gdal
 
 sys.path.append("../pymod")
