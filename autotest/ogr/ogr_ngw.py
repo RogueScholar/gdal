@@ -73,7 +73,8 @@ def check_availability(url):
 
 
 def get_new_name():
-    return "gdaltest_group_" + str(int(time.time())) + "_" + str(random.randint(10, 99))
+    return "gdaltest_group_" + str(int(time.time())) + "_" + str(
+        random.randint(10, 99))
 
 
 ###############################################################################
@@ -109,21 +110,25 @@ def test_ogr_ngw_2():
         gdaltest.ngw_drv = None
         pytest.skip()
 
-    create_url = "NGW:" + gdaltest.ngw_test_server + "/resource/0/" + get_new_name()
+    create_url = "NGW:" + gdaltest.ngw_test_server + "/resource/0/" + get_new_name(
+    )
     gdal.PushErrorHandler()
     gdaltest.ngw_ds = gdaltest.ngw_drv.Create(
-        create_url, 0, 0, 0, gdal.GDT_Unknown, options=["DESCRIPTION=GDAL Test group"]
-    )
+        create_url,
+        0,
+        0,
+        0,
+        gdal.GDT_Unknown,
+        options=["DESCRIPTION=GDAL Test group"])
     gdal.PopErrorHandler()
 
     assert gdaltest.ngw_ds is not None, "Create datasource failed."
-    assert (
-        gdaltest.ngw_ds.GetMetadataItem("description", "") == "GDAL Test group"
-    ), "Did not get expected datasource description."
+    assert (gdaltest.ngw_ds.GetMetadataItem("description",
+                                            "") == "GDAL Test group"
+            ), "Did not get expected datasource description."
 
-    assert (
-        int(gdaltest.ngw_ds.GetMetadataItem("id", "")) > 0
-    ), "Did not get expected datasource identifier."
+    assert (int(gdaltest.ngw_ds.GetMetadataItem("id", "")) >
+            0), "Did not get expected datasource identifier."
 
     gdaltest.group_id = gdaltest.ngw_ds.GetMetadataItem("id", "")
 
@@ -144,9 +149,8 @@ def test_ogr_ngw_3():
     ds_resource_id = gdaltest.ngw_ds.GetMetadataItem("id", "")
     rename_url = "NGW:" + gdaltest.ngw_test_server + "/resource/" + ds_resource_id
 
-    assert (
-        gdaltest.ngw_drv.Rename(new_name, rename_url) == gdal.CE_None
-    ), "Rename datasource failed."
+    assert (gdaltest.ngw_drv.Rename(
+        new_name, rename_url) == gdal.CE_None), "Rename datasource failed."
 
 
 ###############################################################################
@@ -176,22 +180,19 @@ def test_ogr_ngw_4():
     assert (
         md_item == "777"
     ), "Did not get expected datasource metadata item. test_int.d is equal {}, but should {}.".format(
-        md_item, "777"
-    )
+        md_item, "777")
 
     md_item = gdaltest.ngw_ds.GetMetadataItem("test_float.f", "NGW")
     assert float(md_item) == pytest.approx(
         777.555, abs=0.00001
     ), "Did not get expected datasource metadata item. test_float.f is equal {}, but should {}.".format(
-        md_item, "777.555"
-    )
+        md_item, "777.555")
 
     md_item = gdaltest.ngw_ds.GetMetadataItem("test_string", "NGW")
     assert (
         md_item == "metadata test"
     ), "Did not get expected datasource metadata item. test_string is equal {}, but should {}.".format(
-        md_item, "metadata test"
-    )
+        md_item, "metadata test")
 
     resource_type = gdaltest.ngw_ds.GetMetadataItem("resource_type", "")
     assert (
@@ -271,7 +272,8 @@ def test_ogr_ngw_5():
 
     # Test duplicated names.
     fld_defn = ogr.FieldDefn("STRFIELD", ogr.OFTString)
-    assert lyr.CreateField(fld_defn) != 0, "Expected not to create duplicated field"
+    assert lyr.CreateField(
+        fld_defn) != 0, "Expected not to create duplicated field"
 
     # Test forbidden field names.
     gdal.ErrorReset()
@@ -372,22 +374,19 @@ def test_ogr_ngw_5():
         assert (
             md_item == "777"
         ), "Did not get expected layer metadata item. test_int.d is equal {}, but should {}.".format(
-            md_item, "777"
-        )
+            md_item, "777")
 
         md_item = lyr.GetMetadataItem("test_float.f", "NGW")
         assert float(md_item) == pytest.approx(
             777.555, abs=0.00001
         ), "Did not get expected layer metadata item. test_float.f is equal {}, but should {}.".format(
-            md_item, "777.555"
-        )
+            md_item, "777.555")
 
         md_item = lyr.GetMetadataItem("test_string", "NGW")
         assert (
             md_item == "metadata test"
         ), "Did not get expected layer metadata item. test_string is equal {}, but should {}.".format(
-            md_item, "metadata test"
-        )
+            md_item, "metadata test")
 
         resource_type = lyr.GetMetadataItem("resource_type", "")
         assert (
@@ -411,9 +410,8 @@ def test_ogr_ngw_6():
     lyr_resource_id = lyr.GetMetadataItem("id", "")
     url = "NGW:" + gdaltest.ngw_test_server + "/resource/" + lyr_resource_id
     ds = gdal.OpenEx(url)
-    assert (
-        ds is not None and ds.GetLayerCount() == 1
-    ), "Failed to open single vector layer."
+    assert (ds is not None
+            and ds.GetLayerCount() == 1), "Failed to open single vector layer."
 
 
 ###############################################################################
@@ -437,8 +435,7 @@ def test_ogr_ngw_7():
     assert (
         ret == 0 and f.GetFID() >= 0
     ), "Create feature failed. Expected FID greater or equal 0, got {}.".format(
-        f.GetFID()
-    )
+        f.GetFID())
 
     fill_fields2(f)
     f.SetGeometry(ogr.CreateGeometryFromWkt("POINT (3 4)"))
@@ -470,7 +467,9 @@ def test_ogr_ngw_8():
     gdaltest.ngw_ds = None
 
     url = "NGW:" + gdaltest.ngw_test_server + "/resource/" + ds_resource_id
-    gdaltest.ngw_ds = gdal.OpenEx(url, gdal.OF_UPDATE, open_options=["BATCH_SIZE=2"])
+    gdaltest.ngw_ds = gdal.OpenEx(url,
+                                  gdal.OF_UPDATE,
+                                  open_options=["BATCH_SIZE=2"])
 
     lyr = gdaltest.ngw_ds.GetLayerByName("test_pt_layer")
     f1 = ogr.Feature(lyr.GetLayerDefn())
@@ -499,13 +498,14 @@ def test_ogr_ngw_8():
     counter = 0
     while feat is not None:
         counter += 1
-        assert feat.GetFID() >= 0, "Expected FID greater or equal 0, got {}.".format(
-            feat.GetFID()
-        )
+        assert feat.GetFID(
+        ) >= 0, "Expected FID greater or equal 0, got {}.".format(
+            feat.GetFID())
 
         feat = lyr.GetNextFeature()
 
-    assert counter >= 3, "Expected 3 or greater feature count, got {}.".format(counter)
+    assert counter >= 3, "Expected 3 or greater feature count, got {}.".format(
+        counter)
 
 
 ###############################################################################
@@ -524,7 +524,9 @@ def test_ogr_ngw_9():
     gdaltest.ngw_ds = None
 
     url = "NGW:" + gdaltest.ngw_test_server + "/resource/" + ds_resource_id
-    gdaltest.ngw_ds = gdal.OpenEx(url, gdal.OF_UPDATE, open_options=["PAGE_SIZE=2"])
+    gdaltest.ngw_ds = gdal.OpenEx(url,
+                                  gdal.OF_UPDATE,
+                                  open_options=["PAGE_SIZE=2"])
 
     lyr = gdaltest.ngw_ds.GetLayerByName("test_pt_layer")
 
@@ -533,13 +535,14 @@ def test_ogr_ngw_9():
     counter = 0
     while feat is not None:
         counter += 1
-        assert feat.GetFID() >= 0, "Expected FID greater or equal 0, got {}.".format(
-            feat.GetFID()
-        )
+        assert feat.GetFID(
+        ) >= 0, "Expected FID greater or equal 0, got {}.".format(
+            feat.GetFID())
 
         feat = lyr.GetNextFeature()
 
-    assert counter >= 3, "Expected 3 or greater feature count, got {}.".format(counter)
+    assert counter >= 3, "Expected 3 or greater feature count, got {}.".format(
+        counter)
 
 
 ###############################################################################
@@ -558,20 +561,20 @@ def test_ogr_ngw_10():
     gdaltest.ngw_ds = None
 
     url = "NGW:" + gdaltest.ngw_test_server + "/resource/" + ds_resource_id
-    gdaltest.ngw_ds = gdal.OpenEx(url, gdal.OF_UPDATE, open_options=["NATIVE_DATA=YES"])
+    gdaltest.ngw_ds = gdal.OpenEx(url,
+                                  gdal.OF_UPDATE,
+                                  open_options=["NATIVE_DATA=YES"])
     lyr = gdaltest.ngw_ds.GetLayerByName("test_pt_layer")
     lyr.ResetReading()
     feat = lyr.GetNextFeature()
 
     feature_id = feat.GetFID()
     native_data = feat.GetNativeData()
-    assert (
-        native_data is not None
-    ), "Feature #{} native data should not be empty".format(feature_id)
+    assert (native_data is not None
+            ), "Feature #{} native data should not be empty".format(feature_id)
     # {"description":null,"attachment":null}
-    assert (
-        feat.GetNativeMediaType() == "application/json"
-    ), "Unsupported native media type"
+    assert (feat.GetNativeMediaType() == "application/json"
+            ), "Unsupported native media type"
 
     # Set description
     feat.SetNativeData('{"description":"Test feature description"}')
@@ -580,9 +583,9 @@ def test_ogr_ngw_10():
 
     feat = lyr.GetFeature(feature_id)
     native_data = feat.GetNativeData()
-    assert (
-        native_data is not None and native_data.find("Test feature description") != -1
-    ), "Expected feature description text, got {}".format(native_data)
+    assert (native_data is not None
+            and native_data.find("Test feature description") != -1
+            ), "Expected feature description text, got {}".format(native_data)
 
 
 ###############################################################################
@@ -602,9 +605,11 @@ def test_ogr_ngw_11():
 
     feat = lyr.GetNextFeature()
 
-    assert not feat.IsFieldSet("STRFIELD"), "got STRFIELD despite request to ignore it."
+    assert not feat.IsFieldSet(
+        "STRFIELD"), "got STRFIELD despite request to ignore it."
 
-    assert feat.GetFieldAsInteger("DECFIELD") == 123, "missing or wrong DECFIELD"
+    assert feat.GetFieldAsInteger(
+        "DECFIELD") == 123, "missing or wrong DECFIELD"
 
     fd = lyr.GetLayerDefn()
     fld = fd.GetFieldDefn(0)  # STRFIELD
@@ -678,8 +683,8 @@ def test_ogr_ngw_13():
 
     # Check intersecting POINT(3 4)
     lyr.SetSpatialFilter(
-        ogr.CreateGeometryFromWkt("POLYGON ((2.5 3.5,2.5 6,6 6,6 3.5,2.5 3.5))")
-    )
+        ogr.CreateGeometryFromWkt(
+            "POLYGON ((2.5 3.5,2.5 6,6 6,6 3.5,2.5 3.5))"))
     fc = lyr.GetFeatureCount()
     assert fc == 1, "Expected feature count is 1, got {}.".format(fc)
 
@@ -707,16 +712,17 @@ def test_ogr_ngw_14():
     f.SetGeometry(ogr.CreateGeometryFromWkt("POLYGON((0 0,0 1,1 0,0 0))"))
     ret = lyr.CreateFeature(f)
     assert ret == 0, "Failed to create feature in test_pl_layer."
-    assert lyr.GetFeatureCount() == 1, "Expected feature count is 1, got {}.".format(
-        lyr.GetFeatureCount()
-    )
+    assert lyr.GetFeatureCount(
+    ) == 1, "Expected feature count is 1, got {}.".format(
+        lyr.GetFeatureCount())
 
     gdaltest.ngw_ds.ExecuteSQL("DELETE FROM test_pl_layer")
-    assert lyr.GetFeatureCount() == 0, "Expected feature count is 0, got {}.".format(
-        lyr.GetFeatureCount()
-    )
+    assert lyr.GetFeatureCount(
+    ) == 0, "Expected feature count is 0, got {}.".format(
+        lyr.GetFeatureCount())
 
-    gdaltest.ngw_ds.ExecuteSQL("ALTER TABLE test_pl_layer RENAME TO test_pl_layer777")
+    gdaltest.ngw_ds.ExecuteSQL(
+        "ALTER TABLE test_pl_layer RENAME TO test_pl_layer777")
     lyr = gdaltest.ngw_ds.GetLayerByName("test_pl_layer777")
     assert lyr is not None, "Get layer test_pl_layer777 failed."
 
@@ -740,9 +746,9 @@ def test_ogr_ngw_14():
     assert (
         lyr is not None
     ), 'ExecuteSQL: SELECT STRFIELD,DECFIELD FROM test_pl_layer777 WHERE STRFIELD = "fo_o"; failed.'
-    assert lyr.GetFeatureCount() == 2, "Expected feature count is 2, got {}.".format(
-        lyr.GetFeatureCount()
-    )
+    assert lyr.GetFeatureCount(
+    ) == 2, "Expected feature count is 2, got {}.".format(
+        lyr.GetFeatureCount())
 
     gdaltest.ngw_ds.ReleaseResultSet(lyr)
 
@@ -752,7 +758,8 @@ def test_ogr_ngw_14():
 
 
 def test_ogr_ngw_test_ogrsf():
-    if gdaltest.ngw_drv is None or gdal.GetConfigOption("SKIP_SLOW") is not None:
+    if gdaltest.ngw_drv is None or gdal.GetConfigOption(
+            "SKIP_SLOW") is not None:
         pytest.skip()
 
     if check_availability(gdaltest.ngw_test_server) == False:
@@ -772,25 +779,20 @@ def test_ogr_ngw_test_ogrsf():
     if test_cli_utilities.get_test_ogrsf_path() is None:
         pytest.skip()
 
-    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() + " " + url)
+    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() + " " +
+                               url)
     assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
-    ret = gdaltest.runexternal(
-        test_cli_utilities.get_test_ogrsf_path() + " " + url + " -oo PAGE_SIZE=100"
-    )
+    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() + " " +
+                               url + " -oo PAGE_SIZE=100")
     assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
-    ret = gdaltest.runexternal(
-        test_cli_utilities.get_test_ogrsf_path() + " " + url + " -oo BATCH_SIZE=5"
-    )
+    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() + " " +
+                               url + " -oo BATCH_SIZE=5")
     assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
-    ret = gdaltest.runexternal(
-        test_cli_utilities.get_test_ogrsf_path()
-        + " "
-        + url
-        + " -oo BATCH_SIZE=5 -oo PAGE_SIZE=100"
-    )
+    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() + " " +
+                               url + " -oo BATCH_SIZE=5 -oo PAGE_SIZE=100")
     assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
 
@@ -804,15 +806,13 @@ def test_ogr_ngw_cleanup():
         pytest.skip()
 
     if gdaltest.group_id is not None:
-        delete_url = (
-            "NGW:" + gdaltest.ngw_test_server + "/resource/" + gdaltest.group_id
-        )
+        delete_url = ("NGW:" + gdaltest.ngw_test_server + "/resource/" +
+                      gdaltest.group_id)
 
         gdaltest.ngw_layer = None
         gdaltest.ngw_ds = None
 
         assert gdaltest.ngw_drv.Delete(delete_url) == gdal.CE_None, (
-            "Failed to delete datasource " + delete_url + "."
-        )
+            "Failed to delete datasource " + delete_url + ".")
 
     gdaltest.ngw_ds = None

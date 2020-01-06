@@ -72,7 +72,8 @@ def check_availability(url):
 
 
 def get_new_name():
-    return "gdaltest_group_" + str(int(time.time())) + "_" + str(random.randint(10, 99))
+    return "gdaltest_group_" + str(int(time.time())) + "_" + str(
+        random.randint(10, 99))
 
 
 ###############################################################################
@@ -111,22 +112,26 @@ def test_ngw_2():
         gdaltest.ngw_drv = None
         pytest.skip()
 
-    create_url = "NGW:" + gdaltest.ngw_test_server + "/resource/0/" + get_new_name()
+    create_url = "NGW:" + gdaltest.ngw_test_server + "/resource/0/" + get_new_name(
+    )
     gdal.PushErrorHandler()
     description = "GDAL Raster test group"
     gdaltest.ngw_ds = gdaltest.ngw_drv.Create(
-        create_url, 0, 0, 0, gdal.GDT_Unknown, options=["DESCRIPTION=" + description]
-    )
+        create_url,
+        0,
+        0,
+        0,
+        gdal.GDT_Unknown,
+        options=["DESCRIPTION=" + description])
     gdal.PopErrorHandler()
 
     assert gdaltest.ngw_ds is not None, "Create datasource failed."
-    assert (
-        gdaltest.ngw_ds.GetMetadataItem("description", "") == description
-    ), "Did not get expected datasource description."
+    assert (gdaltest.ngw_ds.GetMetadataItem(
+        "description",
+        "") == description), "Did not get expected datasource description."
 
-    assert (
-        int(gdaltest.ngw_ds.GetMetadataItem("id", "")) > 0
-    ), "Did not get expected datasource identifier."
+    assert (int(gdaltest.ngw_ds.GetMetadataItem("id", "")) >
+            0), "Did not get expected datasource identifier."
 
 
 ###############################################################################
@@ -146,9 +151,8 @@ def test_ngw_3():
     ds_resource_id = gdaltest.ngw_ds.GetMetadataItem("id", "")
     rename_url = "NGW:" + gdaltest.ngw_test_server + "/resource/" + ds_resource_id
 
-    assert (
-        gdaltest.ngw_drv.Rename(new_name, rename_url) == gdal.CE_None
-    ), "Rename datasource failed."
+    assert (gdaltest.ngw_drv.Rename(
+        new_name, rename_url) == gdal.CE_None), "Rename datasource failed."
 
 
 ###############################################################################
@@ -168,8 +172,7 @@ def test_ngw_4():
     resource_id = gdaltest.ngw_ds.GetMetadataItem("id", "")
     url = "NGW:" + gdaltest.ngw_test_server + "/resource/" + resource_id + "/rgbsmall"
     ds = gdaltest.ngw_drv.CreateCopy(
-        url, src_ds, options=["DESCRIPTION=Test raster create"]
-    )
+        url, src_ds, options=["DESCRIPTION=Test raster create"])
     src_ds = None
 
     assert ds is not None, "Raster create failed"
@@ -186,7 +189,10 @@ def test_ngw_4():
     ds = gdaltest.ngw_drv.CreateCopy(
         url,
         src_ds,
-        options=["DESCRIPTION=Test 16bit raster create", "RASTER_QML_PATH=data/96.qml"],
+        options=[
+            "DESCRIPTION=Test 16bit raster create",
+            "RASTER_QML_PATH=data/96.qml"
+        ],
     )
     src_ds = None
 
@@ -226,30 +232,28 @@ def test_ngw_6():
         gdaltest.ngw_drv = None
         pytest.skip()
 
-    assert (
-        gdaltest.ngw_ds.RasterXSize == 1073741824
-        and gdaltest.ngw_ds.RasterYSize == 1073741824
-        and gdaltest.ngw_ds.RasterCount == 4
-    ), "Wrong size or band count."
+    assert (gdaltest.ngw_ds.RasterXSize == 1073741824
+            and gdaltest.ngw_ds.RasterYSize == 1073741824
+            and gdaltest.ngw_ds.RasterCount == 4), "Wrong size or band count."
 
     wkt = gdaltest.ngw_ds.GetProjectionRef()
-    assert wkt[:33] == 'PROJCS["WGS 84 / Pseudo-Mercator"', "Got wrong SRS: " + wkt
+    assert wkt[:
+               33] == 'PROJCS["WGS 84 / Pseudo-Mercator"', "Got wrong SRS: " + wkt
 
     gt = gdaltest.ngw_ds.GetGeoTransform()
     # -20037508.34, 0.037322767712175846, 0.0, 20037508.34, 0.0, -0.037322767712175846
-    assert (
-        gt[0] == pytest.approx(-20037508.34, abs=0.00001)
-        or gt[3] == pytest.approx(20037508.34, abs=0.00001)
-        or gt[1] == pytest.approx(0.037322767712175846, abs=0.00001)
-        or gt[2] == pytest.approx(0.0, abs=0.00001)
-        or gt[5] == pytest.approx(-0.037322767712175846, abs=0.00001)
-        or gt[4] == pytest.approx(0.0, abs=0.00001)
-    ), "Wrong geotransform. {}".format(gt)
+    assert (gt[0] == pytest.approx(-20037508.34, abs=0.00001)
+            or gt[3] == pytest.approx(20037508.34, abs=0.00001)
+            or gt[1] == pytest.approx(0.037322767712175846, abs=0.00001)
+            or gt[2] == pytest.approx(0.0, abs=0.00001)
+            or gt[5] == pytest.approx(-0.037322767712175846, abs=0.00001)
+            or gt[4] == pytest.approx(
+                0.0, abs=0.00001)), "Wrong geotransform. {}".format(gt)
 
-    assert gdaltest.ngw_ds.GetRasterBand(1).GetOverviewCount() > 0, "No overviews!"
-    assert (
-        gdaltest.ngw_ds.GetRasterBand(1).DataType == gdal.GDT_Byte
-    ), "Wrong band data type."
+    assert gdaltest.ngw_ds.GetRasterBand(
+        1).GetOverviewCount() > 0, "No overviews!"
+    assert (gdaltest.ngw_ds.GetRasterBand(1).DataType == gdal.GDT_Byte
+            ), "Wrong band data type."
 
 
 ###############################################################################
@@ -305,8 +309,7 @@ def test_ngw_8():
     assert (
         subdatasets
     ), "Did not get expected subdataset count. Get {} subdatasets. Url: {}".format(
-        len(subdatasets), url
-    )
+        len(subdatasets), url)
 
     name = subdatasets["SUBDATASET_0_NAME"]
     ds = gdal.OpenEx(name, gdal.OF_RASTER)
@@ -324,15 +327,13 @@ def test_ngw_cleanup():
         pytest.skip()
 
     if gdaltest.group_id is not None:
-        delete_url = (
-            "NGW:" + gdaltest.ngw_test_server + "/resource/" + gdaltest.group_id
-        )
+        delete_url = ("NGW:" + gdaltest.ngw_test_server + "/resource/" +
+                      gdaltest.group_id)
 
         gdaltest.ngw_ds = None
 
         assert gdaltest.ngw_drv.Delete(delete_url) == gdal.CE_None, (
-            "Failed to delete datasource " + delete_url + "."
-        )
+            "Failed to delete datasource " + delete_url + ".")
 
     gdaltest.ngw_ds = None
     gdaltest.clean_tmp()
