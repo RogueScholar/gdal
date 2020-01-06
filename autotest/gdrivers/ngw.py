@@ -29,18 +29,18 @@
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
 
+from datetime import datetime
+import random
+import pytest
+import json
+import time
+import gdaltest
 import sys
 import shutil
 from osgeo import gdal
 
 sys.path.append('../pymod')
 
-import gdaltest
-import time
-import json
-import pytest
-import random
-from datetime import datetime
 
 def check_availability(url):
     # Sandbox cleans at 1:05 on monday (UTC)
@@ -70,11 +70,13 @@ def check_availability(url):
     except:
         return False
 
+
 def get_new_name():
     return 'gdaltest_group_' + str(int(time.time())) + '_' + str(random.randint(10, 99))
 
 ###############################################################################
 # Verify we have the driver.
+
 
 def test_ngw_1():
 
@@ -87,7 +89,8 @@ def test_ngw_1():
         gdaltest.ngw_drv = None
         pytest.skip()
 
-    gdaltest.ngw_test_server = 'https://sandbox.nextgis.com' # 'http://dev.nextgis.com/sandbox'
+    # 'http://dev.nextgis.com/sandbox'
+    gdaltest.ngw_test_server = 'https://sandbox.nextgis.com'
 
     if check_availability(gdaltest.ngw_test_server) == False:
         gdaltest.ngw_drv = None
@@ -95,6 +98,7 @@ def test_ngw_1():
 
 ###############################################################################
 # Check create datasource.
+
 
 def test_ngw_2():
 
@@ -108,8 +112,8 @@ def test_ngw_2():
     create_url = 'NGW:' + gdaltest.ngw_test_server + '/resource/0/' + get_new_name()
     gdal.PushErrorHandler()
     description = 'GDAL Raster test group'
-    gdaltest.ngw_ds = gdaltest.ngw_drv.Create(create_url, 0, 0, 0, gdal.GDT_Unknown, \
-        options=['DESCRIPTION=' + description,])
+    gdaltest.ngw_ds = gdaltest.ngw_drv.Create(create_url, 0, 0, 0, gdal.GDT_Unknown,
+                                              options=['DESCRIPTION=' + description, ])
     gdal.PopErrorHandler()
 
     assert gdaltest.ngw_ds is not None, 'Create datasource failed.'
@@ -121,6 +125,7 @@ def test_ngw_2():
 
 ###############################################################################
 # Check rename datasource.
+
 
 def test_ngw_3():
 
@@ -141,6 +146,7 @@ def test_ngw_3():
 ###############################################################################
 # Create the NGW raster layer
 
+
 def test_ngw_4():
 
     if gdaltest.ngw_drv is None:
@@ -152,8 +158,10 @@ def test_ngw_4():
 
     src_ds = gdal.Open('data/rgbsmall.tif')
     resource_id = gdaltest.ngw_ds.GetMetadataItem('id', '')
-    url = 'NGW:' + gdaltest.ngw_test_server + '/resource/' + resource_id + '/rgbsmall'
-    ds = gdaltest.ngw_drv.CreateCopy(url, src_ds, options=['DESCRIPTION=Test raster create'])
+    url = 'NGW:' + gdaltest.ngw_test_server + \
+        '/resource/' + resource_id + '/rgbsmall'
+    ds = gdaltest.ngw_drv.CreateCopy(
+        url, src_ds, options=['DESCRIPTION=Test raster create'])
     src_ds = None
 
     assert ds is not None, 'Raster create failed'
@@ -179,6 +187,7 @@ def test_ngw_4():
 ###############################################################################
 # Open the NGW dataset
 
+
 def test_ngw_5():
 
     if gdaltest.ngw_drv is None or gdaltest.raster_id is None:
@@ -196,6 +205,7 @@ def test_ngw_5():
 ###############################################################################
 # Check various things about the configuration.
 
+
 def test_ngw_6():
 
     if gdaltest.ngw_drv is None or gdaltest.ngw_ds is None:
@@ -206,8 +216,8 @@ def test_ngw_6():
         pytest.skip()
 
     assert gdaltest.ngw_ds.RasterXSize == 1073741824 and \
-           gdaltest.ngw_ds.RasterYSize == 1073741824 and \
-           gdaltest.ngw_ds.RasterCount == 4, 'Wrong size or band count.'
+        gdaltest.ngw_ds.RasterYSize == 1073741824 and \
+        gdaltest.ngw_ds.RasterCount == 4, 'Wrong size or band count.'
 
     wkt = gdaltest.ngw_ds.GetProjectionRef()
     assert wkt[:33] == 'PROJCS["WGS 84 / Pseudo-Mercator"', 'Got wrong SRS: ' + wkt
@@ -215,18 +225,20 @@ def test_ngw_6():
     gt = gdaltest.ngw_ds.GetGeoTransform()
     # -20037508.34, 0.037322767712175846, 0.0, 20037508.34, 0.0, -0.037322767712175846
     assert gt[0] == pytest.approx(-20037508.34, abs=0.00001) \
-       or gt[3] == pytest.approx(20037508.34, abs=0.00001) \
-       or gt[1] == pytest.approx(0.037322767712175846, abs=0.00001) \
-       or gt[2] == pytest.approx(0.0, abs=0.00001) \
-       or gt[5] == pytest.approx(-0.037322767712175846, abs=0.00001) \
-       or gt[4] == pytest.approx(0.0, abs=0.00001), 'Wrong geotransform. {}'.format(gt)
+        or gt[3] == pytest.approx(20037508.34, abs=0.00001) \
+        or gt[1] == pytest.approx(0.037322767712175846, abs=0.00001) \
+        or gt[2] == pytest.approx(0.0, abs=0.00001) \
+        or gt[5] == pytest.approx(-0.037322767712175846, abs=0.00001) \
+        or gt[4] == pytest.approx(0.0, abs=0.00001), 'Wrong geotransform. {}'.format(gt)
 
-    assert gdaltest.ngw_ds.GetRasterBand(1).GetOverviewCount() > 0, 'No overviews!'
+    assert gdaltest.ngw_ds.GetRasterBand(
+        1).GetOverviewCount() > 0, 'No overviews!'
     assert gdaltest.ngw_ds.GetRasterBand(1).DataType == gdal.GDT_Byte, \
         'Wrong band data type.'
 
 ###############################################################################
 # Check checksum for a small region.
+
 
 def test_ngw_7():
 
@@ -258,6 +270,7 @@ def test_ngw_7():
 ###############################################################################
 # Test getting subdatasets from GetCapabilities
 
+
 def test_ngw_8():
 
     if gdaltest.ngw_drv is None or gdaltest.group_id is None:
@@ -268,11 +281,12 @@ def test_ngw_8():
         pytest.skip()
 
     url = 'NGW:' + gdaltest.ngw_test_server + '/resource/' + gdaltest.group_id
-    ds = gdal.OpenEx(url, gdal.OF_VECTOR | gdal.OF_RASTER )
+    ds = gdal.OpenEx(url, gdal.OF_VECTOR | gdal.OF_RASTER)
     assert ds is not None, 'Open of {} failed.'.format(url)
 
     subdatasets = ds.GetMetadata("SUBDATASETS")
-    assert subdatasets, 'Did not get expected subdataset count. Get {} subdatasets. Url: {}'.format(len(subdatasets), url)
+    assert subdatasets, 'Did not get expected subdataset count. Get {} subdatasets. Url: {}'.format(
+        len(subdatasets), url)
 
     name = subdatasets['SUBDATASET_0_NAME']
     ds = gdal.OpenEx(name, gdal.OF_RASTER)
@@ -281,6 +295,7 @@ def test_ngw_8():
     ds = None
 
 ###############################################################################
+
 
 def test_ngw_cleanup():
 
