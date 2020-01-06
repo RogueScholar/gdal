@@ -96,11 +96,11 @@ static GDALDataset *OGRNGWDriverOpen( GDALOpenInfo *poOpenInfo )
  */
 
 static GDALDataset *OGRNGWDriverCreate( const char *pszName,
-                                            CPL_UNUSED int nBands,
-                                            CPL_UNUSED int nXSize,
-                                            CPL_UNUSED int nYSize,
-                                            CPL_UNUSED GDALDataType eDT,
-                                            char **papszOptions )
+                                        CPL_UNUSED int nBands,
+                                        CPL_UNUSED int nXSize,
+                                        CPL_UNUSED int nYSize,
+                                        CPL_UNUSED GDALDataType eDT,
+                                        char **papszOptions )
 
 {
     NGWAPI::Uri stUri = NGWAPI::ParseUri(pszName);
@@ -112,13 +112,13 @@ static GDALDataset *OGRNGWDriverCreate( const char *pszName,
     }
 
     CPLDebug("NGW", "Parse uri result. URL: %s, ID: %s, New name: %s",
-        stUri.osAddress.c_str(), stUri.osResourceId.c_str(),
-        stUri.osNewResourceName.c_str());
+             stUri.osAddress.c_str(), stUri.osResourceId.c_str(),
+             stUri.osNewResourceName.c_str());
 
     std::string osKey = CSLFetchNameValueDef( papszOptions, "KEY", "");
     std::string osDesc = CSLFetchNameValueDef( papszOptions, "DESCRIPTION", "");
     std::string osUserPwd = CSLFetchNameValueDef( papszOptions, "USERPWD",
-        CPLGetConfigOption("NGW_USERPWD", "") );
+                            CPLGetConfigOption("NGW_USERPWD", "") );
 
     CPLJSONObject oPayload;
     CPLJSONObject oResource( "resource", oPayload );
@@ -138,7 +138,7 @@ static GDALDataset *OGRNGWDriverCreate( const char *pszName,
     oParent.Add( "id", atoi(stUri.osResourceId.c_str()) );
 
     std::string osNewResourceId = NGWAPI::CreateResource( stUri.osAddress,
-        oPayload.Format(CPLJSONObject::Plain), GetHeaders(osUserPwd) );
+                                  oPayload.Format(CPLJSONObject::Plain), GetHeaders(osUserPwd) );
     if( osNewResourceId == "-1" )
     {
         return nullptr;
@@ -185,8 +185,8 @@ static CPLErr OGRNGWDriverDelete( const char *pszName )
     //     stUri.osResourceId, papszOptions, true);
     // if( stPermissions.bResourceCanDelete )
     // {
-        return NGWAPI::DeleteResource(stUri.osAddress, stUri.osResourceId,
-            papszOptions) ? CE_None : CE_Failure;
+    return NGWAPI::DeleteResource(stUri.osAddress, stUri.osResourceId,
+                                  papszOptions) ? CE_None : CE_Failure;
     // }
     // CPLError(CE_Failure, CPLE_AppDefined, "Operation not permitted.");
     // return CE_Failure;
@@ -205,14 +205,14 @@ static CPLErr OGRNGWDriverRename( const char *pszNewName, const char *pszOldName
         return CE_Failure;
     }
     CPLDebug("NGW", "Parse uri result. URL: %s, ID: %s, New name: %s",
-        stUri.osAddress.c_str(), stUri.osResourceId.c_str(), pszNewName);
+             stUri.osAddress.c_str(), stUri.osResourceId.c_str(), pszNewName);
     char **papszOptions = GetHeaders();
     // NGWAPI::Permissions stPermissions = NGWAPI::CheckPermissions(stUri.osAddress,
     //     stUri.osResourceId, papszOptions, true);
     // if( stPermissions.bResourceCanUpdate )
     // {
-        return NGWAPI::RenameResource(stUri.osAddress, stUri.osResourceId,
-            pszNewName, papszOptions) ? CE_None : CE_Failure;
+    return NGWAPI::RenameResource(stUri.osAddress, stUri.osResourceId,
+                                  pszNewName, papszOptions) ? CE_None : CE_Failure;
     // }
     // CPLError(CE_Failure, CPLE_AppDefined, "Operation not permitted.");
     // return CE_Failure;
@@ -222,8 +222,8 @@ static CPLErr OGRNGWDriverRename( const char *pszNewName, const char *pszOldName
  * OGRNGWDriverCreateCopy()
  */
 static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
-    GDALDataset *poSrcDS, int bStrict, char **papszOptions,
-    GDALProgressFunc pfnProgress, void *pProgressData )
+        GDALDataset *poSrcDS, int bStrict, char **papszOptions,
+        GDALProgressFunc pfnProgress, void *pProgressData )
 {
     // Check destination dataset,
     NGWAPI::Uri stUri = NGWAPI::ParseUri(pszFilename);
@@ -246,9 +246,9 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
     {
         if( osQMLPath.empty() ) {
             CPLError( CE_Failure, CPLE_NotSupported,
-                "Default NGW raster style supports only 3 (RGB) or 4 (RGBA). "
-                "Raster has %d bands. You must provide QML file with raster style.",
-                nBands );
+                      "Default NGW raster style supports only 3 (RGB) or 4 (RGBA). "
+                      "Raster has %d bands. You must provide QML file with raster style.",
+                      nBands );
             return nullptr;
         }
     }
@@ -258,9 +258,9 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
     {
         if( osQMLPath.empty() ) {
             CPLError( CE_Failure, CPLE_NotSupported,
-                "Default NGW raster style supports only 8 bit byte bands. "
-                "Raster has data type %s. You must provide QML file with raster style.",
-                GDALGetDataTypeName( poSrcDS->GetRasterBand(1)->GetRasterDataType()) );
+                      "Default NGW raster style supports only 8 bit byte bands. "
+                      "Raster has data type %s. You must provide QML file with raster style.",
+                      GDALGetDataTypeName( poSrcDS->GetRasterBand(1)->GetRasterDataType()) );
             return nullptr;
         }
     }
@@ -277,8 +277,8 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
         std::string osTempFilename = CPLGenerateTempFilename("ngw_tmp");
         osTempFilename += ".tif";
         GDALDataset *poTmpDS = poDriver->CreateCopy( osTempFilename.c_str(),
-            poSrcDS, bStrict, const_cast<char**>(apszOptions), pfnProgress,
-            pProgressData);
+                               poSrcDS, bStrict, const_cast<char**>(apszOptions), pfnProgress,
+                               pProgressData);
 
         if( poTmpDS != nullptr )
         {
@@ -289,8 +289,8 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
         else
         {
             CPLError( CE_Failure, CPLE_NotSupported,
-                "NGW driver doesn't support %s source raster.",
-                poSrcDS->GetDriverName() );
+                      "NGW driver doesn't support %s source raster.",
+                      poSrcDS->GetDriverName() );
             return nullptr;
         }
     }
@@ -319,13 +319,13 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
     std::string osKey = CSLFetchNameValueDef( papszOptions, "KEY", "");
     std::string osDesc = CSLFetchNameValueDef( papszOptions, "DESCRIPTION", "");
     std::string osUserPwd = CSLFetchNameValueDef( papszOptions, "USERPWD",
-        CPLGetConfigOption("NGW_USERPWD", ""));
+                            CPLGetConfigOption("NGW_USERPWD", ""));
     std::string osStyleName = CSLFetchNameValueDef( papszOptions, "RASTER_STYLE_NAME", "");
 
     // Send file
     char **papszHTTPOptions = GetHeaders(osUserPwd);
     CPLJSONObject oFileJson = NGWAPI::UploadFile(stUri.osAddress, osFilename,
-        papszHTTPOptions, pfnProgress, pProgressData);
+                              papszHTTPOptions, pfnProgress, pProgressData);
 
     if( bCloseDS ) // Delete temp tiff file.
     {
@@ -341,7 +341,7 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
     if( !oUploadMeta.IsValid() || oUploadMeta.Size() == 0 )
     {
         CPLError(CE_Failure, CPLE_AppDefined, "Get unexpected response: %s.",
-            oFileJson.Format(CPLJSONObject::Plain).c_str());
+                 oFileJson.Format(CPLJSONObject::Plain).c_str());
         return nullptr;
     }
 
@@ -372,7 +372,7 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
 
     papszHTTPOptions = GetHeaders(osUserPwd);
     std::string osNewResourceId = NGWAPI::CreateResource( stUri.osAddress,
-        oPayloadRaster.Format(CPLJSONObject::Plain), papszHTTPOptions );
+                                  oPayloadRaster.Format(CPLJSONObject::Plain), papszHTTPOptions );
     if( osNewResourceId == "-1" )
     {
         return nullptr;
@@ -392,12 +392,12 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
         // Upload QML file
         papszHTTPOptions = GetHeaders(osUserPwd);
         oFileJson = NGWAPI::UploadFile(stUri.osAddress, osQMLPath,
-            papszHTTPOptions, pfnProgress, pProgressData);
+                                       papszHTTPOptions, pfnProgress, pProgressData);
         oUploadMeta = oFileJson.GetArray("upload_meta");
         if( !oUploadMeta.IsValid() || oUploadMeta.Size() == 0 )
         {
             CPLError(CE_Failure, CPLE_AppDefined, "Get unexpected response: %s.",
-                oFileJson.Format(CPLJSONObject::Plain).c_str());
+                     oFileJson.Format(CPLJSONObject::Plain).c_str());
             return nullptr;
         }
         CPLJSONObject oQGISRasterStyle( "qgis_raster_style", oPayloadRasterStyle );
@@ -414,7 +414,7 @@ static GDALDataset *OGRNGWDriverCreateCopy( const char *pszFilename,
 
     papszHTTPOptions = GetHeaders(osUserPwd);
     osNewResourceId = NGWAPI::CreateResource( stUri.osAddress,
-        oPayloadRasterStyle.Format(CPLJSONObject::Plain), papszHTTPOptions );
+                      oPayloadRasterStyle.Format(CPLJSONObject::Plain), papszHTTPOptions );
     if( osNewResourceId == "-1" )
     {
         return nullptr;
@@ -456,40 +456,40 @@ void RegisterOGRNGW()
     poDriver->SetMetadataItem( GDAL_DCAP_CREATECOPY, "YES" );
 
     poDriver->SetMetadataItem( GDAL_DMD_OPENOPTIONLIST,
-        "<OpenOptionList>"
-        "   <Option name='USERPWD' scope='raster,vector' type='string' description='Username and password, separated by colon'/>"
-        "   <Option name='PAGE_SIZE' scope='vector' type='integer' description='Limit feature count while fetching from server. Default value is -1 - no limit' default='-1'/>"
-        "   <Option name='BATCH_SIZE' scope='vector' type='integer' description='Size of feature insert and update operations cache before send to server. If batch size is -1 batch mode is disabled' default='-1'/>"
-        "   <Option name='NATIVE_DATA' scope='vector' type='boolean' description='Whether to store the native Json representation of extensions key' default='NO'/>"
-        "   <Option name='CACHE_EXPIRES' scope='raster' type='integer' description='Time in seconds cached files will stay valid. If cached file expires it is deleted when maximum size of cache is reached. Also expired file can be overwritten by the new one from web' default='604800'/>"
-        "   <Option name='CACHE_MAX_SIZE' scope='raster' type='integer' description='The cache maximum size in bytes. If cache reached maximum size, expired cached files will be deleted' default='67108864'/>"
-        "   <Option name='JSON_DEPTH' scope='raster,vector' type='integer' description='The depth of json response that can be parsed. If depth is greater than this value, parse error occurs' default='32'/>"
-        "</OpenOptionList>"
-    );
+                               "<OpenOptionList>"
+                               "   <Option name='USERPWD' scope='raster,vector' type='string' description='Username and password, separated by colon'/>"
+                               "   <Option name='PAGE_SIZE' scope='vector' type='integer' description='Limit feature count while fetching from server. Default value is -1 - no limit' default='-1'/>"
+                               "   <Option name='BATCH_SIZE' scope='vector' type='integer' description='Size of feature insert and update operations cache before send to server. If batch size is -1 batch mode is disabled' default='-1'/>"
+                               "   <Option name='NATIVE_DATA' scope='vector' type='boolean' description='Whether to store the native Json representation of extensions key' default='NO'/>"
+                               "   <Option name='CACHE_EXPIRES' scope='raster' type='integer' description='Time in seconds cached files will stay valid. If cached file expires it is deleted when maximum size of cache is reached. Also expired file can be overwritten by the new one from web' default='604800'/>"
+                               "   <Option name='CACHE_MAX_SIZE' scope='raster' type='integer' description='The cache maximum size in bytes. If cache reached maximum size, expired cached files will be deleted' default='67108864'/>"
+                               "   <Option name='JSON_DEPTH' scope='raster,vector' type='integer' description='The depth of json response that can be parsed. If depth is greater than this value, parse error occurs' default='32'/>"
+                               "</OpenOptionList>"
+                             );
 
     poDriver->SetMetadataItem( GDAL_DMD_CREATIONOPTIONLIST,
-        "<CreationOptionList>"
-        "   <Option name='KEY' scope='raster,vector' type='string' description='Key value. Must be unique in whole NextGIS Web instance'/>"
-        "   <Option name='DESCRIPTION' scope='raster,vector' type='string' description='Resource description'/>"
-        "   <Option name='RASTER_STYLE_NAME' scope='raster' type='string' description='Raster layer style name'/>"
-        "   <Option name='USERPWD' scope='raster,vector' type='string' description='Username and password, separated by colon'/>"
-        "   <Option name='PAGE_SIZE' scope='vector' type='integer' description='Limit feature count while fetching from server. Default value is -1 - no limit' default='-1'/>"
-        "   <Option name='BATCH_SIZE' scope='vector' type='integer' description='Size of feature insert and update operations cache before send to server. If batch size is -1 batch mode is disabled' default='-1'/>"
-        "   <Option name='NATIVE_DATA' scope='vector' type='boolean' description='Whether to store the native Json representation of extensions key' default='NO'/>"
-        "   <Option name='CACHE_EXPIRES' scope='raster' type='integer' description='Time in seconds cached files will stay valid. If cached file expires it is deleted when maximum size of cache is reached. Also expired file can be overwritten by the new one from web' default='604800'/>"
-        "   <Option name='CACHE_MAX_SIZE' scope='raster' type='integer' description='The cache maximum size in bytes. If cache reached maximum size, expired cached files will be deleted' default='67108864'/>"
-        "   <Option name='JSON_DEPTH' scope='raster,vector' type='integer' description='The depth of json response that can be parsed. If depth is greater than this value, parse error occurs' default='32'/>"
-        "   <Option name='RASTER_QML_PATH' scope='raster' type='string' description='Raster QMS style path'/>"
-        "</CreationOptionList>"
-    );
+                               "<CreationOptionList>"
+                               "   <Option name='KEY' scope='raster,vector' type='string' description='Key value. Must be unique in whole NextGIS Web instance'/>"
+                               "   <Option name='DESCRIPTION' scope='raster,vector' type='string' description='Resource description'/>"
+                               "   <Option name='RASTER_STYLE_NAME' scope='raster' type='string' description='Raster layer style name'/>"
+                               "   <Option name='USERPWD' scope='raster,vector' type='string' description='Username and password, separated by colon'/>"
+                               "   <Option name='PAGE_SIZE' scope='vector' type='integer' description='Limit feature count while fetching from server. Default value is -1 - no limit' default='-1'/>"
+                               "   <Option name='BATCH_SIZE' scope='vector' type='integer' description='Size of feature insert and update operations cache before send to server. If batch size is -1 batch mode is disabled' default='-1'/>"
+                               "   <Option name='NATIVE_DATA' scope='vector' type='boolean' description='Whether to store the native Json representation of extensions key' default='NO'/>"
+                               "   <Option name='CACHE_EXPIRES' scope='raster' type='integer' description='Time in seconds cached files will stay valid. If cached file expires it is deleted when maximum size of cache is reached. Also expired file can be overwritten by the new one from web' default='604800'/>"
+                               "   <Option name='CACHE_MAX_SIZE' scope='raster' type='integer' description='The cache maximum size in bytes. If cache reached maximum size, expired cached files will be deleted' default='67108864'/>"
+                               "   <Option name='JSON_DEPTH' scope='raster,vector' type='integer' description='The depth of json response that can be parsed. If depth is greater than this value, parse error occurs' default='32'/>"
+                               "   <Option name='RASTER_QML_PATH' scope='raster' type='string' description='Raster QMS style path'/>"
+                               "</CreationOptionList>"
+                             );
 
     poDriver->SetMetadataItem( GDAL_DS_LAYER_CREATIONOPTIONLIST,
-        "<LayerCreationOptionList>"
-        "   <Option name='OVERWRITE' type='boolean' description='Whether to overwrite an existing table with the layer name to be created' default='NO'/>"
-        "   <Option name='KEY' type='string' description='Key value. Must be unique in whole NextGIS Web instance'/>"
-        "   <Option name='DESCRIPTION' type='string' description='Resource description'/>"
-        "</LayerCreationOptionList>"
-    );
+                               "<LayerCreationOptionList>"
+                               "   <Option name='OVERWRITE' type='boolean' description='Whether to overwrite an existing table with the layer name to be created' default='NO'/>"
+                               "   <Option name='KEY' type='string' description='Key value. Must be unique in whole NextGIS Web instance'/>"
+                               "   <Option name='DESCRIPTION' type='string' description='Resource description'/>"
+                               "</LayerCreationOptionList>"
+                             );
 
     poDriver->SetMetadataItem( GDAL_DMD_CREATIONFIELDDATATYPES, "Integer Integer64 Real String Date DateTime Time" );
     poDriver->SetMetadataItem( GDAL_DCAP_NOTNULL_FIELDS, "NO" );

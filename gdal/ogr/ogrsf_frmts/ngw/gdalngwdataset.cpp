@@ -37,7 +37,9 @@ class NGWWrapperRasterBand : public GDALProxyRasterBand
     GDALRasterBand *poBaseBand;
 
 protected:
-    virtual GDALRasterBand *RefUnderlyingRasterBand() override { return poBaseBand; }
+    virtual GDALRasterBand *RefUnderlyingRasterBand() override {
+        return poBaseBand;
+    }
 
 public:
     explicit NGWWrapperRasterBand( GDALRasterBand* poBaseBandIn ) :
@@ -105,7 +107,7 @@ void OGRNGWDataset::FetchPermissions()
         // Check connection and is it read only.
         char **papszHTTPOptions = GetHeaders();
         stPermissions = NGWAPI::CheckPermissions( osUrl, osResourceId,
-            papszHTTPOptions, bReadWrite );
+                        papszHTTPOptions, bReadWrite );
         CSLDestroy( papszHTTPOptions );
     }
     else
@@ -169,8 +171,8 @@ OGRLayer *OGRNGWDataset::GetLayer( int iLayer )
  * Open()
  */
 bool OGRNGWDataset::Open( const std::string &osUrlIn,
-    const std::string &osResourceIdIn, char **papszOpenOptionsIn,
-    bool bUpdateIn, int nOpenFlagsIn )
+                          const std::string &osResourceIdIn, char **papszOpenOptionsIn,
+                          bool bUpdateIn, int nOpenFlagsIn )
 {
     osUrl = osUrlIn;
     osResourceId = osResourceIdIn;
@@ -178,29 +180,29 @@ bool OGRNGWDataset::Open( const std::string &osUrlIn,
     bReadWrite = bUpdateIn;
 
     osUserPwd = CSLFetchNameValueDef( papszOpenOptionsIn, "USERPWD",
-        CPLGetConfigOption("NGW_USERPWD", ""));
+                                      CPLGetConfigOption("NGW_USERPWD", ""));
 
     nBatchSize = atoi( CSLFetchNameValueDef( papszOpenOptionsIn,
-        "BATCH_SIZE", CPLGetConfigOption("NGW_BATCH_SIZE", "-1") ) );
+                       "BATCH_SIZE", CPLGetConfigOption("NGW_BATCH_SIZE", "-1") ) );
 
     nPageSize = atoi( CSLFetchNameValueDef(papszOpenOptionsIn, "PAGE_SIZE",
-        CPLGetConfigOption("NGW_PAGE_SIZE", "-1") ) );
+                                           CPLGetConfigOption("NGW_PAGE_SIZE", "-1") ) );
     if( nPageSize == 0 )
     {
         nPageSize = -1;
     }
 
     nCacheExpires = atoi( CSLFetchNameValueDef(papszOpenOptionsIn, "CACHE_EXPIRES",
-        CPLGetConfigOption("NGW_CACHE_EXPIRES", "604800") ) );
+                          CPLGetConfigOption("NGW_CACHE_EXPIRES", "604800") ) );
 
     nCacheMaxSize = atoi( CSLFetchNameValueDef(papszOpenOptionsIn, "CACHE_MAX_SIZE",
-        CPLGetConfigOption("NGW_CACHE_MAX_SIZE", "67108864") ) );
+                          CPLGetConfigOption("NGW_CACHE_MAX_SIZE", "67108864") ) );
 
     bExtInNativeData = CPLFetchBool( papszOpenOptionsIn, "NATIVE_DATA",
-        CPLTestBool( CPLGetConfigOption("NGW_NATIVE_DATA", "NO") ) );
+                                     CPLTestBool( CPLGetConfigOption("NGW_NATIVE_DATA", "NO") ) );
 
     osJsonDepth = CSLFetchNameValueDef( papszOpenOptionsIn, "JSON_DEPTH",
-        CPLGetConfigOption("NGW_JSON_DEPTH", "32"));
+                                        CPLGetConfigOption("NGW_JSON_DEPTH", "32"));
 
     return Init( nOpenFlagsIn );
 }
@@ -213,14 +215,14 @@ bool OGRNGWDataset::Open( const std::string &osUrlIn,
  *      - NGW:http://some.nextgis.com:8000/test/resource/0
  */
 bool OGRNGWDataset::Open( const char *pszFilename, char **papszOpenOptionsIn,
-    bool bUpdateIn, int nOpenFlagsIn )
+                          bool bUpdateIn, int nOpenFlagsIn )
 {
     NGWAPI::Uri stUri = NGWAPI::ParseUri(pszFilename);
 
     if( stUri.osPrefix != "NGW" )
     {
         CPLError(CE_Failure, CPLE_NotSupported,
-            "Unsupported name %s", pszFilename);
+                 "Unsupported name %s", pszFilename);
         return false;
     }
 
@@ -228,7 +230,7 @@ bool OGRNGWDataset::Open( const char *pszFilename, char **papszOpenOptionsIn,
     osResourceId = stUri.osResourceId;
 
     return Open( stUri.osAddress, stUri.osResourceId, papszOpenOptionsIn,
-        bUpdateIn, nOpenFlagsIn );
+                 bUpdateIn, nOpenFlagsIn );
 }
 
 /*
@@ -242,10 +244,10 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
     CPLJSONDocument oResourceDetailsReq;
     char **papszHTTPOptions = GetHeaders();
     bool bResult = oResourceDetailsReq.LoadUrl( NGWAPI::GetResource( osUrl,
-        osResourceId ), papszHTTPOptions );
+                   osResourceId ), papszHTTPOptions );
 
     CPLDebug("NGW", "Get resource %s details %s", osResourceId.c_str(),
-        bResult ? "success" : "failed");
+             bResult ? "success" : "failed");
 
     if( bResult )
     {
@@ -266,7 +268,7 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
                 }
             }
             else if( (osResourceType == "vector_layer" ||
-                osResourceType == "postgis_layer") )
+                      osResourceType == "postgis_layer") )
             {
                 // Cehck feature paging.
                 FillCapabilities( papszHTTPOptions );
@@ -274,16 +276,16 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
                 AddLayer( oRoot, papszHTTPOptions, nOpenFlagsIn );
             }
             else if( osResourceType == "mapserver_style" ||
-                osResourceType == "qgis_vector_style" ||
-                osResourceType == "raster_style" ||
-                osResourceType == "qgis_raster_style" ||
-                osResourceType == "wmsclient_layer" )
+                     osResourceType == "qgis_vector_style" ||
+                     osResourceType == "raster_style" ||
+                     osResourceType == "qgis_raster_style" ||
+                     osResourceType == "wmsclient_layer" )
             {
                 // GetExtent from parent.
                 OGREnvelope stExtent;
                 std::string osParentId = oRoot.GetString("resource/parent/id");
                 bool bExtentResult = NGWAPI::GetExtent(osUrl, osParentId,
-                    papszHTTPOptions, 3857, stExtent);
+                                                       papszHTTPOptions, 3857, stExtent);
 
                 if( !bExtentResult )
                 {
@@ -295,8 +297,8 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
                 }
 
                 CPLDebug("NGW", "Raster extent is: %f, %f, %f, %f",
-                    stExtent.MinX, stExtent.MinY,
-                    stExtent.MaxX, stExtent.MaxY);
+                         stExtent.MinX, stExtent.MinY,
+                         stExtent.MaxX, stExtent.MaxY);
 
                 int nEPSG = 3857;
                 // Get parent details. We can skip this as default SRS in NGW is 3857.
@@ -308,13 +310,13 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
                 {
                     CPLJSONDocument oResourceReq;
                     bResult = oResourceReq.LoadUrl( NGWAPI::GetResource( osUrl,
-                        osResourceId ), papszHTTPOptions );
+                                                    osResourceId ), papszHTTPOptions );
 
                     if( bResult )
                     {
                         CPLJSONObject oParentRoot = oResourceReq.GetRoot();
                         if( osResourceType == "mapserver_style" ||
-                            osResourceType == "qgis_vector_style" )
+                                osResourceType == "qgis_vector_style" )
                         {
                             nEPSG = oParentRoot.GetInteger("vector_layer/srs/id", nEPSG);
                         }
@@ -330,27 +332,27 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
                 std::string osRasterUrl = NGWAPI::GetTMS(osUrl, osResourceId);
                 char* pszRasterUrl = CPLEscapeString(osRasterUrl.c_str(), -1, CPLES_XML);
                 const char *pszConnStr = CPLSPrintf("<GDAL_WMS><Service name=\"TMS\">"
-            "<ServerUrl>%s</ServerUrl></Service><DataWindow>"
-            "<UpperLeftX>-20037508.34</UpperLeftX><UpperLeftY>20037508.34</UpperLeftY>"
-            "<LowerRightX>20037508.34</LowerRightX><LowerRightY>-20037508.34</LowerRightY>"
-            "<TileLevel>%d</TileLevel><TileCountX>1</TileCountX>"
-            "<TileCountY>1</TileCountY><YOrigin>top</YOrigin></DataWindow>"
-            "<Projection>EPSG:%d</Projection><BlockSizeX>256</BlockSizeX>"
-            "<BlockSizeY>256</BlockSizeY><BandsCount>%d</BandsCount>"
-            "<Cache><Type>file</Type><Expires>%d</Expires><MaxSize>%d</MaxSize>"
-            "</Cache><ZeroBlockHttpCodes>204,404</ZeroBlockHttpCodes></GDAL_WMS>",
-                pszRasterUrl,
-                22,      // NOTE: We have no limit in zoom levels.
-                nEPSG,   // NOTE: Default SRS is EPSG:3857.
-                4,
-                nCacheExpires,
-                nCacheMaxSize);
+                                                    "<ServerUrl>%s</ServerUrl></Service><DataWindow>"
+                                                    "<UpperLeftX>-20037508.34</UpperLeftX><UpperLeftY>20037508.34</UpperLeftY>"
+                                                    "<LowerRightX>20037508.34</LowerRightX><LowerRightY>-20037508.34</LowerRightY>"
+                                                    "<TileLevel>%d</TileLevel><TileCountX>1</TileCountX>"
+                                                    "<TileCountY>1</TileCountY><YOrigin>top</YOrigin></DataWindow>"
+                                                    "<Projection>EPSG:%d</Projection><BlockSizeX>256</BlockSizeX>"
+                                                    "<BlockSizeY>256</BlockSizeY><BandsCount>%d</BandsCount>"
+                                                    "<Cache><Type>file</Type><Expires>%d</Expires><MaxSize>%d</MaxSize>"
+                                                    "</Cache><ZeroBlockHttpCodes>204,404</ZeroBlockHttpCodes></GDAL_WMS>",
+                                                    pszRasterUrl,
+                                                    22,      // NOTE: We have no limit in zoom levels.
+                                                    nEPSG,   // NOTE: Default SRS is EPSG:3857.
+                                                    4,
+                                                    nCacheExpires,
+                                                    nCacheMaxSize);
 
                 CPLFree( pszRasterUrl );
 
                 poRasterDS = reinterpret_cast<GDALDataset*>(GDALOpenEx(pszConnStr,
-                    GDAL_OF_READONLY | GDAL_OF_RASTER | GDAL_OF_INTERNAL, nullptr,
-                    nullptr, nullptr));
+                             GDAL_OF_READONLY | GDAL_OF_RASTER | GDAL_OF_INTERNAL, nullptr,
+                             nullptr, nullptr));
 
                 if( poRasterDS )
                 {
@@ -362,7 +364,7 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
                             iBand++ )
                     {
                         SetBand( iBand, new NGWWrapperRasterBand(
-                            poRasterDS->GetRasterBand( iBand )) );
+                                     poRasterDS->GetRasterBand( iBand )) );
                     }
 
                     // Set pixel limits.
@@ -372,20 +374,20 @@ bool OGRNGWDataset::Init(int nOpenFlagsIn)
                     if(poRasterDS->GetGeoTransform(geoTransform) == CE_None)
                     {
                         bHasTransform = GDALInvGeoTransform(geoTransform,
-                            invGeoTransform) == TRUE;
+                                                            invGeoTransform) == TRUE;
                     }
 
                     if(bHasTransform)
                     {
                         GDALApplyGeoTransform(invGeoTransform, stExtent.MinX,
-                            stExtent.MinY, &stPixelExtent.MinX, &stPixelExtent.MaxY);
+                                              stExtent.MinY, &stPixelExtent.MinX, &stPixelExtent.MaxY);
 
                         GDALApplyGeoTransform(invGeoTransform, stExtent.MaxX,
-                            stExtent.MaxY, &stPixelExtent.MaxX, &stPixelExtent.MinY);
+                                              stExtent.MaxY, &stPixelExtent.MaxX, &stPixelExtent.MinY);
 
                         CPLDebug("NGW", "Raster extent in px is: %f, %f, %f, %f",
-                            stPixelExtent.MinX, stPixelExtent.MinY,
-                            stPixelExtent.MaxX, stPixelExtent.MaxY);
+                                 stPixelExtent.MinX, stPixelExtent.MinY,
+                                 stPixelExtent.MaxX, stPixelExtent.MaxY);
                     }
                     else
                     {
@@ -423,7 +425,7 @@ bool OGRNGWDataset::FillResources( char **papszOptions, int nOpenFlagsIn )
 {
     CPLJSONDocument oResourceDetailsReq;
     bool bResult = oResourceDetailsReq.LoadUrl( NGWAPI::GetChildren( osUrl,
-        osResourceId ), papszOptions );
+                   osResourceId ), papszOptions );
 
     if( bResult )
     {
@@ -433,13 +435,13 @@ bool OGRNGWDataset::FillResources( char **papszOptions, int nOpenFlagsIn )
             CPLJSONObject oChild = oChildren[i];
             std::string osResourceType = oChild.GetString("resource/cls");
             if( (osResourceType == "vector_layer" ||
-                osResourceType == "postgis_layer") )
+                    osResourceType == "postgis_layer") )
             {
                 // Add vector layer. If failed, try next layer.
                 AddLayer( oChild, papszOptions, nOpenFlagsIn );
             }
             else if( (osResourceType == "raster_layer" ||
-                osResourceType == "wmsclient_layer") && nOpenFlagsIn & GDAL_OF_RASTER )
+                      osResourceType == "wmsclient_layer") && nOpenFlagsIn & GDAL_OF_RASTER )
             {
                 AddRaster( oChild, papszOptions );
             }
@@ -453,14 +455,14 @@ bool OGRNGWDataset::FillResources( char **papszOptions, int nOpenFlagsIn )
  * AddLayer()
  */
 void OGRNGWDataset::AddLayer( const CPLJSONObject &oResourceJsonObject,
-    char **papszOptions, int nOpenFlagsIn )
+                              char **papszOptions, int nOpenFlagsIn )
 {
     std::string osLayerResourceId;
     if( nOpenFlagsIn & GDAL_OF_VECTOR )
     {
         OGRNGWLayer *poLayer = new OGRNGWLayer( this, oResourceJsonObject );
         papoLayers = (OGRNGWLayer**) CPLRealloc(papoLayers, (nLayers + 1) *
-            sizeof(OGRNGWLayer*));
+                                                sizeof(OGRNGWLayer*));
         papoLayers[nLayers++] = poLayer;
         osLayerResourceId = poLayer->GetResourceId();
     }
@@ -471,11 +473,11 @@ void OGRNGWDataset::AddLayer( const CPLJSONObject &oResourceJsonObject,
 
     // Check styles exist and add them as rasters.
     if( nOpenFlagsIn & GDAL_OF_RASTER &&
-        oResourceJsonObject.GetBool( "resource/children", false ) )
+            oResourceJsonObject.GetBool( "resource/children", false ) )
     {
         CPLJSONDocument oResourceChildReq;
         bool bResult = oResourceChildReq.LoadUrl( NGWAPI::GetChildren( osUrl,
-            osLayerResourceId ), papszOptions );
+                       osLayerResourceId ), papszOptions );
 
         if( bResult )
         {
@@ -492,16 +494,16 @@ void OGRNGWDataset::AddLayer( const CPLJSONObject &oResourceJsonObject,
  * AddRaster()
  */
 void OGRNGWDataset::AddRaster( const CPLJSONObject &oRasterJsonObj,
-    char **papszOptions )
+                               char **papszOptions )
 {
     std::string osOutResourceId;
     std::string osOutResourceName;
     std::string osResourceType = oRasterJsonObj.GetString( "resource/cls" );
     if( osResourceType == "mapserver_style" ||
-        osResourceType == "qgis_vector_style" ||
-        osResourceType == "raster_style" ||
-        osResourceType == "qgis_raster_style" ||
-        osResourceType == "wmsclient_layer" )
+            osResourceType == "qgis_vector_style" ||
+            osResourceType == "raster_style" ||
+            osResourceType == "qgis_raster_style" ||
+            osResourceType == "wmsclient_layer" )
     {
         osOutResourceId = oRasterJsonObj.GetString( "resource/id" );
         osOutResourceName = oRasterJsonObj.GetString( "resource/display_name" );
@@ -511,7 +513,7 @@ void OGRNGWDataset::AddRaster( const CPLJSONObject &oRasterJsonObj,
         std::string osRasterResourceId = oRasterJsonObj.GetString( "resource/id" );
         CPLJSONDocument oResourceRequest;
         bool bResult = oResourceRequest.LoadUrl( NGWAPI::GetChildren( osUrl,
-            osRasterResourceId ), papszOptions );
+                       osRasterResourceId ), papszOptions );
 
         if( bResult )
         {
@@ -521,7 +523,7 @@ void OGRNGWDataset::AddRaster( const CPLJSONObject &oRasterJsonObj,
                 CPLJSONObject oChild = oChildren[i];
                 osResourceType = oChild.GetString("resource/cls");
                 if( osResourceType == "raster_style" ||
-                    osResourceType == "qgis_raster_style" )
+                        osResourceType == "qgis_raster_style" )
                 {
                     AddRaster( oChild, papszOptions );
                 }
@@ -537,13 +539,13 @@ void OGRNGWDataset::AddRaster( const CPLJSONObject &oRasterJsonObj,
         }
 
         CPLDebug("NGW", "Add raster %s: %s", osOutResourceId.c_str(),
-            osOutResourceName.c_str());
+                 osOutResourceName.c_str());
 
         GDALDataset::SetMetadataItem( CPLSPrintf("SUBDATASET_%d_NAME", nRasters),
-            CPLSPrintf("NGW:%s/resource/%s", osUrl.c_str(),
-            osOutResourceId.c_str()), "SUBDATASETS" );
+                                      CPLSPrintf("NGW:%s/resource/%s", osUrl.c_str(),
+                                              osOutResourceId.c_str()), "SUBDATASETS" );
         GDALDataset::SetMetadataItem( CPLSPrintf("SUBDATASET_%d_DESC", nRasters),
-            osOutResourceName.c_str(), "SUBDATASETS" );
+                                      osOutResourceName.c_str(), "SUBDATASETS" );
         nRasters++;
     }
 }
@@ -552,14 +554,14 @@ void OGRNGWDataset::AddRaster( const CPLJSONObject &oRasterJsonObj,
  * ICreateLayer
  */
 OGRLayer *OGRNGWDataset::ICreateLayer( const char *pszNameIn,
-                                           OGRSpatialReference *poSpatialRef,
-                                           OGRwkbGeometryType eGType,
-                                           char **papszOptions )
+                                       OGRSpatialReference *poSpatialRef,
+                                       OGRwkbGeometryType eGType,
+                                       char **papszOptions )
 {
     if( !bReadWrite )
     {
         CPLError(CE_Failure, CPLE_AppDefined,
-            "Operation not available in read-only mode");
+                 "Operation not available in read-only mode");
         return nullptr;
     }
 
@@ -576,7 +578,7 @@ OGRLayer *OGRNGWDataset::ICreateLayer( const char *pszNameIn,
     if( eGType < wkbPoint || eGType > wkbMultiPolygon )
     {
         CPLError(CE_Failure, CPLE_AppDefined,
-            "Unsupported geometry type: %s", OGRGeometryTypeToName(eGType));
+                 "Unsupported geometry type: %s", OGRGeometryTypeToName(eGType));
         return nullptr;
     }
 
@@ -597,7 +599,7 @@ OGRLayer *OGRNGWDataset::ICreateLayer( const char *pszNameIn,
     if( nEPSG != 3857 ) // TODO: Check NextGIS Web supported SRS.
     {
         CPLError(CE_Failure, CPLE_AppDefined,
-            "Unsupported spatial reference EPSG code: %d", nEPSG);
+                 "Unsupported spatial reference EPSG code: %d", nEPSG);
         return nullptr;
     }
 
@@ -634,11 +636,11 @@ OGRLayer *OGRNGWDataset::ICreateLayer( const char *pszNameIn,
         poSRSClone->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
     }
     OGRNGWLayer *poLayer = new OGRNGWLayer( this, pszNameIn, poSRSClone, eGType,
-        osKey, osDesc );
+                                            osKey, osDesc );
     if( poSRSClone )
         poSRSClone->Release();
     papoLayers = (OGRNGWLayer**) CPLRealloc(papoLayers, (nLayers + 1) *
-        sizeof(OGRNGWLayer*));
+                                            sizeof(OGRNGWLayer*));
     papoLayers[nLayers++] = poLayer;
     return poLayer;
 }
@@ -651,14 +653,14 @@ OGRErr OGRNGWDataset::DeleteLayer( int iLayer )
     if( !bReadWrite )
     {
         CPLError(CE_Failure, CPLE_AppDefined,
-            "Operation not available in read-only mode.");
+                 "Operation not available in read-only mode.");
         return OGRERR_FAILURE;
     }
 
     if( iLayer < 0 || iLayer >= nLayers )
     {
         CPLError( CE_Failure, CPLE_AppDefined,
-            "Layer %d not in legal range of 0 to %d.", iLayer, nLayers-1 );
+                  "Layer %d not in legal range of 0 to %d.", iLayer, nLayers-1 );
         return OGRERR_FAILURE;
     }
 
@@ -727,7 +729,7 @@ void OGRNGWDataset::FillMetadata( const CPLJSONObject &oRootObject )
     {
         std::string osSuffix = NGWAPI::GetResmetaSuffix( item.GetType() );
         GDALDataset::SetMetadataItem( (item.GetName() + osSuffix).c_str(),
-            item.ToString().c_str(), "NGW" );
+                                      item.ToString().c_str(), "NGW" );
     }
 }
 
@@ -742,7 +744,7 @@ bool OGRNGWDataset::FlushMetadata( char **papszMetadata )
     }
 
     bool bResult = NGWAPI::FlushMetadata(osUrl, osResourceId, papszMetadata,
-        GetHeaders());
+                                         GetHeaders());
     if( bResult )
     {
         bMetadataDerty = false;
@@ -775,7 +777,7 @@ CPLErr OGRNGWDataset::SetMetadata( char **papszMetadata, const char *pszDomain)
  * SetMetadataItem()
  */
 CPLErr OGRNGWDataset::SetMetadataItem( const char *pszName,
-    const char *pszValue, const char *pszDomain)
+                                       const char *pszValue, const char *pszDomain)
 {
     FetchPermissions();
     if( !stPermissions.bMetadataCanWrite )
@@ -931,7 +933,7 @@ static char **SQLTokenize( const char *pszStr )
  * ExecuteSQL()
  */
 OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
-    OGRGeometry *poSpatialFilter, const char *pszDialect )
+                                     OGRGeometry *poSpatialFilter, const char *pszDialect )
 {
     // Clean statement string.
     CPLString osStatement(pszStatement);
@@ -957,7 +959,7 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
             }
         }
         CPLError(CE_Failure, CPLE_AppDefined, "Unknown layer : %s",
-            osLayerName.c_str());
+                 osLayerName.c_str());
 
         return nullptr;
     }
@@ -982,7 +984,7 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
         else
         {
             CPLError(CE_Failure, CPLE_AppDefined, "Unknown layer : %s",
-                osLayerName.c_str());
+                     osLayerName.c_str());
         }
         return nullptr;
     }
@@ -1009,7 +1011,7 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
         }
 
         CPLError(CE_Failure, CPLE_AppDefined, "Unknown layer : %s",
-            osLayerName.c_str());
+                 osLayerName.c_str());
 
         return nullptr;
     }
@@ -1025,13 +1027,13 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
         CPLStringList aosTokens( SQLTokenize(osStatement) );
         /* ALTER TABLE src_table RENAME TO dst_table */
         if( aosTokens.size() == 6 && EQUAL(aosTokens[3], "RENAME") &&
-            EQUAL(aosTokens[4], "TO") )
+                EQUAL(aosTokens[4], "TO") )
         {
             const char* pszSrcTableName = aosTokens[2];
             const char* pszDstTableName = aosTokens[5];
 
             OGRNGWLayer *poLayer = static_cast<OGRNGWLayer*>(GetLayerByName(
-                SQLUnescape(pszSrcTableName) ));
+                                       SQLUnescape(pszSrcTableName) ));
             if( poLayer )
             {
                 poLayer->Rename( SQLUnescape(pszDstTableName) );
@@ -1039,12 +1041,12 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
             }
 
             CPLError(CE_Failure, CPLE_AppDefined, "Unknown layer : %s",
-                pszSrcTableName);
+                     pszSrcTableName);
         }
         else
         {
             CPLError(CE_Failure, CPLE_AppDefined,
-                "Unsupported alter table operation. Only rename table to ... support.");
+                     "Unsupported alter table operation. Only rename table to ... support.");
         }
         return nullptr;
     }
@@ -1060,14 +1062,14 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
         }
 
         if( oSelect.join_count == 0 && oSelect.poOtherSelect == nullptr &&
-            oSelect.table_count == 1 && oSelect.order_specs == 0 )
+                oSelect.table_count == 1 && oSelect.order_specs == 0 )
         {
             OGRNGWLayer *poLayer = reinterpret_cast<OGRNGWLayer*>(
-                GetLayerByName( oSelect.table_defs[0].table_name ) );
+                                       GetLayerByName( oSelect.table_defs[0].table_name ) );
             if( nullptr == poLayer )
             {
                 CPLError(CE_Failure, CPLE_AppDefined,
-                    "Layer %s not found in dataset.", oSelect.table_defs[0].table_name);
+                         "Layer %s not found in dataset.", oSelect.table_defs[0].table_name);
                 return nullptr;
             }
 
@@ -1085,7 +1087,7 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
                 if( oSelect.column_defs[i].distinct_flag )
                 {
                     CPLError(CE_Warning, CPLE_AppDefined,
-                        "Distinct not supported.");
+                             "Distinct not supported.");
                     bSkip = true;
                     break;
                 }
@@ -1109,7 +1111,7 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
             if( oSelect.where_expr != nullptr )
             {
                 osNgwSelect = OGRNGWLayer::TranslateSQLToFilter(
-                    oSelect.where_expr);
+                                  oSelect.where_expr);
                 if( osNgwSelect.empty() )
                 {
                     bSkip = true;
@@ -1121,7 +1123,7 @@ OGRLayer *OGRNGWDataset::ExecuteSQL( const char *pszStatement,
                 if( aosFields.empty() )
                 {
                     CPLError(CE_Failure, CPLE_AppDefined,
-                        "SELECT statement is invalid: field list is empty.");
+                             "SELECT statement is invalid: field list is empty.");
                     return nullptr;
                 }
 
@@ -1186,10 +1188,10 @@ CPLErr OGRNGWDataset::GetGeoTransform( double *padfTransform )
  * IRasterIO()
  */
 CPLErr OGRNGWDataset::IRasterIO( GDALRWFlag eRWFlag, int nXOff, int nYOff,
-    int nXSize, int nYSize, void *pData, int nBufXSize, int nBufYSize,
-    GDALDataType eBufType, int nBandCount, int *panBandMap,
-    GSpacing nPixelSpace, GSpacing nLineSpace, GSpacing nBandSpace,
-    GDALRasterIOExtraArg* psExtraArg )
+                                 int nXSize, int nYSize, void *pData, int nBufXSize, int nBufYSize,
+                                 GDALDataType eBufType, int nBandCount, int *panBandMap,
+                                 GSpacing nPixelSpace, GSpacing nLineSpace, GSpacing nBandSpace,
+                                 GDALRasterIOExtraArg* psExtraArg )
 {
     if( poRasterDS != nullptr )
     {
@@ -1204,22 +1206,22 @@ CPLErr OGRNGWDataset::IRasterIO( GDALRWFlag eRWFlag, int nXOff, int nYOff,
             if( !stPixelExtent.Intersects(stTestExtent) )
             {
                 CPLDebug("NGW", "Raster extent in px is: %f, %f, %f, %f",
-                    stPixelExtent.MinX, stPixelExtent.MinY,
-                    stPixelExtent.MaxX, stPixelExtent.MaxY);
+                         stPixelExtent.MinX, stPixelExtent.MinY,
+                         stPixelExtent.MaxX, stPixelExtent.MaxY);
                 CPLDebug("NGW", "RasterIO extent is: %f, %f, %f, %f",
-                    stTestExtent.MinX, stTestExtent.MinY,
-                    stTestExtent.MaxX, stTestExtent.MaxY);
+                         stTestExtent.MinX, stTestExtent.MinY,
+                         stTestExtent.MaxX, stTestExtent.MaxY);
 
                 // Fill buffer transparent color.
                 memset( pData, 0, nBufXSize * nBufYSize * nBandCount *
-                    GDALGetDataTypeSizeBytes(eBufType) );
+                        GDALGetDataTypeSizeBytes(eBufType) );
                 return CE_None;
             }
         }
     }
     return GDALDataset::IRasterIO(eRWFlag, nXOff, nYOff, nXSize, nYSize, pData,
-        nBufXSize, nBufYSize, eBufType, nBandCount, panBandMap, nPixelSpace,
-        nLineSpace, nBandSpace, psExtraArg);
+                                  nBufXSize, nBufYSize, eBufType, nBandCount, panBandMap, nPixelSpace,
+                                  nLineSpace, nBandSpace, psExtraArg);
 }
 
 /*
@@ -1239,7 +1241,7 @@ void OGRNGWDataset::FillCapabilities( char **papszOptions )
             bHasFeaturePaging = NGWAPI::CheckVersion(osVersion, 3, 1);
 
             CPLDebug("NGW", "Is feature paging supported: %s",
-                bHasFeaturePaging ? "yes" : "no");
+                     bHasFeaturePaging ? "yes" : "no");
         }
     }
 }
