@@ -161,12 +161,18 @@
 #define OJPEGEncode gdal_OJPEGEncode
 #define OJPEGFixupTags gdal_OJPEGFixupTags
 #define OJPEGLibjpegJpegErrorMgrErrorExit gdal_OJPEGLibjpegJpegErrorMgrErrorExit
-#define OJPEGLibjpegJpegErrorMgrOutputMessage gdal_OJPEGLibjpegJpegErrorMgrOutputMessage
-#define OJPEGLibjpegJpegSourceMgrFillInputBuffer gdal_OJPEGLibjpegJpegSourceMgrFillInputBuffer
-#define OJPEGLibjpegJpegSourceMgrInitSource gdal_OJPEGLibjpegJpegSourceMgrInitSource
-#define OJPEGLibjpegJpegSourceMgrResyncToRestart gdal_OJPEGLibjpegJpegSourceMgrResyncToRestart
-#define OJPEGLibjpegJpegSourceMgrSkipInputData gdal_OJPEGLibjpegJpegSourceMgrSkipInputData
-#define OJPEGLibjpegJpegSourceMgrTermSource gdal_OJPEGLibjpegJpegSourceMgrTermSource
+#define OJPEGLibjpegJpegErrorMgrOutputMessage                                  \
+  gdal_OJPEGLibjpegJpegErrorMgrOutputMessage
+#define OJPEGLibjpegJpegSourceMgrFillInputBuffer                               \
+  gdal_OJPEGLibjpegJpegSourceMgrFillInputBuffer
+#define OJPEGLibjpegJpegSourceMgrInitSource                                    \
+  gdal_OJPEGLibjpegJpegSourceMgrInitSource
+#define OJPEGLibjpegJpegSourceMgrResyncToRestart                               \
+  gdal_OJPEGLibjpegJpegSourceMgrResyncToRestart
+#define OJPEGLibjpegJpegSourceMgrSkipInputData                                 \
+  gdal_OJPEGLibjpegJpegSourceMgrSkipInputData
+#define OJPEGLibjpegJpegSourceMgrTermSource                                    \
+  gdal_OJPEGLibjpegJpegSourceMgrTermSource
 #define OJPEGLibjpegSessionAbort gdal_OJPEGLibjpegSessionAbort
 #define OJPEGPostDecode gdal_OJPEGPostDecode
 #define OJPEGPostEncode gdal_OJPEGPostEncode
@@ -187,9 +193,12 @@
 #define OJPEGReadHeaderInfoSecStreamDri gdal_OJPEGReadHeaderInfoSecStreamDri
 #define OJPEGReadHeaderInfoSecStreamSof gdal_OJPEGReadHeaderInfoSecStreamSof
 #define OJPEGReadHeaderInfoSecStreamSos gdal_OJPEGReadHeaderInfoSecStreamSos
-#define OJPEGReadHeaderInfoSecTablesAcTable gdal_OJPEGReadHeaderInfoSecTablesAcTable
-#define OJPEGReadHeaderInfoSecTablesDcTable gdal_OJPEGReadHeaderInfoSecTablesDcTable
-#define OJPEGReadHeaderInfoSecTablesQTable gdal_OJPEGReadHeaderInfoSecTablesQTable
+#define OJPEGReadHeaderInfoSecTablesAcTable                                    \
+  gdal_OJPEGReadHeaderInfoSecTablesAcTable
+#define OJPEGReadHeaderInfoSecTablesDcTable                                    \
+  gdal_OJPEGReadHeaderInfoSecTablesDcTable
+#define OJPEGReadHeaderInfoSecTablesQTable                                     \
+  gdal_OJPEGReadHeaderInfoSecTablesQTable
 #define OJPEGReadSecondarySos gdal_OJPEGReadSecondarySos
 #define OJPEGReadSkip gdal_OJPEGReadSkip
 #define OJPEGReadWord gdal_OJPEGReadWord
@@ -394,7 +403,8 @@
 #define TIFFGetStrileByteCount gdal_TIFFGetStrileByteCount
 #define TIFFGetStrileByteCountWithErr gdal_TIFFGetStrileByteCountWithErr
 #define TIFFGetStrileOffset gdal_TIFFGetStrileOffset
-#define _TIFFGetStrileOffsetOrByteCountValue gdal__TIFFGetStrileOffsetOrByteCountValue
+#define _TIFFGetStrileOffsetOrByteCountValue                                   \
+  gdal__TIFFGetStrileOffsetOrByteCountValue
 #define TIFFGetStrileOffsetWithErr gdal_TIFFGetStrileOffsetWithErr
 #define TIFFGetTagListCount gdal_TIFFGetTagListCount
 #define TIFFGetTagListEntry gdal_TIFFGetTagListEntry
@@ -473,44 +483,82 @@
 #define TIFFReadDirEntryCheckedSlong8 gdal_TIFFReadDirEntryCheckedSlong8
 #define TIFFReadDirEntryCheckedSrational gdal_TIFFReadDirEntryCheckedSrational
 #define TIFFReadDirEntryCheckedSshort gdal_TIFFReadDirEntryCheckedSshort
-#define TIFFReadDirEntryCheckRangeByteLong gdal_TIFFReadDirEntryCheckRangeByteLong
-#define TIFFReadDirEntryCheckRangeByteLong8 gdal_TIFFReadDirEntryCheckRangeByteLong8
-#define TIFFReadDirEntryCheckRangeByteSbyte gdal_TIFFReadDirEntryCheckRangeByteSbyte
-#define TIFFReadDirEntryCheckRangeByteShort gdal_TIFFReadDirEntryCheckRangeByteShort
-#define TIFFReadDirEntryCheckRangeByteSlong gdal_TIFFReadDirEntryCheckRangeByteSlong
-#define TIFFReadDirEntryCheckRangeByteSlong8 gdal_TIFFReadDirEntryCheckRangeByteSlong8
-#define TIFFReadDirEntryCheckRangeByteSshort gdal_TIFFReadDirEntryCheckRangeByteSshort
-#define TIFFReadDirEntryCheckRangeLong8Sbyte gdal_TIFFReadDirEntryCheckRangeLong8Sbyte
-#define TIFFReadDirEntryCheckRangeLong8Slong gdal_TIFFReadDirEntryCheckRangeLong8Slong
-#define TIFFReadDirEntryCheckRangeLong8Slong8 gdal_TIFFReadDirEntryCheckRangeLong8Slong8
-#define TIFFReadDirEntryCheckRangeLong8Sshort gdal_TIFFReadDirEntryCheckRangeLong8Sshort
-#define TIFFReadDirEntryCheckRangeLongLong8 gdal_TIFFReadDirEntryCheckRangeLongLong8
-#define TIFFReadDirEntryCheckRangeLongSbyte gdal_TIFFReadDirEntryCheckRangeLongSbyte
-#define TIFFReadDirEntryCheckRangeLongSlong gdal_TIFFReadDirEntryCheckRangeLongSlong
-#define TIFFReadDirEntryCheckRangeLongSlong8 gdal_TIFFReadDirEntryCheckRangeLongSlong8
-#define TIFFReadDirEntryCheckRangeLongSshort gdal_TIFFReadDirEntryCheckRangeLongSshort
-#define TIFFReadDirEntryCheckRangeSbyteByte gdal_TIFFReadDirEntryCheckRangeSbyteByte
-#define TIFFReadDirEntryCheckRangeSbyteLong gdal_TIFFReadDirEntryCheckRangeSbyteLong
-#define TIFFReadDirEntryCheckRangeSbyteLong8 gdal_TIFFReadDirEntryCheckRangeSbyteLong8
-#define TIFFReadDirEntryCheckRangeSbyteShort gdal_TIFFReadDirEntryCheckRangeSbyteShort
-#define TIFFReadDirEntryCheckRangeSbyteSlong gdal_TIFFReadDirEntryCheckRangeSbyteSlong
-#define TIFFReadDirEntryCheckRangeSbyteSlong8 gdal_TIFFReadDirEntryCheckRangeSbyteSlong8
-#define TIFFReadDirEntryCheckRangeSbyteSshort gdal_TIFFReadDirEntryCheckRangeSbyteSshort
-#define TIFFReadDirEntryCheckRangeShortLong gdal_TIFFReadDirEntryCheckRangeShortLong
-#define TIFFReadDirEntryCheckRangeShortLong8 gdal_TIFFReadDirEntryCheckRangeShortLong8
-#define TIFFReadDirEntryCheckRangeShortSbyte gdal_TIFFReadDirEntryCheckRangeShortSbyte
-#define TIFFReadDirEntryCheckRangeShortSlong gdal_TIFFReadDirEntryCheckRangeShortSlong
-#define TIFFReadDirEntryCheckRangeShortSlong8 gdal_TIFFReadDirEntryCheckRangeShortSlong8
-#define TIFFReadDirEntryCheckRangeShortSshort gdal_TIFFReadDirEntryCheckRangeShortSshort
-#define TIFFReadDirEntryCheckRangeSlong8Long8 gdal_TIFFReadDirEntryCheckRangeSlong8Long8
-#define TIFFReadDirEntryCheckRangeSlongLong gdal_TIFFReadDirEntryCheckRangeSlongLong
-#define TIFFReadDirEntryCheckRangeSlongLong8 gdal_TIFFReadDirEntryCheckRangeSlongLong8
-#define TIFFReadDirEntryCheckRangeSlongSlong8 gdal_TIFFReadDirEntryCheckRangeSlongSlong8
-#define TIFFReadDirEntryCheckRangeSshortLong gdal_TIFFReadDirEntryCheckRangeSshortLong
-#define TIFFReadDirEntryCheckRangeSshortLong8 gdal_TIFFReadDirEntryCheckRangeSshortLong8
-#define TIFFReadDirEntryCheckRangeSshortShort gdal_TIFFReadDirEntryCheckRangeSshortShort
-#define TIFFReadDirEntryCheckRangeSshortSlong gdal_TIFFReadDirEntryCheckRangeSshortSlong
-#define TIFFReadDirEntryCheckRangeSshortSlong8 gdal_TIFFReadDirEntryCheckRangeSshortSlong8
+#define TIFFReadDirEntryCheckRangeByteLong                                     \
+  gdal_TIFFReadDirEntryCheckRangeByteLong
+#define TIFFReadDirEntryCheckRangeByteLong8                                    \
+  gdal_TIFFReadDirEntryCheckRangeByteLong8
+#define TIFFReadDirEntryCheckRangeByteSbyte                                    \
+  gdal_TIFFReadDirEntryCheckRangeByteSbyte
+#define TIFFReadDirEntryCheckRangeByteShort                                    \
+  gdal_TIFFReadDirEntryCheckRangeByteShort
+#define TIFFReadDirEntryCheckRangeByteSlong                                    \
+  gdal_TIFFReadDirEntryCheckRangeByteSlong
+#define TIFFReadDirEntryCheckRangeByteSlong8                                   \
+  gdal_TIFFReadDirEntryCheckRangeByteSlong8
+#define TIFFReadDirEntryCheckRangeByteSshort                                   \
+  gdal_TIFFReadDirEntryCheckRangeByteSshort
+#define TIFFReadDirEntryCheckRangeLong8Sbyte                                   \
+  gdal_TIFFReadDirEntryCheckRangeLong8Sbyte
+#define TIFFReadDirEntryCheckRangeLong8Slong                                   \
+  gdal_TIFFReadDirEntryCheckRangeLong8Slong
+#define TIFFReadDirEntryCheckRangeLong8Slong8                                  \
+  gdal_TIFFReadDirEntryCheckRangeLong8Slong8
+#define TIFFReadDirEntryCheckRangeLong8Sshort                                  \
+  gdal_TIFFReadDirEntryCheckRangeLong8Sshort
+#define TIFFReadDirEntryCheckRangeLongLong8                                    \
+  gdal_TIFFReadDirEntryCheckRangeLongLong8
+#define TIFFReadDirEntryCheckRangeLongSbyte                                    \
+  gdal_TIFFReadDirEntryCheckRangeLongSbyte
+#define TIFFReadDirEntryCheckRangeLongSlong                                    \
+  gdal_TIFFReadDirEntryCheckRangeLongSlong
+#define TIFFReadDirEntryCheckRangeLongSlong8                                   \
+  gdal_TIFFReadDirEntryCheckRangeLongSlong8
+#define TIFFReadDirEntryCheckRangeLongSshort                                   \
+  gdal_TIFFReadDirEntryCheckRangeLongSshort
+#define TIFFReadDirEntryCheckRangeSbyteByte                                    \
+  gdal_TIFFReadDirEntryCheckRangeSbyteByte
+#define TIFFReadDirEntryCheckRangeSbyteLong                                    \
+  gdal_TIFFReadDirEntryCheckRangeSbyteLong
+#define TIFFReadDirEntryCheckRangeSbyteLong8                                   \
+  gdal_TIFFReadDirEntryCheckRangeSbyteLong8
+#define TIFFReadDirEntryCheckRangeSbyteShort                                   \
+  gdal_TIFFReadDirEntryCheckRangeSbyteShort
+#define TIFFReadDirEntryCheckRangeSbyteSlong                                   \
+  gdal_TIFFReadDirEntryCheckRangeSbyteSlong
+#define TIFFReadDirEntryCheckRangeSbyteSlong8                                  \
+  gdal_TIFFReadDirEntryCheckRangeSbyteSlong8
+#define TIFFReadDirEntryCheckRangeSbyteSshort                                  \
+  gdal_TIFFReadDirEntryCheckRangeSbyteSshort
+#define TIFFReadDirEntryCheckRangeShortLong                                    \
+  gdal_TIFFReadDirEntryCheckRangeShortLong
+#define TIFFReadDirEntryCheckRangeShortLong8                                   \
+  gdal_TIFFReadDirEntryCheckRangeShortLong8
+#define TIFFReadDirEntryCheckRangeShortSbyte                                   \
+  gdal_TIFFReadDirEntryCheckRangeShortSbyte
+#define TIFFReadDirEntryCheckRangeShortSlong                                   \
+  gdal_TIFFReadDirEntryCheckRangeShortSlong
+#define TIFFReadDirEntryCheckRangeShortSlong8                                  \
+  gdal_TIFFReadDirEntryCheckRangeShortSlong8
+#define TIFFReadDirEntryCheckRangeShortSshort                                  \
+  gdal_TIFFReadDirEntryCheckRangeShortSshort
+#define TIFFReadDirEntryCheckRangeSlong8Long8                                  \
+  gdal_TIFFReadDirEntryCheckRangeSlong8Long8
+#define TIFFReadDirEntryCheckRangeSlongLong                                    \
+  gdal_TIFFReadDirEntryCheckRangeSlongLong
+#define TIFFReadDirEntryCheckRangeSlongLong8                                   \
+  gdal_TIFFReadDirEntryCheckRangeSlongLong8
+#define TIFFReadDirEntryCheckRangeSlongSlong8                                  \
+  gdal_TIFFReadDirEntryCheckRangeSlongSlong8
+#define TIFFReadDirEntryCheckRangeSshortLong                                   \
+  gdal_TIFFReadDirEntryCheckRangeSshortLong
+#define TIFFReadDirEntryCheckRangeSshortLong8                                  \
+  gdal_TIFFReadDirEntryCheckRangeSshortLong8
+#define TIFFReadDirEntryCheckRangeSshortShort                                  \
+  gdal_TIFFReadDirEntryCheckRangeSshortShort
+#define TIFFReadDirEntryCheckRangeSshortSlong                                  \
+  gdal_TIFFReadDirEntryCheckRangeSshortSlong
+#define TIFFReadDirEntryCheckRangeSshortSlong8                                 \
+  gdal_TIFFReadDirEntryCheckRangeSshortSlong8
 #define TIFFReadDirEntryData gdal_TIFFReadDirEntryData
 #define TIFFReadDirEntryDataAndRealloc gdal_TIFFReadDirEntryDataAndRealloc
 #define TIFFReadDirEntryDouble gdal_TIFFReadDirEntryDouble
@@ -522,7 +570,8 @@
 #define TIFFReadDirEntryLong gdal_TIFFReadDirEntryLong
 #define TIFFReadDirEntryLong8 gdal_TIFFReadDirEntryLong8
 #define TIFFReadDirEntryLong8Array gdal_TIFFReadDirEntryLong8Array
-#define TIFFReadDirEntryLong8ArrayWithLimit gdal_TIFFReadDirEntryLong8ArrayWithLimit
+#define TIFFReadDirEntryLong8ArrayWithLimit                                    \
+  gdal_TIFFReadDirEntryLong8ArrayWithLimit
 #define TIFFReadDirEntryLongArray gdal_TIFFReadDirEntryLongArray
 #define TIFFReadDirEntryOutputErr gdal_TIFFReadDirEntryOutputErr
 #define TIFFReadDirEntryPersampleShort gdal_TIFFReadDirEntryPersampleShort
@@ -533,10 +582,12 @@
 #define TIFFReadDirEntrySlongArray gdal_TIFFReadDirEntrySlongArray
 #define TIFFReadDirEntrySshortArray gdal_TIFFReadDirEntrySshortArray
 #define TIFFReadEncodedStrip gdal_TIFFReadEncodedStrip
-#define _TIFFReadEncodedStripAndAllocBuffer gdal__TIFFReadEncodedStripAndAllocBuffer
+#define _TIFFReadEncodedStripAndAllocBuffer                                    \
+  gdal__TIFFReadEncodedStripAndAllocBuffer
 #define TIFFReadEncodedStripGetStripSize gdal_TIFFReadEncodedStripGetStripSize
 #define TIFFReadEncodedTile gdal_TIFFReadEncodedTile
-#define _TIFFReadEncodedTileAndAllocBuffer gdal__TIFFReadEncodedTileAndAllocBuffer
+#define _TIFFReadEncodedTileAndAllocBuffer                                     \
+  gdal__TIFFReadEncodedTileAndAllocBuffer
 #define TIFFReadEXIFDirectory gdal_TIFFReadEXIFDirectory
 #define TIFFReadFromUserBuffer gdal_TIFFReadFromUserBuffer
 #define _tiffReadProc gdal__tiffReadProc
@@ -557,7 +608,8 @@
 #define TIFFReadUInt64 gdal_TIFFReadUInt64
 #define _TIFFrealloc gdal__TIFFrealloc
 #define TIFFRegisterCODEC gdal_TIFFRegisterCODEC
-#define _TIFFReserveLargeEnoughWriteBuffer gdal__TIFFReserveLargeEnoughWriteBuffer
+#define _TIFFReserveLargeEnoughWriteBuffer                                     \
+  gdal__TIFFReserveLargeEnoughWriteBuffer
 #define TIFFReverseBits gdal_TIFFReverseBits
 #define TIFFRewriteDirectory gdal_TIFFRewriteDirectory
 #define _TIFFRewriteField gdal__TIFFRewriteField
@@ -649,24 +701,40 @@
 #define TIFFWriteDirectoryTagAscii gdal_TIFFWriteDirectoryTagAscii
 #define TIFFWriteDirectoryTagByteArray gdal_TIFFWriteDirectoryTagByteArray
 #define TIFFWriteDirectoryTagCheckedAscii gdal_TIFFWriteDirectoryTagCheckedAscii
-#define TIFFWriteDirectoryTagCheckedByteArray gdal_TIFFWriteDirectoryTagCheckedByteArray
-#define TIFFWriteDirectoryTagCheckedDoubleArray gdal_TIFFWriteDirectoryTagCheckedDoubleArray
-#define TIFFWriteDirectoryTagCheckedFloatArray gdal_TIFFWriteDirectoryTagCheckedFloatArray
-#define TIFFWriteDirectoryTagCheckedIfd8Array gdal_TIFFWriteDirectoryTagCheckedIfd8Array
-#define TIFFWriteDirectoryTagCheckedIfdArray gdal_TIFFWriteDirectoryTagCheckedIfdArray
+#define TIFFWriteDirectoryTagCheckedByteArray                                  \
+  gdal_TIFFWriteDirectoryTagCheckedByteArray
+#define TIFFWriteDirectoryTagCheckedDoubleArray                                \
+  gdal_TIFFWriteDirectoryTagCheckedDoubleArray
+#define TIFFWriteDirectoryTagCheckedFloatArray                                 \
+  gdal_TIFFWriteDirectoryTagCheckedFloatArray
+#define TIFFWriteDirectoryTagCheckedIfd8Array                                  \
+  gdal_TIFFWriteDirectoryTagCheckedIfd8Array
+#define TIFFWriteDirectoryTagCheckedIfdArray                                   \
+  gdal_TIFFWriteDirectoryTagCheckedIfdArray
 #define TIFFWriteDirectoryTagCheckedLong gdal_TIFFWriteDirectoryTagCheckedLong
-#define TIFFWriteDirectoryTagCheckedLong8Array gdal_TIFFWriteDirectoryTagCheckedLong8Array
-#define TIFFWriteDirectoryTagCheckedLongArray gdal_TIFFWriteDirectoryTagCheckedLongArray
-#define TIFFWriteDirectoryTagCheckedRational gdal_TIFFWriteDirectoryTagCheckedRational
-#define TIFFWriteDirectoryTagCheckedRationalArray gdal_TIFFWriteDirectoryTagCheckedRationalArray
-#define TIFFWriteDirectoryTagCheckedSbyteArray gdal_TIFFWriteDirectoryTagCheckedSbyteArray
+#define TIFFWriteDirectoryTagCheckedLong8Array                                 \
+  gdal_TIFFWriteDirectoryTagCheckedLong8Array
+#define TIFFWriteDirectoryTagCheckedLongArray                                  \
+  gdal_TIFFWriteDirectoryTagCheckedLongArray
+#define TIFFWriteDirectoryTagCheckedRational                                   \
+  gdal_TIFFWriteDirectoryTagCheckedRational
+#define TIFFWriteDirectoryTagCheckedRationalArray                              \
+  gdal_TIFFWriteDirectoryTagCheckedRationalArray
+#define TIFFWriteDirectoryTagCheckedSbyteArray                                 \
+  gdal_TIFFWriteDirectoryTagCheckedSbyteArray
 #define TIFFWriteDirectoryTagCheckedShort gdal_TIFFWriteDirectoryTagCheckedShort
-#define TIFFWriteDirectoryTagCheckedShortArray gdal_TIFFWriteDirectoryTagCheckedShortArray
-#define TIFFWriteDirectoryTagCheckedSlong8Array gdal_TIFFWriteDirectoryTagCheckedSlong8Array
-#define TIFFWriteDirectoryTagCheckedSlongArray gdal_TIFFWriteDirectoryTagCheckedSlongArray
-#define TIFFWriteDirectoryTagCheckedSrationalArray gdal_TIFFWriteDirectoryTagCheckedSrationalArray
-#define TIFFWriteDirectoryTagCheckedSshortArray gdal_TIFFWriteDirectoryTagCheckedSshortArray
-#define TIFFWriteDirectoryTagCheckedUndefinedArray gdal_TIFFWriteDirectoryTagCheckedUndefinedArray
+#define TIFFWriteDirectoryTagCheckedShortArray                                 \
+  gdal_TIFFWriteDirectoryTagCheckedShortArray
+#define TIFFWriteDirectoryTagCheckedSlong8Array                                \
+  gdal_TIFFWriteDirectoryTagCheckedSlong8Array
+#define TIFFWriteDirectoryTagCheckedSlongArray                                 \
+  gdal_TIFFWriteDirectoryTagCheckedSlongArray
+#define TIFFWriteDirectoryTagCheckedSrationalArray                             \
+  gdal_TIFFWriteDirectoryTagCheckedSrationalArray
+#define TIFFWriteDirectoryTagCheckedSshortArray                                \
+  gdal_TIFFWriteDirectoryTagCheckedSshortArray
+#define TIFFWriteDirectoryTagCheckedUndefinedArray                             \
+  gdal_TIFFWriteDirectoryTagCheckedUndefinedArray
 #define TIFFWriteDirectoryTagColormap gdal_TIFFWriteDirectoryTagColormap
 #define TIFFWriteDirectoryTagData gdal_TIFFWriteDirectoryTagData
 #define TIFFWriteDirectoryTagDoubleArray gdal_TIFFWriteDirectoryTagDoubleArray
@@ -676,22 +744,29 @@
 #define TIFFWriteDirectoryTagLong gdal_TIFFWriteDirectoryTagLong
 #define TIFFWriteDirectoryTagLong8Array gdal_TIFFWriteDirectoryTagLong8Array
 #define TIFFWriteDirectoryTagLongArray gdal_TIFFWriteDirectoryTagLongArray
-#define TIFFWriteDirectoryTagLongLong8Array gdal_TIFFWriteDirectoryTagLongLong8Array
+#define TIFFWriteDirectoryTagLongLong8Array                                    \
+  gdal_TIFFWriteDirectoryTagLongLong8Array
 #define TIFFWriteDirectoryTagRational gdal_TIFFWriteDirectoryTagRational
-#define TIFFWriteDirectoryTagRationalArray gdal_TIFFWriteDirectoryTagRationalArray
-#define TIFFWriteDirectoryTagSampleformatArray gdal_TIFFWriteDirectoryTagSampleformatArray
+#define TIFFWriteDirectoryTagRationalArray                                     \
+  gdal_TIFFWriteDirectoryTagRationalArray
+#define TIFFWriteDirectoryTagSampleformatArray                                 \
+  gdal_TIFFWriteDirectoryTagSampleformatArray
 #define TIFFWriteDirectoryTagSbyteArray gdal_TIFFWriteDirectoryTagSbyteArray
 #define TIFFWriteDirectoryTagShort gdal_TIFFWriteDirectoryTagShort
 #define TIFFWriteDirectoryTagShortArray gdal_TIFFWriteDirectoryTagShortArray
 #define TIFFWriteDirectoryTagShortLong gdal_TIFFWriteDirectoryTagShortLong
-#define TIFFWriteDirectoryTagShortPerSample gdal_TIFFWriteDirectoryTagShortPerSample
+#define TIFFWriteDirectoryTagShortPerSample                                    \
+  gdal_TIFFWriteDirectoryTagShortPerSample
 #define TIFFWriteDirectoryTagSlong8Array gdal_TIFFWriteDirectoryTagSlong8Array
 #define TIFFWriteDirectoryTagSlongArray gdal_TIFFWriteDirectoryTagSlongArray
-#define TIFFWriteDirectoryTagSrationalArray gdal_TIFFWriteDirectoryTagSrationalArray
+#define TIFFWriteDirectoryTagSrationalArray                                    \
+  gdal_TIFFWriteDirectoryTagSrationalArray
 #define TIFFWriteDirectoryTagSshortArray gdal_TIFFWriteDirectoryTagSshortArray
 #define TIFFWriteDirectoryTagSubifd gdal_TIFFWriteDirectoryTagSubifd
-#define TIFFWriteDirectoryTagTransferfunction gdal_TIFFWriteDirectoryTagTransferfunction
-#define TIFFWriteDirectoryTagUndefinedArray gdal_TIFFWriteDirectoryTagUndefinedArray
+#define TIFFWriteDirectoryTagTransferfunction                                  \
+  gdal_TIFFWriteDirectoryTagTransferfunction
+#define TIFFWriteDirectoryTagUndefinedArray                                    \
+  gdal_TIFFWriteDirectoryTagUndefinedArray
 #define TIFFWriteEncodedStrip gdal_TIFFWriteEncodedStrip
 #define TIFFWriteEncodedTile gdal_TIFFWriteEncodedTile
 #define _tiffWriteProc gdal__tiffWriteProc
