@@ -28,19 +28,17 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
 import contextlib
 import math
-import os
 import os.path
 import stat
 import sys
-from sys import version_info
 import time
+from sys import version_info
 
+import pytest
 from osgeo import gdal
 from osgeo import osr
-import pytest
 
 cur_name = "default"
 

@@ -29,19 +29,17 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
+import array
 import copy
 import os
-import sys
-import array
-import struct
 import shutil
-from osgeo import gdal
-from osgeo import osr
-
+import struct
+import sys
 
 import gdaltest
 import pytest
+from osgeo import gdal
+from osgeo import osr
 
 ###############################################################################
 # Write/Read test of simple byte reference data.

@@ -28,14 +28,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
-import os
 import array
-from osgeo import gdal
-
+import os
 
 import gdaltest
 import pytest
+from osgeo import gdal
 
 ###############################################################################
 # Verify we can read the special histogram metadata from a provided image.

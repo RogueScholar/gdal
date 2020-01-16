@@ -26,17 +26,15 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 ###############################################################################
-
 import os
-import sys
 import shutil
-
-import pytest
-
-import webserver
+import sys
 
 import gdaltest
-from osgeo import gdal, osr
+import pytest
+import webserver
+from osgeo import gdal
+from osgeo import osr
 
 init_list = [
     ("byte.tif", 1, 4672),

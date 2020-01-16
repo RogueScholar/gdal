@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 # Setup script for GDAL Python bindings.
 # Inspired by psycopg2 setup.py file
 # http://www.initd.org/tracker/psycopg/browser/psycopg2/trunk/setup.py
 # Howard Butler hobu.inc@gmail.com
-
-
-from distutils.errors import CompileError
-from distutils.ccompiler import get_default_compiler
-from distutils.command.build_ext import build_ext
-from distutils.sysconfig import get_config_vars
-from glob import glob
 import os
 import sys
+from distutils.ccompiler import get_default_compiler
+from distutils.command.build_ext import build_ext
+from distutils.errors import CompileError
+from distutils.sysconfig import get_config_vars
+from glob import glob
 
 gdal_version = "3.0.0"
 
