@@ -14,12 +14,12 @@ from glob import glob
 
 gdal_version = "3.0.0"
 
-
 # Strip -Wstrict-prototypes from compiler options, if present. This is
 # not required when compiling a C++ extension.
-(opt,) = get_config_vars("OPT")
+(opt, ) = get_config_vars("OPT")
 if opt is not None:
-    os.environ["OPT"] = " ".join(f for f in opt.split() if f != "-Wstrict-prototypes")
+    os.environ["OPT"] = " ".join(f for f in opt.split()
+                                 if f != "-Wstrict-prototypes")
 
 # If CXX is defined in the environment, it will be used to link the .so
 # but distutils will be confused if it is made of several words like 'ccache g++'
@@ -31,28 +31,22 @@ if opt is not None:
 # If no CXX environment variable is defined, then the value of the CXX variable
 # in GDALmake.opt will not be set as an environment variable
 if "CXX" in os.environ and os.environ["CXX"].strip().find(" ") >= 0:
-    if (
-        os.environ["CXX"].strip().startswith("ccache ")
-        and os.environ["CXX"].strip()[len("ccache ") :].find(" ") < 0
-    ):
-        os.environ["CXX"] = os.environ["CXX"].strip()[len("ccache ") :]
+    if (os.environ["CXX"].strip().startswith("ccache ")
+            and os.environ["CXX"].strip()[len("ccache "):].find(" ") < 0):
+        os.environ["CXX"] = os.environ["CXX"].strip()[len("ccache "):]
     else:
         print(
             'WARNING: "CXX=%s" was defined in the environment and contains more than one word. Unsetting it since that is incompatible of distutils'
-            % os.environ["CXX"]
-        )
+            % os.environ["CXX"])
         del os.environ["CXX"]
 if "CC" in os.environ and os.environ["CC"].strip().find(" ") >= 0:
-    if (
-        os.environ["CC"].strip().startswith("ccache ")
-        and os.environ["CC"].strip()[len("ccache ") :].find(" ") < 0
-    ):
-        os.environ["CC"] = os.environ["CC"].strip()[len("ccache ") :]
+    if (os.environ["CC"].strip().startswith("ccache ")
+            and os.environ["CC"].strip()[len("ccache "):].find(" ") < 0):
+        os.environ["CC"] = os.environ["CC"].strip()[len("ccache "):]
     else:
         print(
             'WARNING: "CC=%s" was defined in the environment and contains more than one word. Unsetting it since that is incompatible of distutils'
-            % os.environ["CC"]
-        )
+            % os.environ["CC"])
         del os.environ["CC"]
 
 # ---------------------------------------------------------------------------
@@ -81,10 +75,10 @@ include_dirs = [
 library_dirs = ["../../.libs", "../../"]
 libraries = ["gdal"]
 
-
 # ---------------------------------------------------------------------------
 # Helper Functions
 # ---------------------------------------------------------------------------
+
 
 # Function to find numpy's include directory
 def get_numpy_include():
@@ -144,7 +138,7 @@ except ImportError:
         build_py.fixer_names = fixer_names
         build_scripts.fixer_names = fixer_names
 else:
-    if sys.version_info >= (3,):
+    if sys.version_info >= (3, ):
         from lib2to3.refactor import get_fixers_from_package
 
         all_fixers = set(get_fixers_from_package("lib2to3.fixes"))
@@ -177,12 +171,10 @@ def fetch_config(option, gdal_config="gdal-config"):
                 raise gdal_config_error(e)
             r = p.stdout.readline().decode("ascii").strip()
         else:
-            exec(
-                """try:
+            exec("""try:
     p = subprocess.Popen([command, args], stdout=subprocess.PIPE)
 except OSError, e:
-    raise gdal_config_error, e"""
-            )
+    raise gdal_config_error, e""")
             r = p.stdout.readline().strip()
         p.stdout.close()
         p.wait()
@@ -202,13 +194,11 @@ except OSError, e:
 def supports_cxx11(compiler, compiler_flag=None):
     ret = False
     with open("gdal_python_cxx11_test.cpp", "wt") as f:
-        f.write(
-            """
+        f.write("""
 #if __cplusplus < 201103L
 #error "C++11 required"
 #endif
-int main () { return 0; }"""
-        )
+int main () { return 0; }""")
         f.close()
         extra_postargs = None
         if compiler_flag:
@@ -259,15 +249,11 @@ class gdal_ext(build_ext):
 
     GDAL_CONFIG = "gdal-config"
     user_options = build_ext.user_options[:]
-    user_options.extend(
-        [
-            (
-                "gdal-config=",
-                None,
-                "The name of the gdal-config binary and/or a full path to it",
-            )
-        ]
-    )
+    user_options.extend([(
+        "gdal-config=",
+        None,
+        "The name of the gdal-config binary and/or a full path to it",
+    )])
 
     def initialize_options(self):
         build_ext.initialize_options(self)
@@ -296,7 +282,8 @@ class gdal_ext(build_ext):
                 import sys
                 import traceback
 
-                traceback_string = "".join(traceback.format_exception(*sys.exc_info()))
+                traceback_string = "".join(
+                    traceback.format_exception(*sys.exc_info()))
                 raise gdal_config_error(traceback_string + "\n" + msg)
 
     def build_extensions(self):
@@ -315,7 +302,7 @@ class gdal_ext(build_ext):
 
                     # Adding arch flags here if OS X and compiler is clang
                     if sys.platform == "darwin" and [
-                        int(x) for x in os.uname()[2].split(".")
+                            int(x) for x in os.uname()[2].split(".")
                     ] >= [11, 0, 0]:
                         # since MacOS X 10.9, clang no longer accepts -mno-fused-madd
                         # extra_compile_args.append('-Qunused-arguments')
@@ -372,7 +359,7 @@ class gdal_ext(build_ext):
 
 
 # This is only needed with Python 2.
-if sys.version_info < (3,):
+if sys.version_info < (3, ):
     try:
         import multiprocessing
         from concurrent.futures import ThreadPoolExecutor as Pool
@@ -419,7 +406,6 @@ ogr_module = Extension(
     extra_compile_args=extra_compile_args,
     extra_link_args=extra_link_args,
 )
-
 
 array_module = Extension(
     "osgeo._gdal_array",
@@ -480,14 +466,12 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 
-
 if BUILD_FOR_CHEESESHOP:
     data_files = [("osgeo/data/gdal", glob(os.path.join("../../data", "*")))]
 else:
     data_files = None
 
 exclude_package_data = {"": ["GNUmakefile"]}
-
 
 setup_kwargs = dict(
     name=name,

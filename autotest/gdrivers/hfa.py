@@ -52,15 +52,18 @@ def test_hfa_histread():
     assert md["STATISTICS_HISTOMAX"] == "255", "STATISTICS_HISTOMAX is wrong."
 
     assert (
-        md["STATISTICS_HISTOBINVALUES"]
-        == "0|0|0|0|0|0|0|0|8|0|0|0|0|0|0|0|23|0|0|0|0|0|0|0|0|29|0|0|0|0|0|0|0|46|0|0|0|0|0|0|0|69|0|0|0|0|0|0|0|99|0|0|0|0|0|0|0|0|120|0|0|0|0|0|0|0|178|0|0|0|0|0|0|0|193|0|0|0|0|0|0|0|212|0|0|0|0|0|0|0|281|0|0|0|0|0|0|0|0|365|0|0|0|0|0|0|0|460|0|0|0|0|0|0|0|533|0|0|0|0|0|0|0|544|0|0|0|0|0|0|0|0|626|0|0|0|0|0|0|0|653|0|0|0|0|0|0|0|673|0|0|0|0|0|0|0|629|0|0|0|0|0|0|0|0|586|0|0|0|0|0|0|0|541|0|0|0|0|0|0|0|435|0|0|0|0|0|0|0|348|0|0|0|0|0|0|0|341|0|0|0|0|0|0|0|0|284|0|0|0|0|0|0|0|225|0|0|0|0|0|0|0|237|0|0|0|0|0|0|0|172|0|0|0|0|0|0|0|0|159|0|0|0|0|0|0|0|105|0|0|0|0|0|0|0|824|"
+        md["STATISTICS_HISTOBINVALUES"] ==
+        "0|0|0|0|0|0|0|0|8|0|0|0|0|0|0|0|23|0|0|0|0|0|0|0|0|29|0|0|0|0|0|0|0|46|0|0|0|0|0|0|0|69|0|0|0|0|0|0|0|99|0|0|0|0|0|0|0|0|120|0|0|0|0|0|0|0|178|0|0|0|0|0|0|0|193|0|0|0|0|0|0|0|212|0|0|0|0|0|0|0|281|0|0|0|0|0|0|0|0|365|0|0|0|0|0|0|0|460|0|0|0|0|0|0|0|533|0|0|0|0|0|0|0|544|0|0|0|0|0|0|0|0|626|0|0|0|0|0|0|0|653|0|0|0|0|0|0|0|673|0|0|0|0|0|0|0|629|0|0|0|0|0|0|0|0|586|0|0|0|0|0|0|0|541|0|0|0|0|0|0|0|435|0|0|0|0|0|0|0|348|0|0|0|0|0|0|0|341|0|0|0|0|0|0|0|0|284|0|0|0|0|0|0|0|225|0|0|0|0|0|0|0|237|0|0|0|0|0|0|0|172|0|0|0|0|0|0|0|0|159|0|0|0|0|0|0|0|105|0|0|0|0|0|0|0|824|"
     ), "STATISTICS_HISTOBINVALUES is wrong."
 
-    assert md["STATISTICS_SKIPFACTORX"] == "1", "STATISTICS_SKIPFACTORX is wrong."
+    assert md[
+        "STATISTICS_SKIPFACTORX"] == "1", "STATISTICS_SKIPFACTORX is wrong."
 
-    assert md["STATISTICS_SKIPFACTORY"] == "1", "STATISTICS_SKIPFACTORY is wrong."
+    assert md[
+        "STATISTICS_SKIPFACTORY"] == "1", "STATISTICS_SKIPFACTORY is wrong."
 
-    assert md["STATISTICS_EXCLUDEDVALUES"] == "0", "STATISTICS_EXCLUDEDVALUE is wrong."
+    assert md[
+        "STATISTICS_EXCLUDEDVALUES"] == "0", "STATISTICS_EXCLUDEDVALUE is wrong."
 
 
 ###############################################################################
@@ -94,8 +97,8 @@ def test_hfa_histwrite():
     assert md["STATISTICS_HISTOMAX"] == "255", "STATISTICS_HISTOMAX is wrong."
 
     assert (
-        md["STATISTICS_HISTOBINVALUES"]
-        == "0|0|0|0|0|0|0|0|8|0|0|0|0|0|0|0|23|0|0|0|0|0|0|0|0|29|0|0|0|0|0|0|0|46|0|0|0|0|0|0|0|69|0|0|0|0|0|0|0|99|0|0|0|0|0|0|0|0|120|0|0|0|0|0|0|0|178|0|0|0|0|0|0|0|193|0|0|0|0|0|0|0|212|0|0|0|0|0|0|0|281|0|0|0|0|0|0|0|0|365|0|0|0|0|0|0|0|460|0|0|0|0|0|0|0|533|0|0|0|0|0|0|0|544|0|0|0|0|0|0|0|0|626|0|0|0|0|0|0|0|653|0|0|0|0|0|0|0|673|0|0|0|0|0|0|0|629|0|0|0|0|0|0|0|0|586|0|0|0|0|0|0|0|541|0|0|0|0|0|0|0|435|0|0|0|0|0|0|0|348|0|0|0|0|0|0|0|341|0|0|0|0|0|0|0|0|284|0|0|0|0|0|0|0|225|0|0|0|0|0|0|0|237|0|0|0|0|0|0|0|172|0|0|0|0|0|0|0|0|159|0|0|0|0|0|0|0|105|0|0|0|0|0|0|0|824|"
+        md["STATISTICS_HISTOBINVALUES"] ==
+        "0|0|0|0|0|0|0|0|8|0|0|0|0|0|0|0|23|0|0|0|0|0|0|0|0|29|0|0|0|0|0|0|0|46|0|0|0|0|0|0|0|69|0|0|0|0|0|0|0|99|0|0|0|0|0|0|0|0|120|0|0|0|0|0|0|0|178|0|0|0|0|0|0|0|193|0|0|0|0|0|0|0|212|0|0|0|0|0|0|0|281|0|0|0|0|0|0|0|0|365|0|0|0|0|0|0|0|460|0|0|0|0|0|0|0|533|0|0|0|0|0|0|0|544|0|0|0|0|0|0|0|0|626|0|0|0|0|0|0|0|653|0|0|0|0|0|0|0|673|0|0|0|0|0|0|0|629|0|0|0|0|0|0|0|0|586|0|0|0|0|0|0|0|541|0|0|0|0|0|0|0|435|0|0|0|0|0|0|0|348|0|0|0|0|0|0|0|341|0|0|0|0|0|0|0|0|284|0|0|0|0|0|0|0|225|0|0|0|0|0|0|0|237|0|0|0|0|0|0|0|172|0|0|0|0|0|0|0|0|159|0|0|0|0|0|0|0|105|0|0|0|0|0|0|0|824|"
     ), "STATISTICS_HISTOBINVALUES is wrong."
 
 
@@ -156,9 +159,11 @@ def test_hfa_int_stats_1():
 
     assert md["STATISTICS_MODE"] == "41013", "STATISTICS_MODE is wrong."
 
-    assert md["STATISTICS_HISTOMIN"] == "40918", "STATISTICS_HISTOMIN is wrong."
+    assert md[
+        "STATISTICS_HISTOMIN"] == "40918", "STATISTICS_HISTOMIN is wrong."
 
-    assert md["STATISTICS_HISTOMAX"] == "41134", "STATISTICS_HISTOMAX is wrong."
+    assert md[
+        "STATISTICS_HISTOMAX"] == "41134", "STATISTICS_HISTOMAX is wrong."
 
     assert md["LAYER_TYPE"] == "athematic", "LAYER_TYPE is wrong."
 
@@ -175,17 +180,17 @@ def test_hfa_int_stats_2():
 
     tolerance = 0.0001
 
-    assert stats[0] == pytest.approx(40918.0, abs=tolerance), "Minimum value is wrong."
+    assert stats[0] == pytest.approx(40918.0,
+                                     abs=tolerance), "Minimum value is wrong."
 
-    assert stats[1] == pytest.approx(41134.0, abs=tolerance), "Maximum value is wrong."
+    assert stats[1] == pytest.approx(41134.0,
+                                     abs=tolerance), "Maximum value is wrong."
 
-    assert stats[2] == pytest.approx(
-        41019.784218148, abs=tolerance
-    ), "Mean value is wrong."
+    assert stats[2] == pytest.approx(41019.784218148,
+                                     abs=tolerance), "Mean value is wrong."
 
-    assert stats[3] == pytest.approx(
-        44.637237445468, abs=tolerance
-    ), "StdDev value is wrong."
+    assert stats[3] == pytest.approx(44.637237445468,
+                                     abs=tolerance), "StdDev value is wrong."
 
 
 ###############################################################################
@@ -201,34 +206,28 @@ def test_hfa_float_stats_1():
     tolerance = 0.0001
 
     mini = float(md["STATISTICS_MINIMUM"])
-    assert mini == pytest.approx(
-        40.91858291626, abs=tolerance
-    ), "STATISTICS_MINIMUM is wrong."
+    assert mini == pytest.approx(40.91858291626,
+                                 abs=tolerance), "STATISTICS_MINIMUM is wrong."
 
     maxi = float(md["STATISTICS_MAXIMUM"])
-    assert maxi == pytest.approx(
-        41.134323120117, abs=tolerance
-    ), "STATISTICS_MAXIMUM is wrong."
+    assert maxi == pytest.approx(41.134323120117,
+                                 abs=tolerance), "STATISTICS_MAXIMUM is wrong."
 
     median = float(md["STATISTICS_MEDIAN"])
     assert median == pytest.approx(
-        41.017182931304, abs=tolerance
-    ), "STATISTICS_MEDIAN is wrong."
+        41.017182931304, abs=tolerance), "STATISTICS_MEDIAN is wrong."
 
     mod = float(md["STATISTICS_MODE"])
-    assert mod == pytest.approx(
-        41.0104410499, abs=tolerance
-    ), "STATISTICS_MODE is wrong."
+    assert mod == pytest.approx(41.0104410499,
+                                abs=tolerance), "STATISTICS_MODE is wrong."
 
     histMin = float(md["STATISTICS_HISTOMIN"])
     assert histMin == pytest.approx(
-        40.91858291626, abs=tolerance
-    ), "STATISTICS_HISTOMIN is wrong."
+        40.91858291626, abs=tolerance), "STATISTICS_HISTOMIN is wrong."
 
     histMax = float(md["STATISTICS_HISTOMAX"])
     assert histMax == pytest.approx(
-        41.134323120117, abs=tolerance
-    ), "STATISTICS_HISTOMAX is wrong."
+        41.134323120117, abs=tolerance), "STATISTICS_HISTOMAX is wrong."
 
     assert md["LAYER_TYPE"] == "athematic", "LAYER_TYPE is wrong."
 
@@ -245,21 +244,17 @@ def test_hfa_float_stats_2():
 
     tolerance = 0.0001
 
-    assert stats[0] == pytest.approx(
-        40.91858291626, abs=tolerance
-    ), "Minimum value is wrong."
+    assert stats[0] == pytest.approx(40.91858291626,
+                                     abs=tolerance), "Minimum value is wrong."
 
-    assert stats[1] == pytest.approx(
-        41.134323120117, abs=tolerance
-    ), "Maximum value is wrong."
+    assert stats[1] == pytest.approx(41.134323120117,
+                                     abs=tolerance), "Maximum value is wrong."
 
-    assert stats[2] == pytest.approx(
-        41.020284249223, abs=tolerance
-    ), "Mean value is wrong."
+    assert stats[2] == pytest.approx(41.020284249223,
+                                     abs=tolerance), "Mean value is wrong."
 
-    assert stats[3] == pytest.approx(
-        0.044636441749041, abs=tolerance
-    ), "StdDev value is wrong."
+    assert stats[3] == pytest.approx(0.044636441749041,
+                                     abs=tolerance), "StdDev value is wrong."
 
 
 ###############################################################################
@@ -296,9 +291,8 @@ def test_hfa_float_read():
 
     value = struct.unpack("f" * 1, data)[0]
 
-    assert value == pytest.approx(
-        41.021659851074219, abs=0.0001
-    ), "Pixel value is wrong."
+    assert value == pytest.approx(41.021659851074219,
+                                  abs=0.0001), "Pixel value is wrong."
 
 
 ###############################################################################
@@ -377,7 +371,8 @@ def test_hfa_metadata_2():
     md = ds.GetRasterBand(1).GetMetadata()
     assert "xxx" in md, "metadata rewrite seems not to have worked"
 
-    assert md["xxx"] == "123" and md["test"] == "0123456789", "got wrong metadata back"
+    assert md["xxx"] == "123" and md[
+        "test"] == "0123456789", "got wrong metadata back"
 
     ds = None
     gdal.GetDriverByName("HFA").Delete("tmp/md_1.img")
@@ -421,7 +416,9 @@ def test_hfa_clean_ige():
     drv = gdal.GetDriverByName("HFA")
     src_ds = gdal.Open("data/byte.tif")
 
-    out_ds = drv.CreateCopy("tmp/igetest.img", src_ds, options=["USE_SPILL=YES"])
+    out_ds = drv.CreateCopy("tmp/igetest.img",
+                            src_ds,
+                            options=["USE_SPILL=YES"])
     out_ds = None
 
     try:
@@ -468,10 +465,9 @@ def test_hfa_corrupt_aux():
 
     assert ds.RasterXSize == 1104, "did not get expected dataset characteristics"
 
-    assert (
-        gdal.GetLastErrorType() == 2
-        and gdal.GetLastErrorMsg().find("Corrupt (looping)") != -1
-    ), "Did not get expected warning."
+    assert (gdal.GetLastErrorType() == 2
+            and gdal.GetLastErrorMsg().find("Corrupt (looping)") != -1
+            ), "Did not get expected warning."
 
     ds = None
 
@@ -533,17 +529,17 @@ def test_hfa_nodata_read():
 
     tolerance = 0.0001
 
-    assert stats[0] == pytest.approx(2, abs=tolerance), "Minimum value is wrong."
+    assert stats[0] == pytest.approx(2,
+                                     abs=tolerance), "Minimum value is wrong."
 
-    assert stats[1] == pytest.approx(4, abs=tolerance), "Maximum value is wrong."
+    assert stats[1] == pytest.approx(4,
+                                     abs=tolerance), "Maximum value is wrong."
 
-    assert stats[2] == pytest.approx(
-        2.6666666666667, abs=tolerance
-    ), "Mean value is wrong."
+    assert stats[2] == pytest.approx(2.6666666666667,
+                                     abs=tolerance), "Mean value is wrong."
 
-    assert stats[3] == pytest.approx(
-        0.94280904158206, abs=tolerance
-    ), "StdDev value is wrong."
+    assert stats[3] == pytest.approx(0.94280904158206,
+                                     abs=tolerance), "StdDev value is wrong."
 
     b = None
     ds = None
@@ -710,7 +706,11 @@ def test_hfa_proName():
 def test_hfa_read_empty_compressed():
 
     drv = gdal.GetDriverByName("HFA")
-    ds = drv.Create("tmp/emptycompressed.img", 64, 64, 1, options=["COMPRESSED=YES"])
+    ds = drv.Create("tmp/emptycompressed.img",
+                    64,
+                    64,
+                    1,
+                    options=["COMPRESSED=YES"])
     ds = None
 
     ds = gdal.Open("tmp/emptycompressed.img")
@@ -738,11 +738,9 @@ def test_hfa_unique_values_color_table():
 
     assert ct.GetCount() == 256, "got wrong color count"
 
-    assert (
-        ct.GetColorEntry(253) == (0, 0, 0, 0)
-        and ct.GetColorEntry(254) == (255, 255, 170, 255)
-        and ct.GetColorEntry(255) == (255, 255, 255, 255)
-    ), "Got wrong colors"
+    assert (ct.GetColorEntry(253) == (0, 0, 0, 0)
+            and ct.GetColorEntry(254) == (255, 255, 170, 255) and
+            ct.GetColorEntry(255) == (255, 255, 255, 255)), "Got wrong colors"
 
     ct = None
     ds = None
@@ -764,21 +762,20 @@ def test_hfa_unique_values_hist():
     md = ds.GetRasterBand(1).GetMetadata()
 
     expected = "12603|1|0|0|45|1|0|0|0|0|656|177|0|0|5026|1062|0|0|2|0|0|0|0|0|0|0|0|0|0|0|0|0|75|1|0|0|207|158|0|0|8|34|0|0|0|0|538|57|0|10|214|20|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|1|31|0|0|9|625|67|0|0|118|738|117|3004|1499|491|187|1272|513|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|16|3|0|0|283|123|5|1931|835|357|332|944|451|80|40|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|12|5|0|0|535|1029|118|0|33|246|342|0|0|10|8|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|169|439|0|0|6|990|329|0|0|120|295|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|164|42|0|0|570|966|0|0|18|152|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|45|106|0|0|16|16517|"
-    assert md["STATISTICS_HISTOBINVALUES"] == expected, "Unexpected HISTOBINVALUES."
+    assert md[
+        "STATISTICS_HISTOBINVALUES"] == expected, "Unexpected HISTOBINVALUES."
 
-    assert (
-        md["STATISTICS_HISTOMIN"] == "0" and md["STATISTICS_HISTOMAX"] == "255"
-    ), "unexpected histomin/histomax value."
+    assert (md["STATISTICS_HISTOMIN"] == "0"
+            and md["STATISTICS_HISTOMAX"] == "255"
+            ), "unexpected histomin/histomax value."
 
     # lets also check the RAT to ensure it has the BinValues column added.
 
     rat = ds.GetRasterBand(1).GetDefaultRAT()
 
-    assert (
-        rat.GetColumnCount() == 6
-        and rat.GetTypeOfCol(0) == gdal.GFT_Real
-        and rat.GetUsageOfCol(0) == gdal.GFU_MinMax
-    ), "BinValues column wrong."
+    assert (rat.GetColumnCount() == 6 and rat.GetTypeOfCol(0) == gdal.GFT_Real
+            and
+            rat.GetUsageOfCol(0) == gdal.GFU_MinMax), "BinValues column wrong."
 
     assert rat.GetValueAsInt(2, 0) == 4, "BinValues value wrong."
 
@@ -814,28 +811,25 @@ def test_hfa_xforms_3rd():
         except (TypeError, ValueError):
             pytest.fail("metadata item %d missing" % check_item[0])
 
-        assert value == pytest.approx(
-            check_item[1], abs=abs(value / 100000.0)
-        ), "metadata item %s has wrong value: %.15g" % (check_item[0], value)
+        assert value == pytest.approx(check_item[1], abs=abs(
+            value / 100000.0)), "metadata item %s has wrong value: %.15g" % (
+                check_item[0], value)
 
     # Check that the GCPs are as expected implying that the evaluation
     # function for XFORMs if working ok.
 
     gcps = ds.GetGCPs()
 
-    assert (
-        gcps[0].GCPPixel == 0.5
-        and gcps[0].GCPLine == 0.5
-        and gcps[0].GCPX == pytest.approx(1667635.007, abs=0.001)
-        and gcps[0].GCPY == pytest.approx(2620003.171, abs=0.001)
-    ), "GCP 0 value wrong."
+    assert (gcps[0].GCPPixel == 0.5 and gcps[0].GCPLine == 0.5
+            and gcps[0].GCPX == pytest.approx(1667635.007, abs=0.001)
+            and gcps[0].GCPY == pytest.approx(2620003.171,
+                                              abs=0.001)), "GCP 0 value wrong."
 
-    assert (
-        gcps[14].GCPPixel == pytest.approx(1769.7, abs=0.1)
-        and gcps[14].GCPLine == pytest.approx(2124.9, abs=0.1)
-        and gcps[14].GCPX == pytest.approx(1665221.064, abs=0.001)
-        and gcps[14].GCPY == pytest.approx(2632414.379, abs=0.001)
-    ), "GCP 14 value wrong."
+    assert (gcps[14].GCPPixel == pytest.approx(1769.7, abs=0.1)
+            and gcps[14].GCPLine == pytest.approx(2124.9, abs=0.1)
+            and gcps[14].GCPX == pytest.approx(1665221.064, abs=0.001)
+            and gcps[14].GCPY == pytest.approx(
+                2632414.379, abs=0.001)), "GCP 14 value wrong."
 
     ds = None
 
@@ -866,7 +860,8 @@ def test_hfa_delete_colortable():
 
     # check color table gone.
     ds = gdal.Open("tmp/i8u.img")
-    assert ds.GetRasterBand(1).GetColorTable() is None, "failed to remove color table"
+    assert ds.GetRasterBand(
+        1).GetColorTable() is None, "failed to remove color table"
 
     ds = None
 
@@ -882,8 +877,7 @@ def test_hfa_delete_colortable2():
     # copy a file to tmp dir to modify.
     src_ds = gdal.Open("../gcore/data/8bit_pal.bmp")
     ds = gdal.GetDriverByName("HFA").CreateCopy(
-        "tmp/hfa_delete_colortable2.img", src_ds
-    )
+        "tmp/hfa_delete_colortable2.img", src_ds)
     src_ds = None
     ds = None
 
@@ -905,7 +899,8 @@ def test_hfa_delete_colortable2():
 
     # check color table gone.
     ds = gdal.Open("tmp/hfa_delete_colortable2.img")
-    assert ds.GetRasterBand(1).GetColorTable() is None, "failed to remove color table"
+    assert ds.GetRasterBand(
+        1).GetColorTable() is None, "failed to remove color table"
 
     ds = None
 
@@ -922,9 +917,8 @@ def test_hfa_excluded_values():
     md = ds.GetRasterBand(1).GetMetadata()
     ds = None
 
-    assert (
-        md["STATISTICS_EXCLUDEDVALUES"] == "0,8,9"
-    ), "STATISTICS_EXCLUDEDVALUE is wrong."
+    assert (md["STATISTICS_EXCLUDEDVALUES"] == "0,8,9"
+            ), "STATISTICS_EXCLUDEDVALUE is wrong."
 
 
 ###############################################################################
@@ -944,7 +938,8 @@ def test_hfa_ov_nodata():
     wrk2_ds = gdal.Open("/vsimem/ov_nodata.img")
     ovb = wrk2_ds.GetRasterBand(1).GetOverview(0)
 
-    assert ovb.GetNoDataValue() == -99999, "nodata not propagated to .img overview."
+    assert ovb.GetNoDataValue(
+    ) == -99999, "nodata not propagated to .img overview."
 
     assert ovb.GetMaskFlags() == gdal.GMF_NODATA, "mask flag not as expected."
 
@@ -956,9 +951,8 @@ def test_hfa_ov_nodata():
         wrk3_ds = None
     gdal.PopErrorHandler()
 
-    assert (
-        wrk3_ds is None
-    ), "this test result is invalid since .ovr file was created, why?"
+    assert (wrk3_ds is None
+            ), "this test result is invalid since .ovr file was created, why?"
 
     wrk2_ds = None
     drv.Delete("/vsimem/ov_nodata.img")
@@ -977,9 +971,8 @@ def test_hfa_read_bit2grayscale():
     assert ov.Checksum() == 4247, "did not get expected overview checksum"
 
     ds_md = ds.GetMetadata()
-    assert (
-        ds_md["PyramidResamplingType"] == "AVERAGE_BIT2GRAYSCALE"
-    ), "wrong pyramid resampling type metadata."
+    assert (ds_md["PyramidResamplingType"] == "AVERAGE_BIT2GRAYSCALE"
+            ), "wrong pyramid resampling type metadata."
 
 
 ###############################################################################
@@ -1038,17 +1031,19 @@ def test_hfa_camera_md():
         except IndexError:
             pytest.fail("metadata item %d missing" % check_item[0])
 
-        assert value == check_item[1], "metadata item %s has wrong value: %s" % (
-            check_item[0],
-            value,
-        )
+        assert value == check_item[
+            1], "metadata item %s has wrong value: %s" % (
+                check_item[0],
+                value,
+            )
 
     # Check that the SRS is reasonable.
 
     srs_wkt = md["outputProjection"]
     exp_wkt = 'PROJCS["UTM Zone 17, Northern Hemisphere",GEOGCS["NAD27",DATUM["North_American_Datum_1927",SPHEROID["Clarke 1866",6378206.4,294.978698213898,AUTHORITY["EPSG","7008"]],TOWGS84[-10,158,187,0,0,0,0],AUTHORITY["EPSG","6267"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9108"]],AUTHORITY["EPSG","4267"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-81],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["Meter",1],AUTHORITY["EPSG","26717"]]'
 
-    assert gdaltest.equal_srs_from_wkt(srs_wkt, exp_wkt), "wrong outputProjection"
+    assert gdaltest.equal_srs_from_wkt(srs_wkt,
+                                       exp_wkt), "wrong outputProjection"
 
     ds = None
 
@@ -1061,7 +1056,8 @@ def hfa_verify_dataset_projection(dataset_path, exp_wkt):
 
     ds = gdal.Open(dataset_path)
     srs_wkt = ds.GetProjectionRef()
-    assert gdaltest.equal_srs_from_wkt(exp_wkt, srs_wkt), "wrong outputProjection"
+    assert gdaltest.equal_srs_from_wkt(exp_wkt,
+                                       srs_wkt), "wrong outputProjection"
 
     ds = None
 
@@ -1103,12 +1099,11 @@ def test_hfa_read_homva_projection():
     ds = gdal.Open("../gcore/data/3376.tif")
     srs_wkt = ds.GetProjectionRef()
     assert gdaltest.equal_srs_from_wkt(
-        srs_wkt, exp_wkt, verbose=False
-    ) or gdaltest.equal_srs_from_wkt(
-        srs_wkt,
-        exp_wkt.replace("Geodetic_Datum_of_Malaysia_2000", "GDM 2000"),
-        verbose=False,
-    ), srs_wkt
+        srs_wkt, exp_wkt, verbose=False) or gdaltest.equal_srs_from_wkt(
+            srs_wkt,
+            exp_wkt.replace("Geodetic_Datum_of_Malaysia_2000", "GDM 2000"),
+            verbose=False,
+        ), srs_wkt
 
 
 ###############################################################################
@@ -1164,9 +1159,8 @@ def test_hfa_rde_overviews():
         "data\\spill.rrd",
         "data\\spill.rde",
     ]
-    assert (
-        filelist == exp_filelist or filelist == exp_filelist_win32
-    ), "did not get expected file list."
+    assert (filelist == exp_filelist or
+            filelist == exp_filelist_win32), "did not get expected file list."
 
     ds = None
 
@@ -1203,9 +1197,8 @@ def test_hfa_copyfiles():
         "tmp\\newnamexxx.rrd",
         "tmp\\newnamexxx.rde",
     ]
-    assert (
-        filelist == exp_filelist or filelist == exp_filelist_win32
-    ), "did not get expected file list."
+    assert (filelist == exp_filelist or
+            filelist == exp_filelist_win32), "did not get expected file list."
 
     ds = None
 
@@ -1249,11 +1242,9 @@ def test_hfa_write_rat():
     ds = gdal.Open("tmp/write_rat.img")
     rat = ds.GetRasterBand(1).GetDefaultRAT()
 
-    assert (
-        rat.GetColumnCount() == 6
-        and rat.GetTypeOfCol(0) == gdal.GFT_Real
-        and rat.GetUsageOfCol(0) == gdal.GFU_Generic
-    ), "BinValues column wrong."
+    assert (rat.GetColumnCount() == 6 and rat.GetTypeOfCol(0) == gdal.GFT_Real
+            and rat.GetUsageOfCol(0) == gdal.GFU_Generic
+            ), "BinValues column wrong."
 
     assert rat.GetValueAsInt(2, 0) == 4, "BinValues value wrong."
 
@@ -1277,9 +1268,9 @@ def test_hfa_createcopy_statistics():
     except OSError:
         pass
     ds_src = gdal.Open("../gcore/data/byte.tif")
-    out_ds = gdal.GetDriverByName("HFA").CreateCopy(
-        "/vsimem/byte.img", ds_src, options=["STATISTICS=YES"]
-    )
+    out_ds = gdal.GetDriverByName("HFA").CreateCopy("/vsimem/byte.img",
+                                                    ds_src,
+                                                    options=["STATISTICS=YES"])
     del out_ds
     ds_src = None
     if os.path.exists(tmpAuxXml):
