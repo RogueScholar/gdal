@@ -37,77 +37,77 @@
 #include <set>
 
 namespace NGWAPI {
-    std::string GetPermisions(const std::string &osUrl, const std::string &osResourceId);
-    std::string GetResource(const std::string &osUrl, const std::string &osResourceId);
-    std::string GetChildren(const std::string &osUrl, const std::string &osResourceId);
-    std::string GetFeature(const std::string &osUrl, const std::string &osResourceId);
-    std::string GetTMS(const std::string &osUrl, const std::string &osResourceId);
-    std::string GetFeaturePage(const std::string &osUrl, const std::string &osResourceId,
-        GIntBig nStart, int nCount = 0, const std::string &osFields = "",
-        const std::string &osWhere = "", const std::string &osSpatialWhere = "");
-    std::string GetRoute(const std::string &osUrl);
-    std::string GetUpload(const std::string &osUrl);
-    std::string GetVersion(const std::string &osUrl);
-    bool CheckVersion(const std::string &osVersion, int nMajor, int nMinor = 0,
-        int nPatch = 0);
+std::string GetPermisions(const std::string &osUrl, const std::string &osResourceId);
+std::string GetResource(const std::string &osUrl, const std::string &osResourceId);
+std::string GetChildren(const std::string &osUrl, const std::string &osResourceId);
+std::string GetFeature(const std::string &osUrl, const std::string &osResourceId);
+std::string GetTMS(const std::string &osUrl, const std::string &osResourceId);
+std::string GetFeaturePage(const std::string &osUrl, const std::string &osResourceId,
+                           GIntBig nStart, int nCount = 0, const std::string &osFields = "",
+                           const std::string &osWhere = "", const std::string &osSpatialWhere = "");
+std::string GetRoute(const std::string &osUrl);
+std::string GetUpload(const std::string &osUrl);
+std::string GetVersion(const std::string &osUrl);
+bool CheckVersion(const std::string &osVersion, int nMajor, int nMinor = 0,
+                  int nPatch = 0);
 
-    struct Uri {
-        std::string osPrefix;
-        std::string osAddress;
-        std::string osResourceId;
-        std::string osNewResourceName;
-    };
+struct Uri {
+    std::string osPrefix;
+    std::string osAddress;
+    std::string osResourceId;
+    std::string osNewResourceName;
+};
 
-    // C++11 allow defaults
-    struct Permissions {
-        bool bResourceCanRead = false;
-        bool bResourceCanCreate = false;
-        bool bResourceCanUpdate = false;
-        bool bResourceCanDelete = false;
-        bool bDatastructCanRead = false;
-        bool bDatastructCanWrite = false;
-        bool bDataCanRead = false;
-        bool bDataCanWrite = false;
-        bool bMetadataCanRead = false;
-        bool bMetadataCanWrite = false;
-    };
+// C++11 allow defaults
+struct Permissions {
+    bool bResourceCanRead = false;
+    bool bResourceCanCreate = false;
+    bool bResourceCanUpdate = false;
+    bool bResourceCanDelete = false;
+    bool bDatastructCanRead = false;
+    bool bDatastructCanWrite = false;
+    bool bDataCanRead = false;
+    bool bDataCanWrite = false;
+    bool bMetadataCanRead = false;
+    bool bMetadataCanWrite = false;
+};
 
-    Uri ParseUri(const std::string &osUrl);
-    Permissions CheckPermissions(const std::string &osUrl,
-        const std::string &osResourceId, char **papszHTTPOptions, bool bReadWrite);
-    bool DeleteResource(const std::string &osUrl, const std::string &osResourceId,
-        char **papszHTTPOptions);
-    bool RenameResource(const std::string &osUrl, const std::string &osResourceId,
-        const std::string &osNewName, char **papszHTTPOptions);
-    OGRwkbGeometryType NGWGeomTypeToOGRGeomType(const std::string &osGeomType);
-    std::string OGRGeomTypeToNGWGeomType(OGRwkbGeometryType eType);
-    OGRFieldType NGWFieldTypeToOGRFieldType(const std::string &osFieldType);
-    std::string OGRFieldTypeToNGWFieldType(OGRFieldType eType);
-    std::string GetFeatureCount(const std::string &osUrl,
-        const std::string &osResourceId);
-    std::string GetLayerExtent(const std::string &osUrl,
-        const std::string &osResourceId);
-    bool FlushMetadata(const std::string &osUrl, const std::string &osResourceId,
-        char **papszMetadata, char **papszHTTPOptions );
-    std::string CreateResource(const std::string &osUrl, const std::string &osPayload,
-        char **papszHTTPOptions);
-    bool UpdateResource(const std::string &osUrl, const std::string &osResourceId,
-        const std::string &osPayload, char **papszHTTPOptions);
-    void FillResmeta(CPLJSONObject &oRoot, char **papszMetadata);
-    std::string GetResmetaSuffix(CPLJSONObject::Type eType);
-    bool DeleteFeature(const std::string &osUrl, const std::string &osResourceId,
-        const std::string &osFeatureId, char **papszHTTPOptions);
-    GIntBig CreateFeature(const std::string &osUrl, const std::string &osResourceId,
-        const std::string &osFeatureJson, char **papszHTTPOptions);
-    bool UpdateFeature(const std::string &osUrl, const std::string &osResourceId,
-        const std::string &osFeatureId, const std::string &osFeatureJson,
-        char **papszHTTPOptions);
-    std::vector<GIntBig> PatchFeatures(const std::string &osUrl, const std::string &osResourceId,
-        const std::string &osFeaturesJson, char **papszHTTPOptions);
-    bool GetExtent(const std::string &osUrl, const std::string &osResourceId,
-        char **papszHTTPOptions, int nEPSG, OGREnvelope &stExtent);
-    CPLJSONObject UploadFile(const std::string &osUrl, const std::string &osFilePath,
-        char **papszHTTPOptions, GDALProgressFunc pfnProgress, void *pProgressData);
+Uri ParseUri(const std::string &osUrl);
+Permissions CheckPermissions(const std::string &osUrl,
+                             const std::string &osResourceId, char **papszHTTPOptions, bool bReadWrite);
+bool DeleteResource(const std::string &osUrl, const std::string &osResourceId,
+                    char **papszHTTPOptions);
+bool RenameResource(const std::string &osUrl, const std::string &osResourceId,
+                    const std::string &osNewName, char **papszHTTPOptions);
+OGRwkbGeometryType NGWGeomTypeToOGRGeomType(const std::string &osGeomType);
+std::string OGRGeomTypeToNGWGeomType(OGRwkbGeometryType eType);
+OGRFieldType NGWFieldTypeToOGRFieldType(const std::string &osFieldType);
+std::string OGRFieldTypeToNGWFieldType(OGRFieldType eType);
+std::string GetFeatureCount(const std::string &osUrl,
+                            const std::string &osResourceId);
+std::string GetLayerExtent(const std::string &osUrl,
+                           const std::string &osResourceId);
+bool FlushMetadata(const std::string &osUrl, const std::string &osResourceId,
+                   char **papszMetadata, char **papszHTTPOptions );
+std::string CreateResource(const std::string &osUrl, const std::string &osPayload,
+                           char **papszHTTPOptions);
+bool UpdateResource(const std::string &osUrl, const std::string &osResourceId,
+                    const std::string &osPayload, char **papszHTTPOptions);
+void FillResmeta(CPLJSONObject &oRoot, char **papszMetadata);
+std::string GetResmetaSuffix(CPLJSONObject::Type eType);
+bool DeleteFeature(const std::string &osUrl, const std::string &osResourceId,
+                   const std::string &osFeatureId, char **papszHTTPOptions);
+GIntBig CreateFeature(const std::string &osUrl, const std::string &osResourceId,
+                      const std::string &osFeatureJson, char **papszHTTPOptions);
+bool UpdateFeature(const std::string &osUrl, const std::string &osResourceId,
+                   const std::string &osFeatureId, const std::string &osFeatureJson,
+                   char **papszHTTPOptions);
+std::vector<GIntBig> PatchFeatures(const std::string &osUrl, const std::string &osResourceId,
+                                   const std::string &osFeaturesJson, char **papszHTTPOptions);
+bool GetExtent(const std::string &osUrl, const std::string &osResourceId,
+               char **papszHTTPOptions, int nEPSG, OGREnvelope &stExtent);
+CPLJSONObject UploadFile(const std::string &osUrl, const std::string &osFilePath,
+                         char **papszHTTPOptions, GDALProgressFunc pfnProgress, void *pProgressData);
 } // namespace NGWAPI
 
 class OGRNGWDataset;
@@ -132,14 +132,14 @@ class OGRNGWLayer final: public OGRLayer
     bool bClientSideAttributeFilter;
 
     explicit OGRNGWLayer( const std::string &osResourceIdIn, OGRNGWDataset *poDSIn,
-        const NGWAPI::Permissions &stPermissionsIn, OGRFeatureDefn *poFeatureDefnIn,
-        GIntBig nFeatureCountIn, const OGREnvelope &stExtentIn );
+                          const NGWAPI::Permissions &stPermissionsIn, OGRFeatureDefn *poFeatureDefnIn,
+                          GIntBig nFeatureCountIn, const OGREnvelope &stExtentIn );
 
 public:
     explicit OGRNGWLayer( OGRNGWDataset *poDSIn, const CPLJSONObject &oResourceJsonObject );
     explicit OGRNGWLayer( OGRNGWDataset *poDSIn, const std::string &osNameIn,
-        OGRSpatialReference *poSpatialRef, OGRwkbGeometryType eGType,
-        const std::string &osKeyIn, const std::string &osDescIn );
+                          OGRSpatialReference *poSpatialRef, OGRwkbGeometryType eGType,
+                          const std::string &osKeyIn, const std::string &osDescIn );
     virtual ~OGRNGWLayer();
 
     bool Delete();
@@ -154,16 +154,16 @@ public:
     virtual GIntBig GetFeatureCount( int bForce = TRUE ) override;
     virtual OGRErr GetExtent(OGREnvelope *psExtent, int bForce = TRUE) override;
     virtual OGRErr GetExtent(int iGeomField, OGREnvelope *psExtent,
-        int bForce = TRUE) override;
+                             int bForce = TRUE) override;
     virtual OGRFeatureDefn *GetLayerDefn() override;
     virtual int TestCapability( const char * ) override;
 
     virtual OGRErr CreateField( OGRFieldDefn *poField,
-        int bApproxOK = TRUE ) override;
+                                int bApproxOK = TRUE ) override;
     virtual OGRErr DeleteField( int iField ) override;
     virtual OGRErr ReorderFields( int *panMap ) override;
     virtual OGRErr AlterFieldDefn( int iField, OGRFieldDefn *poNewFieldDefn,
-        int nFlagsIn ) override;
+                                   int nFlagsIn ) override;
 
     virtual OGRErr SyncToDisk() override;
 
@@ -171,9 +171,9 @@ public:
     bool DeleteAllFeatures();
 
     virtual CPLErr SetMetadata( char **papszMetadata,
-        const char *pszDomain = "" ) override;
+                                const char *pszDomain = "" ) override;
     virtual CPLErr SetMetadataItem( const char *pszName, const char *pszValue,
-        const char *pszDomain = "" ) override;
+                                    const char *pszDomain = "" ) override;
 
     virtual OGRErr SetIgnoredFields( const char **papszFields ) override;
     virtual OGRErr SetAttributeFilter( const char *pszQuery ) override;
@@ -235,52 +235,70 @@ public:
     virtual ~OGRNGWDataset();
 
     bool Open( const char *pszFilename, char **papszOpenOptionsIn,
-        bool bUpdateIn, int nOpenFlagsIn );
+               bool bUpdateIn, int nOpenFlagsIn );
     bool Open( const std::string &osUrlIn, const std::string &osResourceIdIn,
-        char **papszOpenOptionsIn, bool bUpdateIn, int nOpenFlagsIn );
+               char **papszOpenOptionsIn, bool bUpdateIn, int nOpenFlagsIn );
 
     /* GDALDataset */
-    virtual int GetLayerCount() override { return nLayers; }
+    virtual int GetLayerCount() override {
+        return nLayers;
+    }
     virtual OGRLayer *GetLayer( int ) override;
     virtual int TestCapability( const char * ) override;
     virtual OGRLayer  *ICreateLayer( const char *pszName,
-        OGRSpatialReference *poSpatialRef = nullptr,
-        OGRwkbGeometryType eGType = wkbUnknown,
-        char **papszOptions = nullptr ) override;
+                                     OGRSpatialReference *poSpatialRef = nullptr,
+                                     OGRwkbGeometryType eGType = wkbUnknown,
+                                     char **papszOptions = nullptr ) override;
     virtual OGRErr DeleteLayer( int ) override;
     virtual CPLErr SetMetadata( char **papszMetadata,
-        const char *pszDomain = "" ) override;
+                                const char *pszDomain = "" ) override;
     virtual CPLErr SetMetadataItem( const char *pszName, const char *pszValue,
-        const char *pszDomain = "" ) override;
+                                    const char *pszDomain = "" ) override;
     virtual void FlushCache() override;
     virtual OGRLayer *ExecuteSQL( const char *pszStatement,
-        OGRGeometry *poSpatialFilter, const char *pszDialect ) override;
+                                  OGRGeometry *poSpatialFilter, const char *pszDialect ) override;
 
     virtual const OGRSpatialReference *GetSpatialRef() const override;
     virtual CPLErr GetGeoTransform( double *padfTransform ) override;
     virtual CPLErr IRasterIO( GDALRWFlag eRWFlag, int nXOff, int nYOff,
-        int nXSize, int nYSize, void *pData, int nBufXSize, int nBufYSize,
-        GDALDataType eBufType, int nBandCount, int *panBandMap,
-        GSpacing nPixelSpace, GSpacing nLineSpace, GSpacing nBandSpace,
-        GDALRasterIOExtraArg* psExtraArg ) override;
+                              int nXSize, int nYSize, void *pData, int nBufXSize, int nBufYSize,
+                              GDALDataType eBufType, int nBandCount, int *panBandMap,
+                              GSpacing nPixelSpace, GSpacing nLineSpace, GSpacing nBandSpace,
+                              GDALRasterIOExtraArg* psExtraArg ) override;
 
 private:
     char **GetHeaders() const;
-    std::string GetUrl() const { return osUrl; }
-    std::string GetResourceId() const { return osResourceId; }
+    std::string GetUrl() const {
+        return osUrl;
+    }
+    std::string GetResourceId() const {
+        return osResourceId;
+    }
     void FillMetadata( const CPLJSONObject &oRootObject );
     bool FillResources( char **papszOptions, int nOpenFlagsIn );
     void AddLayer( const CPLJSONObject &oResourceJsonObject,  char **papszOptions,
-        int nOpenFlagsIn );
+                   int nOpenFlagsIn );
     void AddRaster( const CPLJSONObject &oResourceJsonObject,  char **papszOptions );
     bool Init(int nOpenFlagsIn);
     bool FlushMetadata( char **papszMetadata );
-    inline bool IsUpdateMode() const { return eAccess == GA_Update; }
-    bool IsBatchMode() const { return nBatchSize >= 0; }
-    bool HasFeaturePaging() const { return bHasFeaturePaging; }
-    int GetPageSize() const { return bHasFeaturePaging ? nPageSize : -1; }
-    int GetBatchSize() const { return nBatchSize; }
-    bool IsExtInNativeData() const { return bExtInNativeData; }
+    inline bool IsUpdateMode() const {
+        return eAccess == GA_Update;
+    }
+    bool IsBatchMode() const {
+        return nBatchSize >= 0;
+    }
+    bool HasFeaturePaging() const {
+        return bHasFeaturePaging;
+    }
+    int GetPageSize() const {
+        return bHasFeaturePaging ? nPageSize : -1;
+    }
+    int GetBatchSize() const {
+        return nBatchSize;
+    }
+    bool IsExtInNativeData() const {
+        return bExtInNativeData;
+    }
     void FetchPermissions();
     void FillCapabilities( char **papszOptions );
 private:

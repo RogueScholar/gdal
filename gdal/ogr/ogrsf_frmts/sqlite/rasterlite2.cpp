@@ -62,16 +62,16 @@ static CPLString EscapeNameAndQuoteIfNeeded(const char* pszName)
 bool OGRSQLiteDataSource::OpenRaster()
 {
 #ifdef HAVE_RASTERLITE2
-/* -------------------------------------------------------------------- */
-/*      Detect RasterLite2 coverages.                                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Detect RasterLite2 coverages.                                   */
+    /* -------------------------------------------------------------------- */
     char** papszResults = nullptr;
     int nRowCount = 0, nColCount = 0;
     int rc = sqlite3_get_table( hDB,
-                           "SELECT name FROM sqlite_master WHERE "
-                           "type = 'table' AND name = 'raster_coverages'",
-                           &papszResults, &nRowCount,
-                           &nColCount, nullptr );
+                                "SELECT name FROM sqlite_master WHERE "
+                                "type = 'table' AND name = 'raster_coverages'",
+                                &papszResults, &nRowCount,
+                                &nColCount, nullptr );
     sqlite3_free_table(papszResults);
     if( !(rc == SQLITE_OK && nRowCount == 1) )
     {
@@ -82,17 +82,17 @@ bool OGRSQLiteDataSource::OpenRaster()
     nRowCount = 0;
     nColCount = 0;
     rc = sqlite3_get_table( hDB,
-                           "SELECT coverage_name, title, abstract "
-                           "FROM raster_coverages "
-                           "LIMIT 10000",
-                           &papszResults, &nRowCount,
-                           &nColCount, nullptr );
+                            "SELECT coverage_name, title, abstract "
+                            "FROM raster_coverages "
+                            "LIMIT 10000",
+                            &papszResults, &nRowCount,
+                            &nColCount, nullptr );
     if( !(rc == SQLITE_OK && nRowCount > 0) )
     {
         sqlite3_free_table(papszResults);
         return false;
     }
-    for(int i=0;i<nRowCount;++i)
+    for(int i=0; i<nRowCount; ++i)
     {
         const char * const* papszRow = papszResults + i * 3 + 3;
         const char* pszCoverageName = papszRow[0];
@@ -100,28 +100,28 @@ bool OGRSQLiteDataSource::OpenRaster()
         const char* pszAbstract = papszRow[2];
         if( pszCoverageName != nullptr )
         {
-            rl2CoveragePtr cvg = rl2_create_coverage_from_dbms( 
-                                                            hDB,
-                                                            nullptr,
-                                                            pszCoverageName );
+            rl2CoveragePtr cvg = rl2_create_coverage_from_dbms(
+                                     hDB,
+                                     nullptr,
+                                     pszCoverageName );
             if( cvg != nullptr )
             {
                 const int nIdx = m_aosSubDatasets.size() / 2 + 1;
                 m_aosSubDatasets.AddNameValue(
                     CPLSPrintf("SUBDATASET_%d_NAME", nIdx),
                     CPLSPrintf("RASTERLITE2:%s:%s",
-                        EscapeNameAndQuoteIfNeeded(m_pszFilename).c_str(),
-                        EscapeNameAndQuoteIfNeeded(pszCoverageName).c_str()));
+                               EscapeNameAndQuoteIfNeeded(m_pszFilename).c_str(),
+                               EscapeNameAndQuoteIfNeeded(pszCoverageName).c_str()));
                 CPLString osDesc("Coverage ");
                 osDesc += pszCoverageName;
                 if( pszTitle != nullptr && pszTitle[0] != '\0' &&
-                    !EQUAL(pszTitle, "*** missing Title ***") )
+                        !EQUAL(pszTitle, "*** missing Title ***") )
                 {
                     osDesc += ", title = ";
                     osDesc += pszTitle;
                 }
                 if( pszAbstract != nullptr && pszAbstract[0] != '\0' &&
-                    !EQUAL(pszAbstract, "*** missing Abstract ***") )
+                        !EQUAL(pszAbstract, "*** missing Abstract ***") )
                 {
                     osDesc += ", abstract = ";
                     osDesc += pszAbstract;
@@ -155,7 +155,7 @@ bool OGRSQLiteDataSource::OpenRaster()
 /************************************************************************/
 
 bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
-                                               const char* pszConnectionId)
+        const char* pszConnectionId)
 {
 #ifdef HAVE_RASTERLITE2
     if( !STARTS_WITH_CI( pszConnectionId, "RASTERLITE2:" ) )
@@ -178,8 +178,8 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     CSLDestroy(papszTokens);
 
     m_pRL2Coverage = rl2_create_coverage_from_dbms( hDB,
-                                                    nullptr,
-                                                    m_osCoverageName );
+                     nullptr,
+                     m_osCoverageName );
     if( m_pRL2Coverage == nullptr )
     {
         CPLError( CE_Failure, CPLE_AppDefined,
@@ -191,19 +191,19 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     if( m_nSectionId < 0 )
     {
         CPLString osSectionTableName( CPLSPrintf("%s_sections",
-                                                 m_osCoverageName.c_str()) );
+                                      m_osCoverageName.c_str()) );
         int nRowCount2 = 0;
         int nColCount2 = 0;
         char** papszResults2 = nullptr;
         char* pszSQL = sqlite3_mprintf(
-                "SELECT section_id, section_name FROM \"%w\" "
-                "ORDER BY section_id "
-                "LIMIT 1000000",
-                osSectionTableName.c_str());
+                           "SELECT section_id, section_name FROM \"%w\" "
+                           "ORDER BY section_id "
+                           "LIMIT 1000000",
+                           osSectionTableName.c_str());
         int rc = sqlite3_get_table( hDB,
-                pszSQL,
-                &papszResults2, &nRowCount2,
-                &nColCount2, nullptr );
+                                    pszSQL,
+                                    &papszResults2, &nRowCount2,
+                                    &nColCount2, nullptr );
         sqlite3_free(pszSQL);
         if( rc == SQLITE_OK )
         {
@@ -218,20 +218,20 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
                     {
                         const int nIdx = m_aosSubDatasets.size() / 2 + 1;
                         m_aosSubDatasets.AddNameValue(
-                          CPLSPrintf("SUBDATASET_%d_NAME", nIdx),
-                          CPLSPrintf("RASTERLITE2:%s:%s:%s:%s",
-                            EscapeNameAndQuoteIfNeeded(m_pszFilename).c_str(),
-                            EscapeNameAndQuoteIfNeeded(m_osCoverageName).
-                                                                      c_str(),
-                            pszSectionId,
-                            EscapeNameAndQuoteIfNeeded(pszSectionName).
-                                                                     c_str()));
+                            CPLSPrintf("SUBDATASET_%d_NAME", nIdx),
+                            CPLSPrintf("RASTERLITE2:%s:%s:%s:%s",
+                                       EscapeNameAndQuoteIfNeeded(m_pszFilename).c_str(),
+                                       EscapeNameAndQuoteIfNeeded(m_osCoverageName).
+                                       c_str(),
+                                       pszSectionId,
+                                       EscapeNameAndQuoteIfNeeded(pszSectionName).
+                                       c_str()));
                         m_aosSubDatasets.AddNameValue(
                             CPLSPrintf("SUBDATASET_%d_DESC", nIdx),
                             CPLSPrintf("Coverage %s, section %s / %s",
-                                    m_osCoverageName.c_str(),
-                                    pszSectionName,
-                                    pszSectionId));
+                                       m_osCoverageName.c_str(),
+                                       pszSectionName,
+                                       pszSectionId));
                     }
                     else
                     {
@@ -258,35 +258,35 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     if( m_nSectionId >= 0 )
     {
         int ret = rl2_resolve_base_resolution_from_dbms(hDB,
-                                                        nullptr,
-                                                        m_osCoverageName,
-                                                        TRUE, // by_section
-                                                        m_nSectionId,
-                                                        &dfXRes,
-                                                        &dfYRes );
+                  nullptr,
+                  m_osCoverageName,
+                  TRUE, // by_section
+                  m_nSectionId,
+                  &dfXRes,
+                  &dfYRes );
         if( ret != RL2_OK )
         {
             CPLError( CE_Failure, CPLE_AppDefined,
-                    "rl2_resolve_base_resolution_from_dbms() failed / "
-                    "Invalid section: " CPL_FRMT_GIB, m_nSectionId );
+                      "rl2_resolve_base_resolution_from_dbms() failed / "
+                      "Invalid section: " CPL_FRMT_GIB, m_nSectionId );
             return false;
         }
 
 
         ret = rl2_resolve_full_section_from_dbms( hDB,
-                                                  nullptr,
-                                                  m_osCoverageName,
-                                                  m_nSectionId,
-                                                  dfXRes, dfYRes,
-                                                  &dfMinX, &dfMinY,
-                                                  &dfMaxX, &dfMaxY,
-                                                  &nWidth, &nHeight );
+                nullptr,
+                m_osCoverageName,
+                m_nSectionId,
+                dfXRes, dfYRes,
+                &dfMinX, &dfMinY,
+                &dfMaxX, &dfMaxY,
+                &nWidth, &nHeight );
         if( ret != RL2_OK || nWidth == 0 || nWidth > INT_MAX ||
-            nHeight == 0 || nHeight > INT_MAX )
+                nHeight == 0 || nHeight > INT_MAX )
         {
             CPLError( CE_Failure, CPLE_AppDefined,
-                    "rl2_resolve_full_section_from_dbms() failed / "
-                    "Invalid section: " CPL_FRMT_GIB, m_nSectionId );
+                      "rl2_resolve_full_section_from_dbms() failed / "
+                      "Invalid section: " CPL_FRMT_GIB, m_nSectionId );
             return false;
         }
     }
@@ -295,10 +295,10 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
         rl2_get_coverage_resolution (m_pRL2Coverage, &dfXRes, &dfYRes);
 
         char* pszSQL = sqlite3_mprintf(
-            "SELECT extent_minx, extent_miny, extent_maxx, extent_maxy "
-            "FROM raster_coverages WHERE "
-            "Lower(coverage_name) = Lower('%q') "
-            "LIMIT 1", m_osCoverageName.c_str() );
+                           "SELECT extent_minx, extent_miny, extent_maxx, extent_maxy "
+                           "FROM raster_coverages WHERE "
+                           "Lower(coverage_name) = Lower('%q') "
+                           "LIMIT 1", m_osCoverageName.c_str() );
         char** papszResults = nullptr;
         int nRowCount = 0;
         int nColCount = 0;
@@ -315,7 +315,7 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
                 const char* pszMaxX = papszResults[4 + 2];
                 const char* pszMaxY = papszResults[4 + 3];
                 if( pszMinX != nullptr && pszMinY != nullptr && pszMaxX != nullptr &&
-                    pszMaxY != nullptr )
+                        pszMaxY != nullptr )
                 {
                     dfMinX = CPLAtof(pszMinX);
                     dfMinY = CPLAtof(pszMinY);
@@ -328,7 +328,7 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
         double dfWidth = 0.5 + (dfMaxX - dfMinX) / dfXRes;
         double dfHeight = 0.5 + (dfMaxY - dfMinY) / dfYRes;
         if( dfWidth <= 0.5 || dfHeight <= 0.5 || dfWidth > INT_MAX ||
-            dfHeight > INT_MAX )
+                dfHeight > INT_MAX )
         {
             CPLError(CE_Failure, CPLE_AppDefined,
                      "Invalid dimensions");
@@ -359,7 +359,7 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
             OGRSpatialReference oSRS(*poSRS);
             char* pszWKT = nullptr;
             if( oSRS.EPSGTreatsAsLatLong() ||
-                oSRS.EPSGTreatsAsNorthingEasting() )
+                    oSRS.EPSGTreatsAsNorthingEasting() )
             {
                 oSRS.GetRoot()->StripNodes( "AXIS" );
             }
@@ -384,91 +384,91 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     bool bSigned = false;
     switch( nSampleType )
     {
-        default:
-        case RL2_SAMPLE_UNKNOWN:
+    default:
+    case RL2_SAMPLE_UNKNOWN:
+    {
+        CPLError(CE_Failure, CPLE_AppDefined, "Unknown sample type");
+        return false;
+    }
+    case RL2_SAMPLE_1_BIT:
+    {
+        if( nPixelType == RL2_PIXEL_MONOCHROME )
         {
-            CPLError(CE_Failure, CPLE_AppDefined, "Unknown sample type");
-            return false;
+            m_bPromote1BitAs8Bit = CPLFetchBool( papszOpenOptions,
+                                                 "1BIT_AS_8BIT", true );
         }
-        case RL2_SAMPLE_1_BIT:
-        {
-            if( nPixelType == RL2_PIXEL_MONOCHROME )
-            {
-                m_bPromote1BitAs8Bit = CPLFetchBool( papszOpenOptions,
-                                                     "1BIT_AS_8BIT", true );
-            }
-            nBits = 1;
-            eDT = GDT_Byte;
-            break;
-        }
-        case RL2_SAMPLE_2_BIT:
-        {
-            nBits = 2;
-            eDT = GDT_Byte;
-            break;
-        }
-        case RL2_SAMPLE_4_BIT:
-        {
-            nBits = 4;
-            eDT = GDT_Byte;
-            break;
-        }
-        case RL2_SAMPLE_INT8:
-        {
-            nBits = 8;
-            eDT = GDT_Byte;
-            bSigned = true;
-            break;
-        }
-        case RL2_SAMPLE_UINT8:
-        {
-            nBits = 8;
-            eDT = GDT_Byte;
-            bSigned = false;
-            break;
-        }
-        case RL2_SAMPLE_INT16:
-        {
-            nBits = 16;
-            eDT = GDT_Int16;
-            bSigned = true;
-            break;
-        }
-        case RL2_SAMPLE_UINT16:
-        {
-            nBits = 16;
-            eDT = GDT_UInt16;
-            bSigned = false;
-            break;
-        }
-        case RL2_SAMPLE_INT32:
-        {
-            nBits = 32;
-            eDT = GDT_Int32;
-            bSigned = true;
-            break;
-        }
-        case RL2_SAMPLE_UINT32:
-        {
-            nBits = 32;
-            eDT = GDT_UInt32;
-            bSigned = false;
-            break;
-        }
-        case RL2_SAMPLE_FLOAT:
-        {
-            nBits = 32;
-            eDT = GDT_Float32;
-            bSigned = true;
-            break;
-        }
-        case RL2_SAMPLE_DOUBLE:
-        {
-            nBits = 64;
-            eDT = GDT_Float64;
-            bSigned = true;
-            break;
-        }
+        nBits = 1;
+        eDT = GDT_Byte;
+        break;
+    }
+    case RL2_SAMPLE_2_BIT:
+    {
+        nBits = 2;
+        eDT = GDT_Byte;
+        break;
+    }
+    case RL2_SAMPLE_4_BIT:
+    {
+        nBits = 4;
+        eDT = GDT_Byte;
+        break;
+    }
+    case RL2_SAMPLE_INT8:
+    {
+        nBits = 8;
+        eDT = GDT_Byte;
+        bSigned = true;
+        break;
+    }
+    case RL2_SAMPLE_UINT8:
+    {
+        nBits = 8;
+        eDT = GDT_Byte;
+        bSigned = false;
+        break;
+    }
+    case RL2_SAMPLE_INT16:
+    {
+        nBits = 16;
+        eDT = GDT_Int16;
+        bSigned = true;
+        break;
+    }
+    case RL2_SAMPLE_UINT16:
+    {
+        nBits = 16;
+        eDT = GDT_UInt16;
+        bSigned = false;
+        break;
+    }
+    case RL2_SAMPLE_INT32:
+    {
+        nBits = 32;
+        eDT = GDT_Int32;
+        bSigned = true;
+        break;
+    }
+    case RL2_SAMPLE_UINT32:
+    {
+        nBits = 32;
+        eDT = GDT_UInt32;
+        bSigned = false;
+        break;
+    }
+    case RL2_SAMPLE_FLOAT:
+    {
+        nBits = 32;
+        eDT = GDT_Float32;
+        bSigned = true;
+        break;
+    }
+    case RL2_SAMPLE_DOUBLE:
+    {
+        nBits = 64;
+        eDT = GDT_Float64;
+        bSigned = true;
+        break;
+    }
     }
 
     // Get information about compression (informative)
@@ -478,49 +478,49 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     const char* pszCompression = nullptr;
     switch( nCompression )
     {
-        case RL2_COMPRESSION_DEFLATE:
-        case RL2_COMPRESSION_DEFLATE_NO:
-            pszCompression = "DEFLATE";
-            break;
-        case RL2_COMPRESSION_LZMA:
-        case RL2_COMPRESSION_LZMA_NO:
-            pszCompression = "LZMA";
-            break;
-        case RL2_COMPRESSION_GIF:
-            pszCompression = "GIF";
-            break;
-        case RL2_COMPRESSION_JPEG:
-            pszCompression = "JPEG";
-            break;
-        case RL2_COMPRESSION_PNG:
-            pszCompression = "PNG";
-            break;
-        case RL2_COMPRESSION_LOSSY_WEBP:
-            pszCompression = "WEBP";
-            break;
-        case RL2_COMPRESSION_LOSSLESS_WEBP:
-            pszCompression = "WEBP_LOSSLESS";
-            break;
-        case RL2_COMPRESSION_CCITTFAX3:
-            pszCompression = "CCITTFAX3";
-            break;
-        case RL2_COMPRESSION_CCITTFAX4:
-            pszCompression = "CCITTFAX4";
-            break;
-        case RL2_COMPRESSION_LZW:
-            pszCompression = "LZW";
-            break;
-        case RL2_COMPRESSION_CHARLS:
-            pszCompression = "CHARLS";
-            break;
-        case RL2_COMPRESSION_LOSSY_JP2:
-            pszCompression = "JPEG2000";
-            break;
-        case RL2_COMPRESSION_LOSSLESS_JP2:
-            pszCompression = "JPEG2000_LOSSLESS";
-            break;
-        default:
-            break;
+    case RL2_COMPRESSION_DEFLATE:
+    case RL2_COMPRESSION_DEFLATE_NO:
+        pszCompression = "DEFLATE";
+        break;
+    case RL2_COMPRESSION_LZMA:
+    case RL2_COMPRESSION_LZMA_NO:
+        pszCompression = "LZMA";
+        break;
+    case RL2_COMPRESSION_GIF:
+        pszCompression = "GIF";
+        break;
+    case RL2_COMPRESSION_JPEG:
+        pszCompression = "JPEG";
+        break;
+    case RL2_COMPRESSION_PNG:
+        pszCompression = "PNG";
+        break;
+    case RL2_COMPRESSION_LOSSY_WEBP:
+        pszCompression = "WEBP";
+        break;
+    case RL2_COMPRESSION_LOSSLESS_WEBP:
+        pszCompression = "WEBP_LOSSLESS";
+        break;
+    case RL2_COMPRESSION_CCITTFAX3:
+        pszCompression = "CCITTFAX3";
+        break;
+    case RL2_COMPRESSION_CCITTFAX4:
+        pszCompression = "CCITTFAX4";
+        break;
+    case RL2_COMPRESSION_LZW:
+        pszCompression = "LZW";
+        break;
+    case RL2_COMPRESSION_CHARLS:
+        pszCompression = "CHARLS";
+        break;
+    case RL2_COMPRESSION_LOSSY_JP2:
+        pszCompression = "JPEG2000";
+        break;
+    case RL2_COMPRESSION_LOSSLESS_JP2:
+        pszCompression = "JPEG2000_LOSSLESS";
+        break;
+    default:
+        break;
     }
 
     if( pszCompression != nullptr )
@@ -530,9 +530,9 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     }
 
     if( nQuality != 0 &&
-        (nCompression == RL2_COMPRESSION_JPEG ||
-         nCompression == RL2_COMPRESSION_LOSSY_WEBP||
-         nCompression == RL2_COMPRESSION_LOSSY_JP2 ) )
+            (nCompression == RL2_COMPRESSION_JPEG ||
+             nCompression == RL2_COMPRESSION_LOSSY_WEBP||
+             nCompression == RL2_COMPRESSION_LOSSY_JP2 ) )
     {
         GDALDataset::SetMetadataItem( "QUALITY",
                                       CPLSPrintf("%d", nQuality),
@@ -544,7 +544,7 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     unsigned int nTileHeight = 0;
     rl2_get_coverage_tile_size (m_pRL2Coverage, &nTileWidth, &nTileHeight);
     if( nTileWidth == 0 || nTileHeight == 0 || nTileWidth > INT_MAX ||
-        nTileHeight > INT_MAX )
+            nTileHeight > INT_MAX )
     {
         CPLError(CE_Failure, CPLE_AppDefined, "Invalid block size");
         return false;
@@ -563,97 +563,97 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
         if( rl2_get_pixel_type( noDataPtr, &noDataSampleType,
                                 &noDataPixelType,
                                 &noDataBands ) == RL2_OK &&
-            noDataSampleType == nSampleType &&
-            noDataPixelType == nPixelType &&
-            noDataBands == l_nBands )
+                noDataSampleType == nSampleType &&
+                noDataPixelType == nPixelType &&
+                noDataBands == l_nBands )
         {
             for( int i = 0; i < l_nBands; ++i )
             {
                 double dfNoDataValue = 0.0;
                 switch( nSampleType )
                 {
-                    default:
-                    {
-                        break;
-                    }
-                    case RL2_SAMPLE_1_BIT:
-                    {
-                        unsigned char nVal = 0;
-                        rl2_get_pixel_sample_1bit( noDataPtr, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_2_BIT:
-                    {
-                        unsigned char nVal = 0;
-                        rl2_get_pixel_sample_2bit( noDataPtr, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_4_BIT:
-                    {
-                        unsigned char nVal = 0;
-                        rl2_get_pixel_sample_4bit( noDataPtr, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
+                default:
+                {
+                    break;
+                }
+                case RL2_SAMPLE_1_BIT:
+                {
+                    unsigned char nVal = 0;
+                    rl2_get_pixel_sample_1bit( noDataPtr, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_2_BIT:
+                {
+                    unsigned char nVal = 0;
+                    rl2_get_pixel_sample_2bit( noDataPtr, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_4_BIT:
+                {
+                    unsigned char nVal = 0;
+                    rl2_get_pixel_sample_4bit( noDataPtr, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
 
-                    }
-                    case RL2_SAMPLE_INT8:
-                    {
-                        char nVal = 0;
-                        rl2_get_pixel_sample_int8( noDataPtr, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_UINT8:
-                    {
-                        unsigned char nVal = 0;
-                        rl2_get_pixel_sample_uint8( noDataPtr, i, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_INT16:
-                    {
-                        short nVal = 0;
-                        rl2_get_pixel_sample_int16( noDataPtr, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_UINT16:
-                    {
-                        unsigned short nVal = 0;
-                        rl2_get_pixel_sample_uint16( noDataPtr, i, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_INT32:
-                    {
-                        int nVal = 0;
-                        rl2_get_pixel_sample_int32( noDataPtr, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_UINT32:
-                    {
-                        unsigned int nVal = 0;
-                        rl2_get_pixel_sample_uint32( noDataPtr, &nVal );
-                        dfNoDataValue = nVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_FLOAT:
-                    {
-                        float fVal = 0.0f;
-                        rl2_get_pixel_sample_float( noDataPtr, &fVal );
-                        dfNoDataValue = fVal;
-                        break;
-                    }
-                    case RL2_SAMPLE_DOUBLE:
-                    {
-                        double dfVal = 0.0;
-                        rl2_get_pixel_sample_double( noDataPtr, &dfVal );
-                        dfNoDataValue = dfVal;
-                        break;
-                    }
+                }
+                case RL2_SAMPLE_INT8:
+                {
+                    char nVal = 0;
+                    rl2_get_pixel_sample_int8( noDataPtr, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_UINT8:
+                {
+                    unsigned char nVal = 0;
+                    rl2_get_pixel_sample_uint8( noDataPtr, i, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_INT16:
+                {
+                    short nVal = 0;
+                    rl2_get_pixel_sample_int16( noDataPtr, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_UINT16:
+                {
+                    unsigned short nVal = 0;
+                    rl2_get_pixel_sample_uint16( noDataPtr, i, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_INT32:
+                {
+                    int nVal = 0;
+                    rl2_get_pixel_sample_int32( noDataPtr, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_UINT32:
+                {
+                    unsigned int nVal = 0;
+                    rl2_get_pixel_sample_uint32( noDataPtr, &nVal );
+                    dfNoDataValue = nVal;
+                    break;
+                }
+                case RL2_SAMPLE_FLOAT:
+                {
+                    float fVal = 0.0f;
+                    rl2_get_pixel_sample_float( noDataPtr, &fVal );
+                    dfNoDataValue = fVal;
+                    break;
+                }
+                case RL2_SAMPLE_DOUBLE:
+                {
+                    double dfVal = 0.0;
+                    rl2_get_pixel_sample_double( noDataPtr, &dfVal );
+                    dfNoDataValue = dfVal;
+                    break;
+                }
                 }
 
                 adfNoDataValues.push_back( dfNoDataValue );
@@ -697,8 +697,8 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
     {
         rl2RasterStatisticsPtr pStatistics =
             rl2_create_raster_statistics_from_dbms( hDB,
-                                                    nullptr,
-                                                    m_osCoverageName );
+                    nullptr,
+                    m_osCoverageName );
         if( pStatistics != nullptr )
         {
             for( int iBand = 1; iBand <= l_nBands; ++iBand )
@@ -710,12 +710,12 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
                 double dfVariance = 0.0;
                 double dfStdDev = 0.0;
                 if( !(nBits == 1 && m_bPromote1BitAs8Bit) &&
-                    rl2_get_band_statistics( pStatistics,
-                                             static_cast<unsigned char>
-                                                             (iBand - 1),
-                                             &dfMin, &dfMax, &dfMean,
-                                             &dfVariance,
-                                             &dfStdDev ) == RL2_OK )
+                        rl2_get_band_statistics( pStatistics,
+                                                 static_cast<unsigned char>
+                                                 (iBand - 1),
+                                                 &dfMin, &dfMax, &dfMean,
+                                                 &dfVariance,
+                                                 &dfStdDev ) == RL2_OK )
                 {
                     poBand->GDALRasterBand::SetMetadataItem(
                         "STATISTICS_MINIMUM", CPLSPrintf("%.16g", dfMin) );
@@ -733,9 +733,9 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
 
     // Fetch other metadata
     char* pszSQL = sqlite3_mprintf(
-        "SELECT title, abstract FROM raster_coverages WHERE "
-        "Lower(coverage_name) = Lower('%q') LIMIT 1",
-        m_osCoverageName.c_str() );
+                       "SELECT title, abstract FROM raster_coverages WHERE "
+                       "Lower(coverage_name) = Lower('%q') LIMIT 1",
+                       m_osCoverageName.c_str() );
     char** papszResults = nullptr;
     int nRowCount = 0;
     int nColCount = 0;
@@ -750,12 +750,12 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
             const char* pszTitle = papszResults[2 + 0];
             const char* pszAbstract = papszResults[2 + 1];
             if( pszTitle != nullptr && pszTitle[0] != '\0' &&
-                !EQUAL(pszTitle, "*** missing Title ***") )
+                    !EQUAL(pszTitle, "*** missing Title ***") )
             {
                 GDALDataset::SetMetadataItem( "COVERAGE_TITLE", pszTitle );
             }
             if( pszAbstract != nullptr && pszAbstract[0] != '\0' &&
-                !EQUAL(pszAbstract, "*** missing Abstract ***") )
+                    !EQUAL(pszAbstract, "*** missing Abstract ***") )
             {
                 GDALDataset::SetMetadataItem( "COVERAGE_ABSTRACT",
                                               pszAbstract );
@@ -770,13 +770,13 @@ bool OGRSQLiteDataSource::OpenRasterSubDataset(CPL_UNUSED
         nRowCount = 0;
         nColCount = 0;
         pszSQL = sqlite3_mprintf(
-            "SELECT summary FROM \"%w\" WHERE "
-            "section_id = %d LIMIT 1",
-            CPLSPrintf( "%s_sections", m_osCoverageName.c_str() ),
-            static_cast<int>(m_nSectionId) );
+                     "SELECT summary FROM \"%w\" WHERE "
+                     "section_id = %d LIMIT 1",
+                     CPLSPrintf( "%s_sections", m_osCoverageName.c_str() ),
+                     static_cast<int>(m_nSectionId) );
         rc = sqlite3_get_table( hDB, pszSQL,
-                                    &papszResults, &nRowCount,
-                                    &nColCount, nullptr );
+                                &papszResults, &nRowCount,
+                                &nColCount, nullptr );
         sqlite3_free( pszSQL );
         if( rc == SQLITE_OK )
         {
@@ -829,34 +829,34 @@ void OGRSQLiteDataSource::ListOverviews()
         if( !m_bRL2MixedResolutions )
         {
             pszSQL = sqlite3_mprintf(
-                "SELECT x_resolution_1_1, y_resolution_1_1, "
-                "x_resolution_1_2, y_resolution_1_2, "
-                "x_resolution_1_4, y_resolution_1_4,"
-                "x_resolution_1_8, y_resolution_1_8 "
-                "FROM \"%w\" ORDER BY pyramid_level "
-                "LIMIT 1000",
-                CPLSPrintf( "%s_levels", m_osCoverageName.c_str() ) );
+                         "SELECT x_resolution_1_1, y_resolution_1_1, "
+                         "x_resolution_1_2, y_resolution_1_2, "
+                         "x_resolution_1_4, y_resolution_1_4,"
+                         "x_resolution_1_8, y_resolution_1_8 "
+                         "FROM \"%w\" ORDER BY pyramid_level "
+                         "LIMIT 1000",
+                         CPLSPrintf( "%s_levels", m_osCoverageName.c_str() ) );
         }
         else
         {
             pszSQL = sqlite3_mprintf(
-                "SELECT x_resolution_1_1, y_resolution_1_1, "
-                "x_resolution_1_2, y_resolution_1_2, "
-                "x_resolution_1_4, y_resolution_1_4,"
-                "x_resolution_1_8, y_resolution_1_8 "
-                "FROM \"%w\" WHERE section_id = %d "
-                "ORDER BY pyramid_level "
-                "LIMIT 1000",
-                CPLSPrintf( "%s_section_levels", m_osCoverageName.c_str() ),
-                static_cast<int>(m_nSectionId) );
+                         "SELECT x_resolution_1_1, y_resolution_1_1, "
+                         "x_resolution_1_2, y_resolution_1_2, "
+                         "x_resolution_1_4, y_resolution_1_4,"
+                         "x_resolution_1_8, y_resolution_1_8 "
+                         "FROM \"%w\" WHERE section_id = %d "
+                         "ORDER BY pyramid_level "
+                         "LIMIT 1000",
+                         CPLSPrintf( "%s_section_levels", m_osCoverageName.c_str() ),
+                         static_cast<int>(m_nSectionId) );
         }
         char** papszResults = nullptr;
         int nRowCount = 0;
         int nColCount = 0;
         char* pszErrMsg = nullptr;
         int rc = sqlite3_get_table( hDB, pszSQL,
-                                &papszResults, &nRowCount,
-                                &nColCount, &pszErrMsg );
+                                    &papszResults, &nRowCount,
+                                    &nColCount, &pszErrMsg );
         sqlite3_free( pszSQL );
         if( pszErrMsg )
             CPLDebug( "SQLite", "%s", pszErrMsg);
@@ -905,7 +905,7 @@ void OGRSQLiteDataSource::ListOverviews()
 /************************************************************************/
 
 void OGRSQLiteDataSource::CreateRL2OverviewDatasetIfNeeded( double dfXRes,
-                                                            double dfYRes )
+        double dfYRes )
 {
     if( fabs( dfXRes - m_adfGeoTransform[1] ) < 1e-5 * m_adfGeoTransform[1] )
         return;
@@ -937,8 +937,8 @@ void OGRSQLiteDataSource::CreateRL2OverviewDatasetIfNeeded( double dfXRes,
     poOvrDS->nRasterXSize = static_cast<int>(0.5 + (dfMaxX - dfMinX) / dfXRes);
     poOvrDS->nRasterYSize = static_cast<int>(0.5 + (dfMaxY - dfMinY) / dfYRes);
     if( poOvrDS->nRasterXSize <= 1 || poOvrDS->nRasterYSize <= 1 ||
-        (poOvrDS->nRasterXSize < 64 && poOvrDS->nRasterYSize < 64 &&
-        !CPLTestBool(CPLGetConfigOption("RL2_SHOW_ALL_PYRAMID_LEVELS", "NO"))) )
+            (poOvrDS->nRasterXSize < 64 && poOvrDS->nRasterYSize < 64 &&
+             !CPLTestBool(CPLGetConfigOption("RL2_SHOW_ALL_PYRAMID_LEVELS", "NO"))) )
     {
         delete poOvrDS;
         return;
@@ -946,8 +946,8 @@ void OGRSQLiteDataSource::CreateRL2OverviewDatasetIfNeeded( double dfXRes,
     for( int iBand = 1; iBand <= nBands; ++iBand )
     {
         poOvrDS->SetBand( iBand,
-                 new RL2RasterBand(
-                     reinterpret_cast<RL2RasterBand*>(GetRasterBand(iBand)) ) );
+                          new RL2RasterBand(
+                              reinterpret_cast<RL2RasterBand*>(GetRasterBand(iBand)) ) );
     }
     m_apoOverviewDS.push_back(poOvrDS);
 }
@@ -977,7 +977,7 @@ RL2RasterBand::RL2RasterBand( int nBandIn,
     if( (nBits % 8) != 0 )
     {
         GDALRasterBand::SetMetadataItem( (nBits == 1 && bPromote1BitAs8Bit) ?
-                                                    "SOURCE_NBITS" : "NBITS",
+                                         "SOURCE_NBITS" : "NBITS",
                                          CPLSPrintf("%d", nBits),
                                          "IMAGE_STRUCTURE" );
     }
@@ -989,7 +989,7 @@ RL2RasterBand::RL2RasterBand( int nBandIn,
     }
 
     if( nPixelType == RL2_PIXEL_MONOCHROME ||
-        nPixelType == RL2_PIXEL_GRAYSCALE )
+            nPixelType == RL2_PIXEL_GRAYSCALE )
     {
         m_eColorInterp = GCI_GrayIndex;
     }
@@ -1000,7 +1000,7 @@ RL2RasterBand::RL2RasterBand( int nBandIn,
     else if( nPixelType == RL2_PIXEL_RGB )
     {
         m_eColorInterp = static_cast<GDALColorInterp>(
-                                                GCI_RedBand + nBandIn - 1 );
+                             GCI_RedBand + nBandIn - 1 );
     }
 }
 
@@ -1014,13 +1014,13 @@ RL2RasterBand::RL2RasterBand(const RL2RasterBand* poOther)
     nBlockXSize = poOther->nBlockXSize;
     nBlockYSize = poOther->nBlockYSize;
     GDALRasterBand::SetMetadataItem( "NBITS",
-        const_cast<RL2RasterBand*>(poOther)->
-                    GetMetadataItem("NBITS", "IMAGE_STRUCTURE"),
-        "IMAGE_STRUCTURE" );
+                                     const_cast<RL2RasterBand*>(poOther)->
+                                     GetMetadataItem("NBITS", "IMAGE_STRUCTURE"),
+                                     "IMAGE_STRUCTURE" );
     GDALRasterBand::SetMetadataItem( "PIXELTYPE",
-        const_cast<RL2RasterBand*>(poOther)->
-                    GetMetadataItem("PIXELTYPE", "IMAGE_STRUCTURE"),
-        "IMAGE_STRUCTURE" );
+                                     const_cast<RL2RasterBand*>(poOther)->
+                                     GetMetadataItem("PIXELTYPE", "IMAGE_STRUCTURE"),
+                                     "IMAGE_STRUCTURE" );
     m_eColorInterp = poOther->m_eColorInterp;
     m_bHasNoData = poOther->m_bHasNoData;
     m_dfNoDataValue = poOther->m_dfNoDataValue;
@@ -1047,9 +1047,9 @@ GDALColorTable* RL2RasterBand::GetColorTable()
     {
         rl2PalettePtr palettePtr =
             rl2_get_dbms_palette(
-                            poGDS->GetDB(),
-                            nullptr,
-                            rl2_get_coverage_name(poGDS->GetRL2CoveragePtr()) );
+                poGDS->GetDB(),
+                nullptr,
+                rl2_get_coverage_name(poGDS->GetRL2CoveragePtr()) );
         if( palettePtr )
         {
             m_poCT = new GDALColorTable();
@@ -1067,7 +1067,7 @@ GDALColorTable* RL2RasterBand::GetColorTable()
                     sEntry.c2 = pabyG[i];
                     sEntry.c3 = pabyB[i];
                     sEntry.c4 =
-                            (m_bHasNoData && i == m_dfNoDataValue) ? 0 : 255;
+                        (m_bHasNoData && i == m_dfNoDataValue) ? 0 : 255;
                     m_poCT->SetColorEntry( i, &sEntry );
                 }
                 rl2_free(pabyR);
@@ -1149,10 +1149,10 @@ CPLErr RL2RasterBand::IReadBlock( int nBlockXOff, int nBlockYOff, void* pData)
     int nBufSize = 0;
 
     sqlite3* hDB = poGDS->GetParentDS() ? poGDS->GetParentDS()->GetDB() :
-                                          poGDS->GetDB();
+                   poGDS->GetDB();
     rl2CoveragePtr cov = poGDS->GetParentDS() ?
-                                    poGDS->GetParentDS()->GetRL2CoveragePtr():
-                                    poGDS->GetRL2CoveragePtr();
+                         poGDS->GetParentDS()->GetRL2CoveragePtr():
+                         poGDS->GetRL2CoveragePtr();
     unsigned char nSampleType = 0;
     unsigned char nPixelType = 0;
     unsigned char l_nBands = 0;
@@ -1161,51 +1161,51 @@ CPLErr RL2RasterBand::IReadBlock( int nBlockXOff, int nBlockYOff, void* pData)
 
     unsigned char nOutPixel = nPixelType;
     if( nPixelType == RL2_PIXEL_MONOCHROME &&
-        nSampleType == RL2_SAMPLE_1_BIT )
+            nSampleType == RL2_SAMPLE_1_BIT )
     {
         nOutPixel = RL2_PIXEL_GRAYSCALE;
     }
 
     const GIntBig nSectionId = poGDS->GetSectionId();
     if( nSectionId >= 0 &&
-        (poGDS->IsRL2MixedResolutions() || poGDS->GetParentDS() == nullptr) )
+            (poGDS->IsRL2MixedResolutions() || poGDS->GetParentDS() == nullptr) )
     {
         int ret = rl2_get_section_raw_raster_data( hDB,
-                                                nMaxThreads,
-                                                cov,
-                                                nSectionId,
-                                                nBlockXSize,
-                                                nBlockYSize,
-                                                dfMinX,
-                                                dfMinY,
-                                                dfMaxX,
-                                                dfMaxY,
-                                                padfGeoTransform[1],
-                                                fabs(padfGeoTransform[5]),
-                                                &pBuffer,
-                                                &nBufSize,
-                                                nullptr, // palette
-                                                nOutPixel );
+                  nMaxThreads,
+                  cov,
+                  nSectionId,
+                  nBlockXSize,
+                  nBlockYSize,
+                  dfMinX,
+                  dfMinY,
+                  dfMaxX,
+                  dfMaxY,
+                  padfGeoTransform[1],
+                  fabs(padfGeoTransform[5]),
+                  &pBuffer,
+                  &nBufSize,
+                  nullptr, // palette
+                  nOutPixel );
         if( ret != RL2_OK )
             return CE_Failure;
     }
     else
     {
         int ret = rl2_get_raw_raster_data( hDB,
-                                                nMaxThreads,
-                                                cov,
-                                                nBlockXSize,
-                                                nBlockYSize,
-                                                dfMinX,
-                                                dfMinY,
-                                                dfMaxX,
-                                                dfMaxY,
-                                                padfGeoTransform[1],
-                                                fabs(padfGeoTransform[5]),
-                                                &pBuffer,
-                                                &nBufSize,
-                                                nullptr, // palette
-                                                nOutPixel );
+                                           nMaxThreads,
+                                           cov,
+                                           nBlockXSize,
+                                           nBlockYSize,
+                                           dfMinX,
+                                           dfMinY,
+                                           dfMaxX,
+                                           dfMaxY,
+                                           padfGeoTransform[1],
+                                           fabs(padfGeoTransform[5]),
+                                           &pBuffer,
+                                           &nBufSize,
+                                           nullptr, // palette
+                                           nOutPixel );
         if( ret != RL2_OK )
             return CE_Failure;
     }
@@ -1223,8 +1223,8 @@ CPLErr RL2RasterBand::IReadBlock( int nBlockXOff, int nBlockYOff, void* pData)
     }
 
     if( nPixelType == RL2_PIXEL_MONOCHROME &&
-        nSampleType == RL2_SAMPLE_1_BIT &&
-        !poGDS->HasPromote1BitAS8Bit() && poGDS->GetParentDS() != nullptr )
+            nSampleType == RL2_SAMPLE_1_BIT &&
+            !poGDS->HasPromote1BitAS8Bit() && poGDS->GetParentDS() != nullptr )
     {
         GByte* pabyDstData = static_cast<GByte*>(pData);
         for( int i = 0; i < nExpectedBytesAllBands; i++ )
@@ -1248,16 +1248,16 @@ CPLErr RL2RasterBand::IReadBlock( int nBlockXOff, int nBlockYOff, void* pData)
                 continue;
 
             GDALRasterBlock* poBlock = reinterpret_cast<RL2RasterBand*>(
-                poGDS->GetRasterBand(iBand))->
-                    TryGetLockedBlockRef( nBlockXOff, nBlockYOff );
+                                           poGDS->GetRasterBand(iBand))->
+                                       TryGetLockedBlockRef( nBlockXOff, nBlockYOff );
             if( poBlock != nullptr )
             {
                 poBlock->DropLock();
                 continue;
             }
             poBlock = reinterpret_cast<RL2RasterBand*>(
-                poGDS->GetRasterBand(iBand))->
-                    GetLockedBlockRef( nBlockXOff, nBlockYOff, TRUE );
+                          poGDS->GetRasterBand(iBand))->
+                      GetLockedBlockRef( nBlockXOff, nBlockYOff, TRUE );
             if( poBlock == nullptr )
                 continue;
             void* pDest = poBlock->GetDataRef();
@@ -1280,12 +1280,12 @@ CPLErr RL2RasterBand::IReadBlock( int nBlockXOff, int nBlockYOff, void* pData)
 /************************************************************************/
 
 template<class T> static T GetNoDataValue( GDALDataset* poSrcDS,
-                                           int nBand,
-                                           T nDefault )
+        int nBand,
+        T nDefault )
 {
     int bHasNoData = FALSE;
     double dfNoData =
-            poSrcDS->GetRasterBand(nBand)->GetNoDataValue(&bHasNoData);
+        poSrcDS->GetRasterBand(nBand)->GetNoDataValue(&bHasNoData);
     if( bHasNoData )
         return static_cast<T>(dfNoData);
     return static_cast<T>(nDefault);
@@ -1306,147 +1306,147 @@ static rl2PixelPtr CreateNoData ( unsigned char nSampleType,
         return nullptr;
     switch (nPixelType)
     {
-        case RL2_PIXEL_MONOCHROME:
+    case RL2_PIXEL_MONOCHROME:
+        rl2_set_pixel_sample_1bit (pxl,
+                                   GetNoDataValue<GByte>(poSrcDS, 1, 0));
+        break;
+    case RL2_PIXEL_PALETTE:
+        switch (nSampleType)
+        {
+        case RL2_SAMPLE_1_BIT:
             rl2_set_pixel_sample_1bit (pxl,
                                        GetNoDataValue<GByte>(poSrcDS, 1, 0));
             break;
-        case RL2_PIXEL_PALETTE:
-            switch (nSampleType)
-            {
-                case RL2_SAMPLE_1_BIT:
-                    rl2_set_pixel_sample_1bit (pxl,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_2_BIT:
-                    rl2_set_pixel_sample_2bit (pxl,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_4_BIT:
-                    rl2_set_pixel_sample_4bit (pxl,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_UINT8:
-                    rl2_set_pixel_sample_uint8 (pxl, 0,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 0));
-                    break;
-                default:
-                    CPLAssert(false);
-                    break;
-            }
+        case RL2_SAMPLE_2_BIT:
+            rl2_set_pixel_sample_2bit (pxl,
+                                       GetNoDataValue<GByte>(poSrcDS, 1, 0));
             break;
-        case RL2_PIXEL_GRAYSCALE:
-            switch (nSampleType)
-            {
-                case RL2_SAMPLE_1_BIT:
-                    rl2_set_pixel_sample_1bit (pxl,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 1));
-                    break;
-                case RL2_SAMPLE_2_BIT:
-                    rl2_set_pixel_sample_2bit (pxl,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 3));
-                    break;
-                case RL2_SAMPLE_4_BIT:
-                    rl2_set_pixel_sample_4bit (pxl,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 15));
-                    break;
-                case RL2_SAMPLE_UINT8:
-                    rl2_set_pixel_sample_uint8 (pxl, 0,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 255));
-                    break;
-                case RL2_SAMPLE_UINT16:
-                    rl2_set_pixel_sample_uint16 (pxl, 0,
-                                      GetNoDataValue<GUInt16>(poSrcDS, 1, 0));
-                    break;
-                default:
-                    CPLAssert(false);
-                    break;
-            }
+        case RL2_SAMPLE_4_BIT:
+            rl2_set_pixel_sample_4bit (pxl,
+                                       GetNoDataValue<GByte>(poSrcDS, 1, 0));
             break;
-        case RL2_PIXEL_RGB:
-            switch (nSampleType)
-            {
-                case RL2_SAMPLE_UINT8:
-                    rl2_set_pixel_sample_uint8 (pxl, 0,
-                                        GetNoDataValue<GByte>(poSrcDS, 1, 255));
-                    rl2_set_pixel_sample_uint8 (pxl, 1,
-                                        GetNoDataValue<GByte>(poSrcDS, 2, 255));
-                    rl2_set_pixel_sample_uint8 (pxl, 2,
-                                        GetNoDataValue<GByte>(poSrcDS, 3, 255));
-                    break;
-                case RL2_SAMPLE_UINT16:
-                    rl2_set_pixel_sample_uint16 (pxl, 0,
-                                        GetNoDataValue<GUInt16>(poSrcDS, 1, 0));
-                    rl2_set_pixel_sample_uint16 (pxl, 1,
-                                        GetNoDataValue<GUInt16>(poSrcDS, 2, 0));
-                    rl2_set_pixel_sample_uint16 (pxl, 2,
-                                        GetNoDataValue<GUInt16>(poSrcDS, 3, 0));
-                    break;
-                default:
-                    CPLAssert(false);
-                    break;
-            }
-            break;
-        case RL2_PIXEL_DATAGRID:
-            switch (nSampleType)
-            {
-                case RL2_SAMPLE_INT8:
-                    rl2_set_pixel_sample_int8 (pxl,
-                                        GetNoDataValue<char>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_UINT8:
-                    rl2_set_pixel_sample_uint8 (pxl, 0,
+        case RL2_SAMPLE_UINT8:
+            rl2_set_pixel_sample_uint8 (pxl, 0,
                                         GetNoDataValue<GByte>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_INT16:
-                    rl2_set_pixel_sample_int16 (pxl,
-                                        GetNoDataValue<GInt16>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_UINT16:
-                    rl2_set_pixel_sample_uint16 (pxl, 0,
-                                        GetNoDataValue<GUInt16>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_INT32:
-                    rl2_set_pixel_sample_int32 (pxl,
-                                        GetNoDataValue<GInt32>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_UINT32:
-                    rl2_set_pixel_sample_uint32 (pxl,
-                                        GetNoDataValue<GUInt32>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_FLOAT:
-                    rl2_set_pixel_sample_float (pxl,
-                                        GetNoDataValue<float>(poSrcDS, 1, 0));
-                    break;
-                case RL2_SAMPLE_DOUBLE:
-                    rl2_set_pixel_sample_double (pxl,
-                                        GetNoDataValue<double>(poSrcDS, 1, 0));
-                    break;
-                default:
-                    CPLAssert(false);
-                    break;
-            }
-            break;
-        case RL2_PIXEL_MULTIBAND:
-            switch (nSampleType)
-            {
-                case RL2_SAMPLE_UINT8:
-                    for (unsigned int nb = 0; nb < nBandCount; nb++)
-                        rl2_set_pixel_sample_uint8 (pxl, nb,
-                            GetNoDataValue<GByte>(poSrcDS, nb+1, 255));
-                    break;
-                case RL2_SAMPLE_UINT16:
-                    for (unsigned int nb = 0; nb < nBandCount; nb++)
-                        rl2_set_pixel_sample_uint16 (pxl, nb,
-                            GetNoDataValue<GUInt16>(poSrcDS, nb+1, 0));
-                    break;
-                default:
-                    CPLAssert(false);
-                    break;
-            }
             break;
         default:
             CPLAssert(false);
             break;
+        }
+        break;
+    case RL2_PIXEL_GRAYSCALE:
+        switch (nSampleType)
+        {
+        case RL2_SAMPLE_1_BIT:
+            rl2_set_pixel_sample_1bit (pxl,
+                                       GetNoDataValue<GByte>(poSrcDS, 1, 1));
+            break;
+        case RL2_SAMPLE_2_BIT:
+            rl2_set_pixel_sample_2bit (pxl,
+                                       GetNoDataValue<GByte>(poSrcDS, 1, 3));
+            break;
+        case RL2_SAMPLE_4_BIT:
+            rl2_set_pixel_sample_4bit (pxl,
+                                       GetNoDataValue<GByte>(poSrcDS, 1, 15));
+            break;
+        case RL2_SAMPLE_UINT8:
+            rl2_set_pixel_sample_uint8 (pxl, 0,
+                                        GetNoDataValue<GByte>(poSrcDS, 1, 255));
+            break;
+        case RL2_SAMPLE_UINT16:
+            rl2_set_pixel_sample_uint16 (pxl, 0,
+                                         GetNoDataValue<GUInt16>(poSrcDS, 1, 0));
+            break;
+        default:
+            CPLAssert(false);
+            break;
+        }
+        break;
+    case RL2_PIXEL_RGB:
+        switch (nSampleType)
+        {
+        case RL2_SAMPLE_UINT8:
+            rl2_set_pixel_sample_uint8 (pxl, 0,
+                                        GetNoDataValue<GByte>(poSrcDS, 1, 255));
+            rl2_set_pixel_sample_uint8 (pxl, 1,
+                                        GetNoDataValue<GByte>(poSrcDS, 2, 255));
+            rl2_set_pixel_sample_uint8 (pxl, 2,
+                                        GetNoDataValue<GByte>(poSrcDS, 3, 255));
+            break;
+        case RL2_SAMPLE_UINT16:
+            rl2_set_pixel_sample_uint16 (pxl, 0,
+                                         GetNoDataValue<GUInt16>(poSrcDS, 1, 0));
+            rl2_set_pixel_sample_uint16 (pxl, 1,
+                                         GetNoDataValue<GUInt16>(poSrcDS, 2, 0));
+            rl2_set_pixel_sample_uint16 (pxl, 2,
+                                         GetNoDataValue<GUInt16>(poSrcDS, 3, 0));
+            break;
+        default:
+            CPLAssert(false);
+            break;
+        }
+        break;
+    case RL2_PIXEL_DATAGRID:
+        switch (nSampleType)
+        {
+        case RL2_SAMPLE_INT8:
+            rl2_set_pixel_sample_int8 (pxl,
+                                       GetNoDataValue<char>(poSrcDS, 1, 0));
+            break;
+        case RL2_SAMPLE_UINT8:
+            rl2_set_pixel_sample_uint8 (pxl, 0,
+                                        GetNoDataValue<GByte>(poSrcDS, 1, 0));
+            break;
+        case RL2_SAMPLE_INT16:
+            rl2_set_pixel_sample_int16 (pxl,
+                                        GetNoDataValue<GInt16>(poSrcDS, 1, 0));
+            break;
+        case RL2_SAMPLE_UINT16:
+            rl2_set_pixel_sample_uint16 (pxl, 0,
+                                         GetNoDataValue<GUInt16>(poSrcDS, 1, 0));
+            break;
+        case RL2_SAMPLE_INT32:
+            rl2_set_pixel_sample_int32 (pxl,
+                                        GetNoDataValue<GInt32>(poSrcDS, 1, 0));
+            break;
+        case RL2_SAMPLE_UINT32:
+            rl2_set_pixel_sample_uint32 (pxl,
+                                         GetNoDataValue<GUInt32>(poSrcDS, 1, 0));
+            break;
+        case RL2_SAMPLE_FLOAT:
+            rl2_set_pixel_sample_float (pxl,
+                                        GetNoDataValue<float>(poSrcDS, 1, 0));
+            break;
+        case RL2_SAMPLE_DOUBLE:
+            rl2_set_pixel_sample_double (pxl,
+                                         GetNoDataValue<double>(poSrcDS, 1, 0));
+            break;
+        default:
+            CPLAssert(false);
+            break;
+        }
+        break;
+    case RL2_PIXEL_MULTIBAND:
+        switch (nSampleType)
+        {
+        case RL2_SAMPLE_UINT8:
+            for (unsigned int nb = 0; nb < nBandCount; nb++)
+                rl2_set_pixel_sample_uint8 (pxl, nb,
+                                            GetNoDataValue<GByte>(poSrcDS, nb+1, 255));
+            break;
+        case RL2_SAMPLE_UINT16:
+            for (unsigned int nb = 0; nb < nBandCount; nb++)
+                rl2_set_pixel_sample_uint16 (pxl, nb,
+                                             GetNoDataValue<GUInt16>(poSrcDS, nb+1, 0));
+            break;
+        default:
+            CPLAssert(false);
+            break;
+        }
+        break;
+    default:
+        CPLAssert(false);
+        break;
     }
     return pxl;
 }
@@ -1479,7 +1479,7 @@ static int RasterLite2Callback( void *data,
              dfTileMinX, dfTileMinY, dfTileMaxX, dfTileMaxY);
 #endif
     RasterLite2CallbackData* pCbkData =
-                            static_cast<RasterLite2CallbackData*>(data);
+        static_cast<RasterLite2CallbackData*>(data);
     if( pOutPalette )
     {
         if( pCbkData->pPalette )
@@ -1488,17 +1488,17 @@ static int RasterLite2Callback( void *data,
             *pOutPalette = nullptr;
     }
     int nXOff = static_cast<int>(0.5 +
-        (dfTileMinX - pCbkData->adfGeoTransform[0]) /
-                                pCbkData->adfGeoTransform[1]);
+                                 (dfTileMinX - pCbkData->adfGeoTransform[0]) /
+                                 pCbkData->adfGeoTransform[1]);
     int nXOff2 = static_cast<int>(0.5 +
-        (dfTileMaxX - pCbkData->adfGeoTransform[0]) /
-                                pCbkData->adfGeoTransform[1]);
+                                  (dfTileMaxX - pCbkData->adfGeoTransform[0]) /
+                                  pCbkData->adfGeoTransform[1]);
     int nYOff = static_cast<int>(0.5 +
-        (dfTileMaxY - pCbkData->adfGeoTransform[3]) /
-                                pCbkData->adfGeoTransform[5]);
+                                 (dfTileMaxY - pCbkData->adfGeoTransform[3]) /
+                                 pCbkData->adfGeoTransform[5]);
     int nYOff2 = static_cast<int>(0.5 +
-        (dfTileMinY - pCbkData->adfGeoTransform[3]) /
-                                pCbkData->adfGeoTransform[5]);
+                                  (dfTileMinY - pCbkData->adfGeoTransform[3]) /
+                                  pCbkData->adfGeoTransform[5]);
     int nReqXSize = nXOff2 - nXOff;
     bool bZeroInitialize = false;
     if( nXOff2 > pCbkData->poSrcDS->GetRasterXSize() )
@@ -1520,30 +1520,30 @@ static int RasterLite2Callback( void *data,
     {
         memset( pabyBuffer, 0,
                 static_cast<size_t>(nXOff2 - nXOff) *
-                                   (nYOff2 - nYOff) * nBands * nDTSize );
+                (nYOff2 - nYOff) * nBands * nDTSize );
     }
 
     const GSpacing nPixelSpacing = static_cast<GSpacing>(nDTSize) * nBands;
     const GSpacing nLineSpacing = nPixelSpacing * (nXOff2 - nXOff);
     CPLErr eErr = pCbkData->poSrcDS->RasterIO( GF_Read,
-                                               nXOff, nYOff,
-                                               nReqXSize, nReqYSize,
-                                               pabyBuffer,
-                                               nReqXSize, nReqYSize,
-                                               eDT,
-                                               nBands,
-                                               nullptr,
-                                               nPixelSpacing,
-                                               nLineSpacing,
-                                               nDTSize,
-                                               nullptr );
+                  nXOff, nYOff,
+                  nReqXSize, nReqYSize,
+                  pabyBuffer,
+                  nReqXSize, nReqYSize,
+                  eDT,
+                  nBands,
+                  nullptr,
+                  nPixelSpacing,
+                  nLineSpacing,
+                  nDTSize,
+                  nullptr );
     if( eErr != CE_None )
         return FALSE;
 
     if( pCbkData->pfnProgress &&
-        !pCbkData->pfnProgress(static_cast<double>(nYOff + nReqYSize) /
-                                    pCbkData->poSrcDS->GetRasterYSize(),
-                               "", pCbkData->pProgressData) )
+            !pCbkData->pfnProgress(static_cast<double>(nYOff + nReqYSize) /
+                                   pCbkData->poSrcDS->GetRasterYSize(),
+                                   "", pCbkData->pProgressData) )
     {
         return FALSE;
     }
@@ -1569,7 +1569,7 @@ static int RasterLite2Callback( void *data,
             for( int iX = 0; iX < nReqXSize; ++iX )
             {
                 GByte* pbyVal = pabyBuffer +
-                        static_cast<size_t>(iY) * (nXOff2 - nXOff) + iX;
+                                static_cast<size_t>(iY) * (nXOff2 - nXOff) + iX;
                 if( *pbyVal > nMaxVal )
                 {
                     if( !bClamped )
@@ -1601,7 +1601,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
                                         void * pProgressData )
 {
     if( poSrcDS->GetRasterCount() == 0 ||
-        poSrcDS->GetRasterCount() > 255 )
+            poSrcDS->GetRasterCount() > 255 )
     {
         CPLError(CE_Failure, CPLE_NotSupported, "Unsupported band count");
         return nullptr;
@@ -1609,7 +1609,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
 
     double adfGeoTransform[6];
     if( poSrcDS->GetGeoTransform(adfGeoTransform) == CE_None &&
-        (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) )
+            (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) )
     {
         CPLError(CE_Failure, CPLE_NotSupported,
                  "Raster with rotation/shearing geotransform terms "
@@ -1618,7 +1618,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     }
 
     if( CSLFetchNameValue(papszOptions, "APPEND_SUBDATASET") &&
-        !CSLFetchNameValue(papszOptions, "COVERAGE") )
+            !CSLFetchNameValue(papszOptions, "COVERAGE") )
     {
         CPLError(CE_Failure, CPLE_AppDefined,
                  "COVERAGE must be specified with APPEND_SUBDATASET=YES");
@@ -1630,7 +1630,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     unsigned char nSampleType = RL2_SAMPLE_UINT8;
     unsigned char nPixelType = RL2_PIXEL_GRAYSCALE;
     unsigned char nBandCount = static_cast<unsigned char>(
-                                            poSrcDS->GetRasterCount());
+                                   poSrcDS->GetRasterCount());
 
     const char* pszPixelType = CSLFetchNameValue(papszOptions, "PIXEL_TYPE");
     if( pszPixelType )
@@ -1652,17 +1652,17 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     {
         // Guess a reasonable pixel type from band characteristics
         if( nBandCount == 1 &&
-            poSrcDS->GetRasterBand(1)->GetColorTable() != nullptr )
+                poSrcDS->GetRasterBand(1)->GetColorTable() != nullptr )
         {
             nPixelType = RL2_PIXEL_PALETTE;
         }
         else if( nBandCount == 3 && (eDT == GDT_Byte || eDT == GDT_UInt16) &&
                  poSrcDS->GetRasterBand(1)->GetColorInterpretation() ==
-                                                            GCI_RedBand &&
+                 GCI_RedBand &&
                  poSrcDS->GetRasterBand(2)->GetColorInterpretation() ==
-                                                            GCI_GreenBand &&
+                 GCI_GreenBand &&
                  poSrcDS->GetRasterBand(3)->GetColorInterpretation() ==
-                                                            GCI_BlueBand )
+                 GCI_BlueBand )
         {
             nPixelType = RL2_PIXEL_RGB;
         }
@@ -1692,7 +1692,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     else
     {
         pszNBITS = poSrcDS->GetRasterBand(1)->GetMetadataItem(
-                                                "NBITS", "IMAGE_STRUCTURE");
+                       "NBITS", "IMAGE_STRUCTURE");
         if( pszNBITS != nullptr )
         {
             nBITS = atoi(pszNBITS);
@@ -1702,7 +1702,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     if( nBITS > 0 && nBITS <= 8 && eDT != GDT_Byte )
     {
         CPLError(CE_Failure, CPLE_NotSupported,
-                    "NBITS <= 8 only compatible with Byte data type");
+                 "NBITS <= 8 only compatible with Byte data type");
         return nullptr;
     }
 
@@ -1823,9 +1823,9 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
             return nullptr;
         }
         if( nSampleType != RL2_SAMPLE_1_BIT &&
-            nSampleType != RL2_SAMPLE_2_BIT &&
-            nSampleType != RL2_SAMPLE_4_BIT &&
-            nSampleType != RL2_SAMPLE_UINT8 )
+                nSampleType != RL2_SAMPLE_2_BIT &&
+                nSampleType != RL2_SAMPLE_4_BIT &&
+                nSampleType != RL2_SAMPLE_UINT8 )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported sample type with PALETTE");
@@ -1841,8 +1841,8 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
             return nullptr;
         }
         if( nSampleType != RL2_SAMPLE_2_BIT &&
-            nSampleType != RL2_SAMPLE_4_BIT &&
-            nSampleType != RL2_SAMPLE_UINT8 )
+                nSampleType != RL2_SAMPLE_4_BIT &&
+                nSampleType != RL2_SAMPLE_UINT8 )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported sample type with GRAYSCALE");
@@ -1858,7 +1858,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
             return nullptr;
         }
         if( nSampleType != RL2_SAMPLE_UINT8 &&
-            nSampleType != RL2_SAMPLE_UINT16 )
+                nSampleType != RL2_SAMPLE_UINT16 )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported sample type with RGB");
@@ -1874,7 +1874,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
             return nullptr;
         }
         if( nSampleType != RL2_SAMPLE_UINT8 &&
-            nSampleType != RL2_SAMPLE_UINT16 )
+                nSampleType != RL2_SAMPLE_UINT16 )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported sample type with MULTIBAND");
@@ -1890,13 +1890,13 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
             return nullptr;
         }
         if( nSampleType != RL2_SAMPLE_INT8 &&
-            nSampleType != RL2_SAMPLE_UINT8 &&
-            nSampleType != RL2_SAMPLE_INT16 &&
-            nSampleType != RL2_SAMPLE_UINT16 &&
-            nSampleType != RL2_SAMPLE_INT32 &&
-            nSampleType != RL2_SAMPLE_UINT32 &&
-            nSampleType != RL2_SAMPLE_FLOAT &&
-            nSampleType != RL2_SAMPLE_DOUBLE )
+                nSampleType != RL2_SAMPLE_UINT8 &&
+                nSampleType != RL2_SAMPLE_INT16 &&
+                nSampleType != RL2_SAMPLE_UINT16 &&
+                nSampleType != RL2_SAMPLE_INT32 &&
+                nSampleType != RL2_SAMPLE_UINT32 &&
+                nSampleType != RL2_SAMPLE_FLOAT &&
+                nSampleType != RL2_SAMPLE_DOUBLE )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported sample type with DATAGRID");
@@ -1908,12 +1908,12 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     if( nPixelType == RL2_PIXEL_MONOCHROME )
     {
         if( nCompression != RL2_COMPRESSION_NONE &&
-            nCompression != RL2_COMPRESSION_DEFLATE &&
-            nCompression != RL2_COMPRESSION_DEFLATE_NO &&
-            nCompression != RL2_COMPRESSION_LZMA &&
-            nCompression != RL2_COMPRESSION_LZMA_NO &&
-            nCompression != RL2_COMPRESSION_CCITTFAX4 &&
-            nCompression != RL2_COMPRESSION_PNG )
+                nCompression != RL2_COMPRESSION_DEFLATE &&
+                nCompression != RL2_COMPRESSION_DEFLATE_NO &&
+                nCompression != RL2_COMPRESSION_LZMA &&
+                nCompression != RL2_COMPRESSION_LZMA_NO &&
+                nCompression != RL2_COMPRESSION_CCITTFAX4 &&
+                nCompression != RL2_COMPRESSION_PNG )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with MONOCHROME");
@@ -1923,11 +1923,11 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     else if( nPixelType == RL2_PIXEL_PALETTE )
     {
         if( nCompression != RL2_COMPRESSION_NONE &&
-            nCompression != RL2_COMPRESSION_DEFLATE &&
-            nCompression != RL2_COMPRESSION_DEFLATE_NO &&
-            nCompression != RL2_COMPRESSION_LZMA &&
-            nCompression != RL2_COMPRESSION_LZMA_NO &&
-            nCompression != RL2_COMPRESSION_PNG )
+                nCompression != RL2_COMPRESSION_DEFLATE &&
+                nCompression != RL2_COMPRESSION_DEFLATE_NO &&
+                nCompression != RL2_COMPRESSION_LZMA &&
+                nCompression != RL2_COMPRESSION_LZMA_NO &&
+                nCompression != RL2_COMPRESSION_PNG )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with PALETTE");
@@ -1955,9 +1955,9 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     else if( nPixelType == RL2_PIXEL_RGB && nSampleType == RL2_SAMPLE_UINT16 )
     {
         if( nCompression == RL2_COMPRESSION_CCITTFAX4 ||
-            nCompression == RL2_COMPRESSION_JPEG ||
-            nCompression == RL2_COMPRESSION_LOSSY_WEBP ||
-            nCompression == RL2_COMPRESSION_LOSSLESS_WEBP )
+                nCompression == RL2_COMPRESSION_JPEG ||
+                nCompression == RL2_COMPRESSION_LOSSY_WEBP ||
+                nCompression == RL2_COMPRESSION_LOSSLESS_WEBP )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with RGB UINT16");
@@ -1969,7 +1969,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
              (nBandCount == 3 || nBandCount == 4) )
     {
         if( nCompression == RL2_COMPRESSION_CCITTFAX4 ||
-            nCompression == RL2_COMPRESSION_JPEG  )
+                nCompression == RL2_COMPRESSION_JPEG  )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with MULTIBAND UINT8 %d bands",
@@ -1982,9 +1982,9 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
              (nBandCount == 3 || nBandCount == 4) )
     {
         if( nCompression == RL2_COMPRESSION_CCITTFAX4 ||
-            nCompression == RL2_COMPRESSION_JPEG ||
-            nCompression == RL2_COMPRESSION_LOSSY_WEBP ||
-            nCompression == RL2_COMPRESSION_LOSSLESS_WEBP  )
+                nCompression == RL2_COMPRESSION_JPEG ||
+                nCompression == RL2_COMPRESSION_LOSSY_WEBP ||
+                nCompression == RL2_COMPRESSION_LOSSLESS_WEBP  )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with MULTIBAND UINT16 %d bands",
@@ -1995,10 +1995,10 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     else if( nPixelType == RL2_PIXEL_MULTIBAND )
     {
         if( nCompression != RL2_COMPRESSION_NONE &&
-            nCompression != RL2_COMPRESSION_DEFLATE &&
-            nCompression != RL2_COMPRESSION_DEFLATE_NO &&
-            nCompression != RL2_COMPRESSION_LZMA &&
-            nCompression != RL2_COMPRESSION_LZMA_NO )
+                nCompression != RL2_COMPRESSION_DEFLATE &&
+                nCompression != RL2_COMPRESSION_DEFLATE_NO &&
+                nCompression != RL2_COMPRESSION_LZMA &&
+                nCompression != RL2_COMPRESSION_LZMA_NO )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with MULTIBAND %s %d bands",
@@ -2012,9 +2012,9 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
               nSampleType == RL2_SAMPLE_UINT16) )
     {
         if( nCompression == RL2_COMPRESSION_CCITTFAX4 ||
-            nCompression == RL2_COMPRESSION_JPEG ||
-            nCompression == RL2_COMPRESSION_LOSSY_WEBP ||
-            nCompression == RL2_COMPRESSION_LOSSLESS_WEBP  )
+                nCompression == RL2_COMPRESSION_JPEG ||
+                nCompression == RL2_COMPRESSION_LOSSY_WEBP ||
+                nCompression == RL2_COMPRESSION_LOSSLESS_WEBP  )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with DATAGRID %s",
@@ -2027,10 +2027,10 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
              nSampleType != RL2_SAMPLE_UINT16 )
     {
         if( nCompression != RL2_COMPRESSION_NONE &&
-            nCompression != RL2_COMPRESSION_DEFLATE &&
-            nCompression != RL2_COMPRESSION_DEFLATE_NO &&
-            nCompression != RL2_COMPRESSION_LZMA &&
-            nCompression != RL2_COMPRESSION_LZMA_NO )
+                nCompression != RL2_COMPRESSION_DEFLATE &&
+                nCompression != RL2_COMPRESSION_DEFLATE_NO &&
+                nCompression != RL2_COMPRESSION_LZMA &&
+                nCompression != RL2_COMPRESSION_LZMA_NO )
         {
             CPLError(CE_Failure, CPLE_NotSupported,
                      "Unsupported compression with DATAGRID %s",
@@ -2050,15 +2050,15 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     }
 
     unsigned int nTileWidth = atoi( CSLFetchNameValueDef(papszOptions,
-                                                         "BLOCKXSIZE",
-                                                         "512") );
+                                    "BLOCKXSIZE",
+                                    "512") );
     unsigned int nTileHeight = atoi( CSLFetchNameValueDef(papszOptions,
-                                                         "BLOCKYSIZE",
-                                                         "512") );
+                                     "BLOCKYSIZE",
+                                     "512") );
 
-/* -------------------------------------------------------------------- */
-/*      Try to create datasource.                                       */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Try to create datasource.                                       */
+    /* -------------------------------------------------------------------- */
     OGRSQLiteDataSource *poDS = new OGRSQLiteDataSource();
 
     if( CSLFetchNameValue(papszOptions, "APPEND_SUBDATASET") )
@@ -2084,10 +2084,10 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
         CSLDestroy(papszNewOptions);
     }
 
-/* -------------------------------------------------------------------- */
-/*      Try to get the SRS Id of this spatial reference system,         */
-/*      adding to the srs table if needed.                              */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Try to get the SRS Id of this spatial reference system,         */
+    /*      adding to the srs table if needed.                              */
+    /* -------------------------------------------------------------------- */
     int nSRSId = 0;
     const char* pszSRID = CSLFetchNameValue(papszOptions, "SRID");
 
@@ -2121,10 +2121,10 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     int nRowCount = 0;
     int nColCount = 0;
     sqlite3_get_table( poDS->GetDB(),
-                  "SELECT * FROM sqlite_master WHERE "
-                  "name = 'raster_coverages' AND type = 'table'",
-                   &papszResults, &nRowCount,
-                   &nColCount, nullptr );
+                       "SELECT * FROM sqlite_master WHERE "
+                       "name = 'raster_coverages' AND type = 'table'",
+                       &papszResults, &nRowCount,
+                       &nColCount, nullptr );
     sqlite3_free_table(papszResults);
     if( nRowCount == 0 )
     {
@@ -2135,7 +2135,7 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
         if (ret != SQLITE_OK)
         {
             CPLError(CE_Failure, CPLE_AppDefined,
-                    "CreateRasterCoveragesTable() failed: %s", pszErrMsg);
+                     "CreateRasterCoveragesTable() failed: %s", pszErrMsg);
             sqlite3_free(pszErrMsg);
             delete poDS;
             return nullptr;
@@ -2143,14 +2143,14 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     }
 
     CPLString osCoverageName( CSLFetchNameValueDef(papszOptions,
-                                                   "COVERAGE",
-                                                   CPLGetBasename(pszName)) );
+                              "COVERAGE",
+                              CPLGetBasename(pszName)) );
     // Check if the coverage already exists
     rl2CoveragePtr cvg = nullptr;
     char* pszSQL = sqlite3_mprintf(
-            "SELECT coverage_name "
-            "FROM raster_coverages WHERE coverage_name = '%q' LIMIT 1",
-            osCoverageName.c_str());
+                       "SELECT coverage_name "
+                       "FROM raster_coverages WHERE coverage_name = '%q' LIMIT 1",
+                       osCoverageName.c_str());
     sqlite3_get_table( poDS->GetDB(), pszSQL,  &papszResults, &nRowCount,
                        &nColCount, nullptr );
     sqlite3_free(pszSQL);
@@ -2184,9 +2184,9 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
         {
             const GDALColorEntry* poCE = poCT->GetColorEntry(i);
             rl2_set_palette_color (pPalette, i,
-                                    static_cast<GByte>(poCE->c1),
-                                    static_cast<GByte>(poCE->c2),
-                                    static_cast<GByte>(poCE->c3));
+                                   static_cast<GByte>(poCE->c1),
+                                   static_cast<GByte>(poCE->c2),
+                                   static_cast<GByte>(poCE->c3));
         }
     }
 
@@ -2212,28 +2212,28 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
         }
 
         if( rl2_create_dbms_coverage(poDS->GetDB(),
-                                    osCoverageName,
-                                    nSampleType,
-                                    nPixelType,
-                                    nBandCount,
-                                    nCompression,
-                                    nQuality,
-                                    nTileWidth,
-                                    nTileHeight,
-                                    nSRSId,
-                                    dfXRes,
-                                    dfYRes,
-                                    pNoData,
-                                    pPalette,
-                                    bStrictResolution,
-                                    bMixedResolutions,
-                                    bSectionPaths,
-                                    bSectionMD5,
-                                    bSectionSummary,
-                                    bIsQueryable) != RL2_OK )
+                                     osCoverageName,
+                                     nSampleType,
+                                     nPixelType,
+                                     nBandCount,
+                                     nCompression,
+                                     nQuality,
+                                     nTileWidth,
+                                     nTileHeight,
+                                     nSRSId,
+                                     dfXRes,
+                                     dfYRes,
+                                     pNoData,
+                                     pPalette,
+                                     bStrictResolution,
+                                     bMixedResolutions,
+                                     bSectionPaths,
+                                     bSectionMD5,
+                                     bSectionSummary,
+                                     bIsQueryable) != RL2_OK )
         {
             CPLError(CE_Failure, CPLE_AppDefined,
-                    "rl2_create_dbms_coverage() failed");
+                     "rl2_create_dbms_coverage() failed");
             rl2_destroy_pixel (pNoData);
             if( pPalette )
                 rl2_destroy_palette(pPalette);
@@ -2266,8 +2266,8 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     double dfYMin = dfYMax + adfGeoTransform[5] * poSrcDS->GetRasterYSize();
 
     CPLString osSectionName( CSLFetchNameValueDef(papszOptions,
-                                                  "SECTION",
-                                                  CPLGetBasename(pszName)) );
+                             "SECTION",
+                             CPLGetBasename(pszName)) );
     const bool bPyramidize = CPLFetchBool( papszOptions, "PYRAMIDIZE", false );
     RasterLite2CallbackData cbk_data;
     cbk_data.poSrcDS = poSrcDS;
@@ -2311,8 +2311,8 @@ GDALDataset *OGRSQLiteDriverCreateCopy( const char* pszName,
     poDS = new OGRSQLiteDataSource();
     GDALOpenInfo oOpenInfo(
         CPLSPrintf("RASTERLITE2:%s:%s",
-                           EscapeNameAndQuoteIfNeeded(pszName).c_str(),
-                           EscapeNameAndQuoteIfNeeded(osCoverageName).c_str()),
+                   EscapeNameAndQuoteIfNeeded(pszName).c_str(),
+                   EscapeNameAndQuoteIfNeeded(osCoverageName).c_str()),
         GDAL_OF_RASTER | GDAL_OF_UPDATE);
     poDS->Open(&oOpenInfo);
     return poDS;
@@ -2359,7 +2359,7 @@ CPLErr OGRSQLiteDataSource::IBuildOverviews(
         if( !STARTS_WITH_CI(pszResampling, "NEAR") )
         {
             CPLError(CE_Warning, CPLE_AppDefined,
-                "Resampling method is ignored. Using librasterlite2 own method");
+                     "Resampling method is ignored. Using librasterlite2 own method");
         }
         for( int i = 0; i < nOverviews; ++i )
         {
@@ -2380,8 +2380,8 @@ CPLErr OGRSQLiteDataSource::IBuildOverviews(
             if( m_nSectionId >= 0 )
             {
                 ret = rl2_build_section_pyramid( hDB, GetRL2Context(),
-                                           m_osCoverageName, m_nSectionId,
-                                           bForcedRebuild, bVerbose);
+                                                 m_osCoverageName, m_nSectionId,
+                                                 bForcedRebuild, bVerbose);
             }
             else
             {
@@ -2408,7 +2408,7 @@ CPLErr OGRSQLiteDataSource::IBuildOverviews(
         }
     }
 
-    for(size_t i=0;i<m_apoOverviewDS.size();++i)
+    for(size_t i=0; i<m_apoOverviewDS.size(); ++i)
         delete m_apoOverviewDS[i];
     m_apoOverviewDS.clear();
     ListOverviews();
@@ -2425,7 +2425,7 @@ CPLErr OGRSQLiteDataSource::IBuildOverviews(
 char** OGRSQLiteDataSource::GetMetadata(const char* pszDomain)
 {
     if( pszDomain != nullptr && EQUAL( pszDomain, "SUBDATASETS" ) &&
-        m_aosSubDatasets.size() > 2 )
+            m_aosSubDatasets.size() > 2 )
     {
         return m_aosSubDatasets.List();
     }

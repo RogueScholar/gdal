@@ -82,10 +82,10 @@ class OGRPDFLayer final: public OGRMemLayer
     int               bGeomTypeMixed;
 
 public:
-        OGRPDFLayer( PDFDataset* poDS,
-                     const char * pszName,
-                     OGRSpatialReference *poSRS,
-                     OGRwkbGeometryType eGeomType );
+    OGRPDFLayer( PDFDataset* poDS,
+                 const char * pszName,
+                 OGRSpatialReference *poSRS,
+                 OGRwkbGeometryType eGeomType );
 
     void                Fill( GDALPDFArray* poArray );
 
@@ -105,10 +105,10 @@ class OGRPDFWritableLayer final: public OGRMemLayer
     PDFWritableVectorDataset       *poDS;
 
 public:
-        OGRPDFWritableLayer(PDFWritableVectorDataset* poDS,
-                    const char * pszName,
-                    OGRSpatialReference *poSRS,
-                    OGRwkbGeometryType eGeomType);
+    OGRPDFWritableLayer(PDFWritableVectorDataset* poDS,
+                        const char * pszName,
+                        OGRSpatialReference *poSRS,
+                        OGRwkbGeometryType eGeomType);
 
     virtual int                 TestCapability( const char * ) override;
     virtual OGRErr              ICreateFeature( OGRFeature *poFeature ) override;
@@ -144,10 +144,10 @@ typedef struct
 
 // Map of Pdfium pages in following structure
 typedef struct {
-  int pageNum;
-  CPDF_Page* page;
-  CPLMutex * readMutex;
-  int sharedNum;
+    int pageNum;
+    CPDF_Page* page;
+    CPLMutex * readMutex;
+    int sharedNum;
 } TPdfiumPageStruct;
 
 typedef std::map<int, TPdfiumPageStruct*>        TMapPdfiumPages;
@@ -158,10 +158,10 @@ typedef std::map<int, TPdfiumPageStruct*>        TMapPdfiumPages;
 
 // Structure for Mutex on File
 typedef struct {
-  char* filename;
-  CPDF_Document* doc;
-  TMapPdfiumPages pages;
-  FPDF_FILEACCESS* psFileAccess;
+    char* filename;
+    CPDF_Document* doc;
+    TMapPdfiumPages pages;
+    FPDF_FILEACCESS* psFileAccess;
 } TPdfiumDocumentStruct;
 
 #endif  // ~ HAVE_PDFIUM
@@ -327,7 +327,7 @@ private:
     double              dfPageWidth;
     double              dfPageHeight;
     void                PDFCoordsToSRSCoords(double x, double y,
-                                             double& X, double &Y);
+            double& X, double &Y);
 
     std::map<int,OGRGeometry*> oMapMCID;
     void                CleanupIntermediateResources();
@@ -343,9 +343,9 @@ private:
     void                ExploreContents(GDALPDFObject* poObj, GDALPDFObject* poResources, int nDepth, int& nVisited, bool& bStop);
 
     void                ExploreContentsNonStructuredInternal(GDALPDFObject* poContents,
-                                                             GDALPDFObject* poResources,
-                                                             std::map<CPLString, OGRPDFLayer*>& oMapPropertyToLayer,
-                                                             OGRPDFLayer* poSingleLayer);
+            GDALPDFObject* poResources,
+            std::map<CPLString, OGRPDFLayer*>& oMapPropertyToLayer,
+            OGRPDFLayer* poSingleLayer);
     void                ExploreContentsNonStructured(GDALPDFObject* poObj, GDALPDFObject* poResources);
 
     int                 UnstackTokens(const char* pszToken,
@@ -369,8 +369,8 @@ private:
     void    InitOverviews();
 #endif  // ~ HAVE_PDFIUM
 
-  public:
-                 PDFDataset(PDFDataset* poParentDS = nullptr, int nXSize = 0, int nYSize = 0);
+public:
+    PDFDataset(PDFDataset* poParentDS = nullptr, int nXSize = 0, int nYSize = 0);
     virtual     ~PDFDataset();
 
     virtual const char* _GetProjectionRef() override;
@@ -410,7 +410,7 @@ private:
     }
     virtual const GDAL_GCP *GetGCPs() override;
     virtual CPLErr _SetGCPs( int nGCPCount, const GDAL_GCP *pasGCPList,
-                            const char *pszGCPProjection ) override;
+                             const char *pszGCPProjection ) override;
     using GDALPamDataset::SetGCPs;
     CPLErr SetGCPs( int nGCPCountIn, const GDAL_GCP *pasGCPListIn,
                     const OGRSpatialReference* poSRS ) override {
@@ -431,12 +431,20 @@ private:
 
     OGRGeometry        *GetGeometryFromMCID(int nMCID);
 
-    GDALPDFObject*      GetPageObj() { return poPageObj; }
-    double              GetPageWidth() const { return dfPageWidth; }
-    double              GetPageHeight() const { return dfPageHeight; }
+    GDALPDFObject*      GetPageObj() {
+        return poPageObj;
+    }
+    double              GetPageWidth() const {
+        return dfPageWidth;
+    }
+    double              GetPageHeight() const {
+        return dfPageHeight;
+    }
 
     static PDFDataset  *Open( GDALOpenInfo * );
-    static GDALDataset *OpenWrapper( GDALOpenInfo * poOpenInfo ) { return Open(poOpenInfo); }
+    static GDALDataset *OpenWrapper( GDALOpenInfo * poOpenInfo ) {
+        return Open(poOpenInfo);
+    }
     static int          Identify( GDALOpenInfo * );
 
 #ifdef HAVE_PDFIUM
@@ -461,9 +469,9 @@ class PDFRasterBand CPL_NON_FINAL: public GDALPamRasterBand
 
     CPLErr IReadBlockFromTile( int, int, void * );
 
-  public:
+public:
 
-                PDFRasterBand( PDFDataset *, int, int );
+    PDFRasterBand( PDFDataset *, int, int );
     virtual ~PDFRasterBand();
 
 #ifdef HAVE_PDFIUM
@@ -490,34 +498,36 @@ class PDFRasterBand CPL_NON_FINAL: public GDALPamRasterBand
 
 class PDFWritableVectorDataset final: public GDALDataset
 {
-        char**              papszOptions;
+    char**              papszOptions;
 
-        int                 nLayers;
-        OGRLayer          **papoLayers;
+    int                 nLayers;
+    OGRLayer          **papoLayers;
 
-        int                 bModified;
+    int                 bModified;
 
-    public:
-                            PDFWritableVectorDataset();
-        virtual ~PDFWritableVectorDataset();
+public:
+    PDFWritableVectorDataset();
+    virtual ~PDFWritableVectorDataset();
 
-        virtual OGRLayer*           ICreateLayer( const char * pszLayerName,
-                                                OGRSpatialReference *poSRS,
-                                                OGRwkbGeometryType eType,
-                                                char ** papszOptions ) override;
+    virtual OGRLayer*           ICreateLayer( const char * pszLayerName,
+            OGRSpatialReference *poSRS,
+            OGRwkbGeometryType eType,
+            char ** papszOptions ) override;
 
-        virtual OGRErr              SyncToDisk();
+    virtual OGRErr              SyncToDisk();
 
-        virtual int                 GetLayerCount() override;
-        virtual OGRLayer*           GetLayer( int ) override;
+    virtual int                 GetLayerCount() override;
+    virtual OGRLayer*           GetLayer( int ) override;
 
-        virtual int                 TestCapability( const char * ) override;
+    virtual int                 TestCapability( const char * ) override;
 
-        static GDALDataset* Create( const char * pszName,
-                                 int nXSize, int nYSize, int nBands,
-                                 GDALDataType eType, char ** papszOptions );
+    static GDALDataset* Create( const char * pszName,
+                                int nXSize, int nYSize, int nBands,
+                                GDALDataType eType, char ** papszOptions );
 
-        void                SetModified() { bModified = TRUE; }
+    void                SetModified() {
+        bModified = TRUE;
+    }
 };
 
 GDALDataset* GDALPDFOpen(const char* pszFilename, GDALAccess eAccess);

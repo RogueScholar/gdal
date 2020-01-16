@@ -46,7 +46,7 @@ class OGRTABDataSource : public OGRDataSource
 {
     CPL_DISALLOW_COPY_ASSIGN(OGRTABDataSource)
 
-  private:
+private:
     char                *m_pszName;
     char                *m_pszDirectory;
 
@@ -59,26 +59,30 @@ class OGRTABDataSource : public OGRDataSource
     int                 m_bSingleLayerAlreadyCreated;
     GBool               m_bQuickSpatialIndexMode;
     int                 m_nBlockSize;
-    
-  private:  
-    inline bool         GetUpdate() const { return eAccess == GA_Update; }
 
-  public:
-                OGRTABDataSource();
+private:
+    inline bool         GetUpdate() const {
+        return eAccess == GA_Update;
+    }
+
+public:
+    OGRTABDataSource();
     virtual     ~OGRTABDataSource();
 
     int         Open( GDALOpenInfo* poOpenInfo, int bTestOpen );
     int         Create( const char *pszName, char ** papszOptions );
 
-    const char  *GetName() override { return m_pszName; }
+    const char  *GetName() override {
+        return m_pszName;
+    }
     int          GetLayerCount() override;
     OGRLayer    *GetLayer( int ) override;
     int          TestCapability( const char * ) override;
 
     OGRLayer    *ICreateLayer(const char *,
-                             OGRSpatialReference * = nullptr,
-                             OGRwkbGeometryType = wkbUnknown,
-                             char ** = nullptr ) override;
+                              OGRSpatialReference * = nullptr,
+                              OGRwkbGeometryType = wkbUnknown,
+                              char ** = nullptr ) override;
 
     char        **GetFileList() override;
 
