@@ -156,7 +156,8 @@ def test_tiff_check_alpha():
     if ds.RasterCount == 4:
         gdaltest.supports_force_rgba = True
     if gdaltest.supports_force_rgba:
-        got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+        got_cs = [ds.GetRasterBand(i + 1).Checksum()
+                  for i in range(ds.RasterCount)]
         assert got_cs == [1970, 1970, 1970, 10807]
         ds = None
 
@@ -173,7 +174,8 @@ def test_tiff_check_alpha():
         gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
         ds = gdal.Open('data/stefan_full_rgba.tif')
         gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-        got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+        got_cs = [ds.GetRasterBand(i + 1).Checksum()
+                  for i in range(ds.RasterCount)]
         # FIXME? Not the same as without GTIFF_FORCE_RGBA=YES
         assert got_cs == [11547, 57792, 35643, 10807]
         ds = None
@@ -191,11 +193,11 @@ def test_tiff_check_alpha():
         gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
         ds = gdal.Open('data/stefan_full_rgba_photometric_rgb.tif')
         gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-        got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+        got_cs = [ds.GetRasterBand(i + 1).Checksum()
+                  for i in range(ds.RasterCount)]
         assert got_cs == [12603, 58561, 36064, 10807]
         ds = None
 
-    
 
 ###############################################################################
 # Test reading a CMYK tiff as RGBA image
@@ -215,7 +217,8 @@ def test_tiff_read_cmyk_rgba():
         'Wrong color interpretation (alpha).'
 
     assert ds.GetRasterBand(1).Checksum() == 23303, \
-        ('Expected checksum = %d. Got = %d' % (23303, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (23303, ds.GetRasterBand(1).Checksum()))
 
 ###############################################################################
 # Test reading a CMYK tiff as a raw image
@@ -229,7 +232,8 @@ def test_tiff_read_cmyk_raw():
         'Wrong color interpretation.'
 
     assert ds.GetRasterBand(1).Checksum() == 29430, \
-        ('Expected checksum = %d. Got = %d' % (29430, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (29430, ds.GetRasterBand(1).Checksum()))
 
 ###############################################################################
 # Test reading a OJPEG image
@@ -264,7 +268,7 @@ def test_tiff_read_ojpeg():
     if cs != 0:
         print('Should be 0 with internal libtiff')
 
-    
+
 ###############################################################################
 # Read a .tif.gz file
 
@@ -278,7 +282,8 @@ def test_tiff_read_gzip():
 
     ds = gdal.Open('/vsigzip/./data/byte.tif.gz')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
     try:
@@ -295,7 +300,8 @@ def test_tiff_read_zip_1():
 
     ds = gdal.Open('/vsizip/./data/byte.tif.zip/byte.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -306,7 +312,8 @@ def test_tiff_read_zip_2():
 
     ds = gdal.Open('/vsizip/./data/byte.tif.zip')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -315,9 +322,11 @@ def test_tiff_read_zip_2():
 
 def test_tiff_read_zip_3():
 
-    ds = gdal.Open('/vsizip/./data/onefileinsubdir.zip/onefileinsubdir/byte.tif')
+    ds = gdal.Open(
+        '/vsizip/./data/onefileinsubdir.zip/onefileinsubdir/byte.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -328,7 +337,8 @@ def test_tiff_read_zip_4():
 
     ds = gdal.Open('/vsizip/./data/onefileinsubdir.zip')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -337,9 +347,11 @@ def test_tiff_read_zip_4():
 
 def test_tiff_read_zip_5():
 
-    ds = gdal.Open('/vsizip/./data/twofileinsubdir.zip/twofileinsubdir/byte.tif')
+    ds = gdal.Open(
+        '/vsizip/./data/twofileinsubdir.zip/twofileinsubdir/byte.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -350,7 +362,8 @@ def test_tiff_read_tar_1():
 
     ds = gdal.Open('/vsitar/./data/byte.tar/byte.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -361,7 +374,8 @@ def test_tiff_read_tar_2():
 
     ds = gdal.Open('/vsitar/./data/byte.tar')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -372,7 +386,8 @@ def test_tiff_read_tgz_1():
 
     ds = gdal.Open('/vsitar/./data/byte.tgz/byte.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
     gdal.Unlink('data/byte.tgz.properties')
@@ -385,7 +400,8 @@ def test_tiff_read_tgz_2():
 
     ds = gdal.Open('/vsitar/./data/byte.tgz')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
     gdal.Unlink('data/byte.tgz.properties')
@@ -421,7 +437,7 @@ def test_tiff_citation():
         print('got: ', wkt)
         pytest.fail('Erdas citation processing failing?')
 
-    
+
 ###############################################################################
 # Check that we can read linear projection parameters properly (#3901)
 
@@ -437,7 +453,8 @@ def test_tiff_linearparmunits():
     srs = osr.SpatialReference(wkt)
 
     fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
-    assert fe == pytest.approx(2000000.0, abs=0.001), 'did not get expected false easting (1)'
+    assert fe == pytest.approx(
+        2000000.0, abs=0.001), 'did not get expected false easting (1)'
 
     # Test the file with the old (broken) GDAL formulation.
 
@@ -448,7 +465,8 @@ def test_tiff_linearparmunits():
     srs = osr.SpatialReference(wkt)
 
     fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
-    assert fe == pytest.approx(609601.219202438, abs=0.001), 'did not get expected false easting (2)'
+    assert fe == pytest.approx(
+        609601.219202438, abs=0.001), 'did not get expected false easting (2)'
 
     # Test the file when using an EPSG code.
 
@@ -459,7 +477,8 @@ def test_tiff_linearparmunits():
     srs = osr.SpatialReference(wkt)
 
     fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
-    assert fe == pytest.approx(2000000.0, abs=0.001), 'did not get expected false easting (3)'
+    assert fe == pytest.approx(
+        2000000.0, abs=0.001), 'did not get expected false easting (3)'
 
 ###############################################################################
 # Check that the GTIFF_LINEAR_UNITS handling works properly (#3901)
@@ -478,7 +497,8 @@ def test_tiff_linearparmunits2():
     srs = osr.SpatialReference(wkt)
 
     fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
-    assert fe == pytest.approx(6561666.66667, abs=0.001), 'did not get expected false easting (1)'
+    assert fe == pytest.approx(
+        6561666.66667, abs=0.001), 'did not get expected false easting (1)'
 
     # Test the file with the correct formulation that is marked as correct.
 
@@ -489,7 +509,8 @@ def test_tiff_linearparmunits2():
     srs = osr.SpatialReference(wkt)
 
     fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
-    assert fe == pytest.approx(2000000.0, abs=0.001), 'did not get expected false easting (2)'
+    assert fe == pytest.approx(
+        2000000.0, abs=0.001), 'did not get expected false easting (2)'
 
     # Test the file with the old (broken) GDAL formulation.
 
@@ -500,7 +521,8 @@ def test_tiff_linearparmunits2():
     srs = osr.SpatialReference(wkt)
 
     fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
-    assert fe == pytest.approx(2000000.0, abs=0.001), 'did not get expected false easting (3)'
+    assert fe == pytest.approx(
+        2000000.0, abs=0.001), 'did not get expected false easting (3)'
 
     gdal.SetConfigOption('GTIFF_LINEAR_UNITS', 'DEFAULT')
 
@@ -528,7 +550,7 @@ def test_tiff_multi_images():
     # Implicitly get the content of the first image (backward compatibility).
     ds = gdal.Open('data/twoimages.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, ('Expected checksum = %d. Got = %d' %
-              (4672, ds.GetRasterBand(1).Checksum()))
+                                                    (4672, ds.GetRasterBand(1).Checksum()))
 
     md = ds.GetMetadata('SUBDATASETS')
     assert md['SUBDATASET_1_NAME'] == 'GTIFF_DIR:1:data/twoimages.tif', \
@@ -539,13 +561,15 @@ def test_tiff_multi_images():
     # Explicitly get the content of the first image.
     ds = gdal.Open('GTIFF_DIR:1:data/twoimages.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
     # Explicitly get the content of the second image.
     ds = gdal.Open('GTIFF_DIR:2:data/twoimages.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds = None
 
 ###############################################################################
@@ -566,19 +590,22 @@ def test_tiff_vsimem():
 
     ds = gdal.Open('/vsimem/tiffinmem', gdal.GA_Update)
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
     ds.GetRasterBand(1).Fill(0)
     ds = None
 
     ds = gdal.Open('/vsimem/tiffinmem')
     assert ds.GetRasterBand(1).Checksum() == 0, \
-        ('Expected checksum = %d. Got = %d' % (0, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (0, ds.GetRasterBand(1).Checksum()))
     ds = None
 
     # Also test with anti-slash
     ds = gdal.Open('/vsimem\\tiffinmem')
     assert ds.GetRasterBand(1).Checksum() == 0, \
-        ('Expected checksum = %d. Got = %d' % (0, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (0, ds.GetRasterBand(1).Checksum()))
     ds = None
 
     # Release memory associated to the in-memory file
@@ -602,7 +629,8 @@ def test_tiff_vsizip_and_mem():
 
     ds = gdal.Open('/vsizip/vsimem/tiffinmem.zip/byte.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672, \
-        ('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (4672, ds.GetRasterBand(1).Checksum()))
 
     # Release memory associated to the in-memory file
     gdal.Unlink('/vsimem/tiffinmem.zip')
@@ -703,14 +731,15 @@ def test_tiff_read_stats_from_pam():
     except OSError:
         pass
 
-    
+
 ###############################################################################
 # Test extracting georeferencing from a .TAB file
 
 
 def test_tiff_read_from_tab():
 
-    ds = gdal.GetDriverByName('GTiff').Create('tmp/tiff_read_from_tab.tif', 1, 1)
+    ds = gdal.GetDriverByName('GTiff').Create(
+        'tmp/tiff_read_from_tab.tif', 1, 1)
     ds = None
 
     f = open('tmp/tiff_read_from_tab.tab', 'wt')
@@ -814,8 +843,8 @@ def test_tiff_read_corrupted_gtiff():
     del ds
 
     err_msg = gdal.GetLastErrorMsg()
-    assert (not (err_msg.find('IO error during') == -1 and \
-       err_msg.find('Error fetching data for field') == -1)), \
+    assert (not (err_msg.find('IO error during') == -1 and
+                 err_msg.find('Error fetching data for field') == -1)), \
         'did not get expected error message'
 
 ###############################################################################
@@ -890,7 +919,8 @@ def test_tiff_read_rpc_tif():
     rpc_md = ds.GetMetadata('RPC')
     ds = None
 
-    assert rpc_md['HEIGHT_OFF'] == '300', ('HEIGHT_OFF wrong:' + rpc_md['HEIGHT_OFF'])
+    assert rpc_md['HEIGHT_OFF'] == '300', (
+        'HEIGHT_OFF wrong:' + rpc_md['HEIGHT_OFF'])
 
     assert rpc_md['LINE_DEN_COEFF'].find('1 -0.00520769693945429') == 0, \
         'LINE_DEN_COEFF wrong'
@@ -914,7 +944,8 @@ def test_tiff_small():
 
     ds = gdal.Open('/vsimem/small.tif')
     assert ds.GetRasterBand(1).Checksum() == 0, \
-        ('Expected checksum = %d. Got = %d' % (0, ds.GetRasterBand(1).Checksum()))
+        ('Expected checksum = %d. Got = %d' %
+         (0, ds.GetRasterBand(1).Checksum()))
 
     # Release memory associated to the in-memory file
     gdal.Unlink('/vsimem/small.tif')
@@ -973,7 +1004,8 @@ def test_tiff_jpeg_rgba_pixel_interleaved():
         cs = ds.GetRasterBand(i + 1).Checksum()
         assert cs == expected_cs[i]
 
-        assert ds.GetRasterBand(i + 1).GetRasterColorInterpretation() == gdal.GCI_RedBand + i
+        assert ds.GetRasterBand(
+            i + 1).GetRasterColorInterpretation() == gdal.GCI_RedBand + i
 
     ds = None
 
@@ -995,7 +1027,8 @@ def test_tiff_jpeg_rgba_band_interleaved():
         cs = ds.GetRasterBand(i + 1).Checksum()
         assert cs == expected_cs[i]
 
-        assert ds.GetRasterBand(i + 1).GetRasterColorInterpretation() == gdal.GCI_RedBand + i
+        assert ds.GetRasterBand(
+            i + 1).GetRasterColorInterpretation() == gdal.GCI_RedBand + i
 
     ds = None
 
@@ -1033,7 +1066,8 @@ def test_tiff_read_vsicurl_multirange():
     webserver_process = None
     webserver_port = 0
 
-    (webserver_process, webserver_port) = webserver.launch(handler=webserver.DispatcherHttpHandler)
+    (webserver_process, webserver_port) = webserver.launch(
+        handler=webserver.DispatcherHttpHandler)
     if webserver_port == 0:
         pytest.skip()
 
@@ -1042,7 +1076,9 @@ def test_tiff_read_vsicurl_multirange():
     try:
         filesize = 262976
         handler = webserver.SequentialHandler()
-        handler.add('HEAD', '/utm.tif', 200, {'Content-Length': '%d' % filesize})
+        handler.add('HEAD', '/utm.tif', 200,
+                    {'Content-Length': '%d' % filesize})
+
         def method(request):
             #sys.stderr.write('%s\n' % str(request.headers))
 
@@ -1055,7 +1091,8 @@ def test_tiff_read_vsicurl_multirange():
                 request.protocol_version = 'HTTP/1.1'
                 request.send_response(206)
                 request.send_header('Content-type', 'application/octet-stream')
-                request.send_header('Content-Range', 'bytes %d-%d/%d' % (start, end, filesize))
+                request.send_header(
+                    'Content-Range', 'bytes %d-%d/%d' % (start, end, filesize))
                 request.send_header('Content-Length', end - start + 1)
                 request.send_header('Connection', 'close')
                 request.end_headers()
@@ -1067,10 +1104,11 @@ def test_tiff_read_vsicurl_multirange():
             handler.add('GET', '/utm.tif', custom_method=method)
 
         with webserver.install_http_handler(handler):
-            with gdaltest.config_options({ 'GTIFF_DIRECT_IO': 'YES',
-                                           'CPL_VSIL_CURL_ALLOWED_EXTENSIONS': '.tif',
-                                           'GDAL_DISABLE_READDIR_ON_OPEN': 'EMPTY_DIR' }):
-                ds = gdal.Open('/vsicurl/http://127.0.0.1:%d/utm.tif' % webserver_port)
+            with gdaltest.config_options({'GTIFF_DIRECT_IO': 'YES',
+                                          'CPL_VSIL_CURL_ALLOWED_EXTENSIONS': '.tif',
+                                          'GDAL_DISABLE_READDIR_ON_OPEN': 'EMPTY_DIR'}):
+                ds = gdal.Open(
+                    '/vsicurl/http://127.0.0.1:%d/utm.tif' % webserver_port)
                 assert ds is not None, 'could not open dataset'
 
                 # Read subsampled data
@@ -1111,7 +1149,7 @@ def test_tiff_read_huge4GB():
         ds = None
         os.remove('tmp/huge4GB.tif')
 
-    
+
 ###############################################################################
 # Test reading a (small) BigTIFF. Tests GTiffCacheOffsetOrCount8()
 
@@ -1135,17 +1173,26 @@ def test_tiff_read_tiff_metadata():
         pytest.skip()
 
     ds = gdal.Open('data/stefan_full_rgba_jpeg_contig.tif')
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_0_0', 'TIFF') == '254'
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_0', 'TIFF') == '770'
-    assert ds.GetRasterBand(1).GetMetadataItem('JPEGTABLES', 'TIFF').find('FFD8') == 0
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_100_0', 'TIFF') is None
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_0_100', 'TIFF') is None
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_100_0', 'TIFF') is None
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_100', 'TIFF') is None
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_0_0', 'TIFF') == '254'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_SIZE_0_0', 'TIFF') == '770'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'JPEGTABLES', 'TIFF').find('FFD8') == 0
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_100_0', 'TIFF') is None
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_0_100', 'TIFF') is None
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_SIZE_100_0', 'TIFF') is None
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_SIZE_0_100', 'TIFF') is None
 
     ds = gdal.Open('data/stefan_full_rgba_jpeg_separate.tif')
-    assert ds.GetRasterBand(4).GetMetadataItem('BLOCK_OFFSET_0_2', 'TIFF') == '11071'
-    assert ds.GetRasterBand(4).GetMetadataItem('BLOCK_SIZE_0_2', 'TIFF') == '188'
+    assert ds.GetRasterBand(4).GetMetadataItem(
+        'BLOCK_OFFSET_0_2', 'TIFF') == '11071'
+    assert ds.GetRasterBand(4).GetMetadataItem(
+        'BLOCK_SIZE_0_2', 'TIFF') == '188'
 
 ###############################################################################
 # Test reading a JPEG-in-TIFF with tiles of irregular size (corrupted image)
@@ -1184,8 +1231,10 @@ def test_tiff_direct_and_virtual_mem_io():
         dt_size = 1
         if dt == gdal.GDT_Int16:
             dt_size = 2
-            mem_ds = gdal.GetDriverByName('MEM').Create('', src_ds.RasterXSize, src_ds.RasterYSize, src_ds.RasterCount, dt)
-            data = src_ds.ReadRaster(0, 0, src_ds.RasterXSize, src_ds.RasterYSize, buf_type=dt)
+            mem_ds = gdal.GetDriverByName('MEM').Create(
+                '', src_ds.RasterXSize, src_ds.RasterYSize, src_ds.RasterCount, dt)
+            data = src_ds.ReadRaster(
+                0, 0, src_ds.RasterXSize, src_ds.RasterYSize, buf_type=dt)
             new_vals = []
             for i in range(4 * src_ds.RasterXSize * src_ds.RasterYSize):
                 if sys.version_info >= (3, 0, 0):
@@ -1198,12 +1247,15 @@ def test_tiff_direct_and_virtual_mem_io():
                 data = ''.encode('latin1').join(new_vals)
             else:
                 data = ''.join(new_vals)
-            mem_ds.WriteRaster(0, 0, src_ds.RasterXSize, src_ds.RasterYSize, data, buf_type=dt)
+            mem_ds.WriteRaster(0, 0, src_ds.RasterXSize,
+                               src_ds.RasterYSize, data, buf_type=dt)
             src_ds = mem_ds
         elif dt == gdal.GDT_CInt16:
             dt_size = 4
-            mem_ds = gdal.GetDriverByName('MEM').Create('', src_ds.RasterXSize, src_ds.RasterYSize, src_ds.RasterCount, dt)
-            data = src_ds.ReadRaster(0, 0, src_ds.RasterXSize, src_ds.RasterYSize, buf_type=dt)
+            mem_ds = gdal.GetDriverByName('MEM').Create(
+                '', src_ds.RasterXSize, src_ds.RasterYSize, src_ds.RasterCount, dt)
+            data = src_ds.ReadRaster(
+                0, 0, src_ds.RasterXSize, src_ds.RasterYSize, buf_type=dt)
             new_vals = []
             for i in range(4 * src_ds.RasterXSize * src_ds.RasterYSize):
                 if sys.version_info >= (3, 0, 0):
@@ -1220,16 +1272,19 @@ def test_tiff_direct_and_virtual_mem_io():
                 data = ''.encode('latin1').join(new_vals)
             else:
                 data = ''.join(new_vals)
-            mem_ds.WriteRaster(0, 0, src_ds.RasterXSize, src_ds.RasterYSize, data, buf_type=dt)
+            mem_ds.WriteRaster(0, 0, src_ds.RasterXSize,
+                               src_ds.RasterYSize, data, buf_type=dt)
             src_ds = mem_ds
 
         for truncated in [False, True]:
             if truncated:
                 nitermax = 4
-                options = [('GTIFF_DIRECT_IO', '/vsimem'), ('GTIFF_VIRTUAL_MEM_IO', '/vsimem')]
+                options = [('GTIFF_DIRECT_IO', '/vsimem'),
+                           ('GTIFF_VIRTUAL_MEM_IO', '/vsimem')]
             else:
                 nitermax = 8
-                options = [('GTIFF_DIRECT_IO', '/vsimem'), ('GTIFF_VIRTUAL_MEM_IO', '/vsimem'), ('GTIFF_VIRTUAL_MEM_IO', 'tmp')]
+                options = [('GTIFF_DIRECT_IO', '/vsimem'), ('GTIFF_VIRTUAL_MEM_IO',
+                                                            '/vsimem'), ('GTIFF_VIRTUAL_MEM_IO', 'tmp')]
             for (option, prefix) in options:
                 if dt == gdal.GDT_CInt16:
                     niter = 3
@@ -1244,48 +1299,58 @@ def test_tiff_direct_and_virtual_mem_io():
                         creation_options = []
                         if (dt == gdal.GDT_CInt16 or dt == gdal.GDT_Int16):
                             creation_options += ['ENDIANNESS=INVERTED']
-                        out_ds = gdal.GetDriverByName('GTiff').CreateCopy(filename, src_ds, options=creation_options)
+                        out_ds = gdal.GetDriverByName('GTiff').CreateCopy(
+                            filename, src_ds, options=creation_options)
                         out_ds.FlushCache()
                         out_ds = None
                     elif i == 1:
                         filename = '%s/tiff_direct_io_separate.tif' % prefix
-                        out_ds = gdal.GetDriverByName('GTiff').CreateCopy(filename, src_ds, options=['INTERLEAVE=BAND'])
+                        out_ds = gdal.GetDriverByName('GTiff').CreateCopy(
+                            filename, src_ds, options=['INTERLEAVE=BAND'])
                         out_ds.FlushCache()
                         out_ds = None
                     elif i == 2:
                         filename = '%s/tiff_direct_io_tiled_contig.tif' % prefix
-                        creation_options = ['TILED=YES', 'BLOCKXSIZE=32', 'BLOCKYSIZE=16']
+                        creation_options = ['TILED=YES',
+                                            'BLOCKXSIZE=32', 'BLOCKYSIZE=16']
                         if (dt == gdal.GDT_CInt16 or dt == gdal.GDT_Int16):
                             creation_options += ['ENDIANNESS=INVERTED']
                         if option == 'GTIFF_VIRTUAL_MEM_IO' and prefix == '/vsimem':
-                            gdal.Translate(filename, src_ds, bandList=[1, 2, 3], creationOptions=creation_options)
+                            gdal.Translate(filename, src_ds, bandList=[
+                                           1, 2, 3], creationOptions=creation_options)
                         else:
-                            out_ds = gdal.GetDriverByName('GTiff').CreateCopy(filename, src_ds, options=creation_options)
+                            out_ds = gdal.GetDriverByName('GTiff').CreateCopy(
+                                filename, src_ds, options=creation_options)
                             out_ds.FlushCache()
                             out_ds = None
                     elif i == 3:
                         filename = '%s/tiff_direct_io_tiled_separate.tif' % prefix
-                        out_ds = gdal.GetDriverByName('GTiff').CreateCopy(filename, src_ds, options=['TILED=YES', 'BLOCKXSIZE=32', 'BLOCKYSIZE=16', 'INTERLEAVE=BAND'])
+                        out_ds = gdal.GetDriverByName('GTiff').CreateCopy(filename, src_ds, options=[
+                            'TILED=YES', 'BLOCKXSIZE=32', 'BLOCKYSIZE=16', 'INTERLEAVE=BAND'])
                         out_ds.FlushCache()
                         out_ds = None
                     elif i == 4:
                         filename = '%s/tiff_direct_io_sparse.tif' % prefix
-                        out_ds = gdal.GetDriverByName('GTiff').Create(filename, 165, 150, 4, dt, options=['SPARSE_OK=YES'])
+                        out_ds = gdal.GetDriverByName('GTiff').Create(
+                            filename, 165, 150, 4, dt, options=['SPARSE_OK=YES'])
                         out_ds.FlushCache()
                         out_ds = None
                     elif i == 5:
                         filename = '%s/tiff_direct_io_sparse_separate.tif' % prefix
-                        out_ds = gdal.GetDriverByName('GTiff').Create(filename, 165, 150, 4, dt, options=['SPARSE_OK=YES', 'INTERLEAVE=BAND'])
+                        out_ds = gdal.GetDriverByName('GTiff').Create(
+                            filename, 165, 150, 4, dt, options=['SPARSE_OK=YES', 'INTERLEAVE=BAND'])
                         out_ds.FlushCache()
                         out_ds = None
                     elif i == 6:
                         filename = '%s/tiff_direct_io_sparse_tiled.tif' % prefix
-                        out_ds = gdal.GetDriverByName('GTiff').Create(filename, 165, 150, 4, dt, options=['SPARSE_OK=YES', 'TILED=YES', 'BLOCKXSIZE=32', 'BLOCKYSIZE=16'])
+                        out_ds = gdal.GetDriverByName('GTiff').Create(filename, 165, 150, 4, dt, options=[
+                            'SPARSE_OK=YES', 'TILED=YES', 'BLOCKXSIZE=32', 'BLOCKYSIZE=16'])
                         out_ds.FlushCache()
                         out_ds = None
                     else:
                         filename = '%s/tiff_direct_io_sparse_tiled_separate.tif' % prefix
-                        out_ds = gdal.GetDriverByName('GTiff').Create(filename, 165, 150, 4, dt, options=['SPARSE_OK=YES', 'TILED=YES', 'BLOCKXSIZE=32', 'BLOCKYSIZE=16', 'INTERLEAVE=BAND'])
+                        out_ds = gdal.GetDriverByName('GTiff').Create(filename, 165, 150, 4, dt, options=[
+                            'SPARSE_OK=YES', 'TILED=YES', 'BLOCKXSIZE=32', 'BLOCKYSIZE=16', 'INTERLEAVE=BAND'])
                         out_ds.FlushCache()
                         out_ds = None
 
@@ -1294,14 +1359,17 @@ def test_tiff_direct_and_virtual_mem_io():
                         nbands = ds.RasterCount
                         nxsize = ds.RasterXSize
                         nysize = ds.RasterYSize
-                        (nblockxsize, nblockysize) = ds.GetRasterBand(1).GetBlockSize()
-                        band_interleaved = ds.GetMetadataItem('INTERLEAVE', 'IMAGE_STRUCTURE') == 'BAND'
+                        (nblockxsize, nblockysize) = ds.GetRasterBand(
+                            1).GetBlockSize()
+                        band_interleaved = ds.GetMetadataItem(
+                            'INTERLEAVE', 'IMAGE_STRUCTURE') == 'BAND'
                         ds = None
 
                         padding = 0
                         if nblockxsize < nxsize:
                             if (nysize % nblockysize) != 0:
-                                padding = ((nxsize + nblockxsize - 1) / nblockxsize * nblockxsize) * (nblockysize - (nysize % nblockysize))
+                                padding = ((nxsize + nblockxsize - 1) / nblockxsize *
+                                           nblockxsize) * (nblockysize - (nysize % nblockysize))
                             if(nxsize % nblockxsize) != 0:
                                 padding += nblockxsize - (nxsize % nblockxsize)
                             padding *= dt_size
@@ -1317,7 +1385,8 @@ def test_tiff_direct_and_virtual_mem_io():
                         data = gdal.VSIFReadL(1, 1000000, f)
                         gdal.VSIFCloseL(f)
                         f = gdal.VSIFOpenL(filename, 'wb')
-                        gdal.VSIFWriteL(data, 1, len(data) - padding - to_remove, f)
+                        gdal.VSIFWriteL(data, 1, len(data) -
+                                        padding - to_remove, f)
                         gdal.VSIFCloseL(f)
 
                     ds = gdal.Open(filename)
@@ -1330,29 +1399,50 @@ def test_tiff_direct_and_virtual_mem_io():
 
                     if truncated:
                         gdal.PushErrorHandler()
-                    ref_data_native_type = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize)
-                    ref_data_native_type_whole = ds.GetRasterBand(1).ReadRaster()
-                    ref_data_native_type_downsampled = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
-                    ref_data_native_type_downsampled_not_nearest = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
-                    ref_data_native_type_upsampled = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=nbands * xsize, buf_ysize=nbands * ysize)
-                    ref_data_native_type_custom_spacings = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size)
-                    ref_data_float32 = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
-                    ref_nbands_data_native_type = ds.ReadRaster(xoff, yoff, xsize, ysize)
+                    ref_data_native_type = ds.GetRasterBand(
+                        1).ReadRaster(xoff, yoff, xsize, ysize)
+                    ref_data_native_type_whole = ds.GetRasterBand(
+                        1).ReadRaster()
+                    ref_data_native_type_downsampled = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
+                    ref_data_native_type_downsampled_not_nearest = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
+                    ref_data_native_type_upsampled = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=nbands * xsize, buf_ysize=nbands * ysize)
+                    ref_data_native_type_custom_spacings = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size)
+                    ref_data_float32 = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
+                    ref_nbands_data_native_type = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize)
                     ref_nbands_data_native_type_whole = ds.ReadRaster()
-                    ref_nbands_data_native_type_downsampled = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
-                    ref_nbands_data_native_type_downsampled_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    ref_nbands_data_native_type_downsampled_not_nearest = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
-                    ref_nbands_data_native_type_upsampled = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=4 * xsize, buf_ysize=4 * ysize)
-                    ref_nbands_data_native_type_downsampled_x_upsampled_y = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=32 * ysize)
-                    ref_nbands_data_native_type_unordered_list = ds.ReadRaster(xoff, yoff, xsize, ysize, band_list=[nbands - i for i in range(nbands)])
-                    ref_nbands_data_native_type_pixel_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    ref_nbands_data_native_type_pixel_interleaved_whole = ds.ReadRaster(buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    ref_nbands_m_1_data_native_type_pixel_interleaved_with_extra_space = ds.ReadRaster(xoff, yoff, xsize, ysize, band_list=[i + 1 for i in range(nbands - 1)], buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    ref_nbands_data_float32 = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
-                    ref_nbands_data_float32_pixel_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32, buf_pixel_space=nbands * sizeof_float, buf_band_space=1 * sizeof_float)
-                    ref_nbands_data_native_type_custom_spacings = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=2 * nbands * dt_size, buf_band_space=dt_size)
+                    ref_nbands_data_native_type_downsampled = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
+                    ref_nbands_data_native_type_downsampled_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(
+                        xsize / 2), buf_ysize=int(ysize / 2), buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    ref_nbands_data_native_type_downsampled_not_nearest = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(
+                        xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
+                    ref_nbands_data_native_type_upsampled = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=4 * xsize, buf_ysize=4 * ysize)
+                    ref_nbands_data_native_type_downsampled_x_upsampled_y = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=32 * ysize)
+                    ref_nbands_data_native_type_unordered_list = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, band_list=[nbands - i for i in range(nbands)])
+                    ref_nbands_data_native_type_pixel_interleaved = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    ref_nbands_data_native_type_pixel_interleaved_whole = ds.ReadRaster(
+                        buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    ref_nbands_m_1_data_native_type_pixel_interleaved_with_extra_space = ds.ReadRaster(xoff, yoff, xsize, ysize, band_list=[
+                                                                                                       i + 1 for i in range(nbands - 1)], buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    ref_nbands_data_float32 = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
+                    ref_nbands_data_float32_pixel_interleaved = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32, buf_pixel_space=nbands * sizeof_float, buf_band_space=1 * sizeof_float)
+                    ref_nbands_data_native_type_custom_spacings = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_pixel_space=2 * nbands * dt_size, buf_band_space=dt_size)
                     if nbands == 3:
-                        ref_nbands_data_native_type_custom_spacings_2 = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=4 * dt_size, buf_band_space=dt_size)
+                        ref_nbands_data_native_type_custom_spacings_2 = ds.ReadRaster(
+                            xoff, yoff, xsize, ysize, buf_pixel_space=4 * dt_size, buf_band_space=dt_size)
                     if truncated:
                         gdal.PopErrorHandler()
                     ds = None
@@ -1362,31 +1452,54 @@ def test_tiff_direct_and_virtual_mem_io():
                     old_val = gdal.GetConfigOption(option)
                     gdal.SetConfigOption(option, 'YES')
                     ds = gdal.Open(filename)
-                    band_interleaved = ds.GetMetadataItem('INTERLEAVE', 'IMAGE_STRUCTURE') == 'BAND'
-                    got_data_native_type = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize)
-                    got_data_native_type_whole = ds.GetRasterBand(1).ReadRaster()
-                    got_data_native_type_downsampled = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
-                    got_data_native_type_downsampled_not_nearest = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
-                    got_data_native_type_upsampled = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=nbands * xsize, buf_ysize=nbands * ysize)
-                    got_data_native_type_custom_spacings = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size)
-                    got_data_float32 = ds.GetRasterBand(1).ReadRaster(xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
-                    got_nbands_data_native_type = ds.ReadRaster(xoff, yoff, xsize, ysize)
+                    band_interleaved = ds.GetMetadataItem(
+                        'INTERLEAVE', 'IMAGE_STRUCTURE') == 'BAND'
+                    got_data_native_type = ds.GetRasterBand(
+                        1).ReadRaster(xoff, yoff, xsize, ysize)
+                    got_data_native_type_whole = ds.GetRasterBand(
+                        1).ReadRaster()
+                    got_data_native_type_downsampled = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
+                    got_data_native_type_downsampled_not_nearest = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
+                    got_data_native_type_upsampled = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=nbands * xsize, buf_ysize=nbands * ysize)
+                    got_data_native_type_custom_spacings = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size)
+                    got_data_float32 = ds.GetRasterBand(1).ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
+                    got_nbands_data_native_type = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize)
                     got_nbands_data_native_type_whole = ds.ReadRaster()
-                    got_nbands_data_native_type_bottom_right_downsampled = ds.ReadRaster(ds.RasterXSize - 2, ds.RasterYSize - 1, 2, 1, buf_xsize=1, buf_ysize=1, buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    got_nbands_data_native_type_downsampled = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
-                    got_nbands_data_native_type_downsampled_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    got_nbands_data_native_type_downsampled_not_nearest = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
-                    got_nbands_data_native_type_upsampled = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=4 * xsize, buf_ysize=4 * ysize)
-                    got_nbands_data_native_type_downsampled_x_upsampled_y = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=32 * ysize)
-                    got_nbands_data_native_type_unordered_list = ds.ReadRaster(xoff, yoff, xsize, ysize, band_list=[nbands - i for i in range(nbands)])
-                    got_nbands_data_native_type_pixel_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    got_nbands_data_native_type_pixel_interleaved_whole = ds.ReadRaster(buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    got_nbands_m_1_data_native_type_pixel_interleaved_with_extra_space = ds.ReadRaster(xoff, yoff, xsize, ysize, band_list=[i + 1 for i in range(nbands - 1)], buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
-                    got_nbands_data_float32 = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
-                    got_nbands_data_float32_pixel_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32, buf_pixel_space=nbands * sizeof_float, buf_band_space=1 * sizeof_float)
-                    got_nbands_data_native_type_custom_spacings = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=2 * nbands * dt_size, buf_band_space=dt_size)
+                    got_nbands_data_native_type_bottom_right_downsampled = ds.ReadRaster(
+                        ds.RasterXSize - 2, ds.RasterYSize - 1, 2, 1, buf_xsize=1, buf_ysize=1, buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    got_nbands_data_native_type_downsampled = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=int(ysize / 2))
+                    got_nbands_data_native_type_downsampled_interleaved = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(
+                        xsize / 2), buf_ysize=int(ysize / 2), buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    got_nbands_data_native_type_downsampled_not_nearest = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_xsize=int(
+                        xsize / 2), buf_ysize=int(ysize / 2), resample_alg=gdal.GRIORA_Bilinear)
+                    got_nbands_data_native_type_upsampled = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=4 * xsize, buf_ysize=4 * ysize)
+                    got_nbands_data_native_type_downsampled_x_upsampled_y = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_xsize=int(xsize / 2), buf_ysize=32 * ysize)
+                    got_nbands_data_native_type_unordered_list = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, band_list=[nbands - i for i in range(nbands)])
+                    got_nbands_data_native_type_pixel_interleaved = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    got_nbands_data_native_type_pixel_interleaved_whole = ds.ReadRaster(
+                        buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    got_nbands_m_1_data_native_type_pixel_interleaved_with_extra_space = ds.ReadRaster(xoff, yoff, xsize, ysize, band_list=[
+                                                                                                       i + 1 for i in range(nbands - 1)], buf_pixel_space=nbands * dt_size, buf_band_space=dt_size)
+                    got_nbands_data_float32 = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32)
+                    got_nbands_data_float32_pixel_interleaved = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_type=gdal.GDT_Float32, buf_pixel_space=nbands * sizeof_float, buf_band_space=1 * sizeof_float)
+                    got_nbands_data_native_type_custom_spacings = ds.ReadRaster(
+                        xoff, yoff, xsize, ysize, buf_pixel_space=2 * nbands * dt_size, buf_band_space=dt_size)
                     if nbands == 3:
-                        got_nbands_data_native_type_custom_spacings_2 = ds.ReadRaster(xoff, yoff, xsize, ysize, buf_pixel_space=4 * dt_size, buf_band_space=dt_size)
+                        got_nbands_data_native_type_custom_spacings_2 = ds.ReadRaster(
+                            xoff, yoff, xsize, ysize, buf_pixel_space=4 * dt_size, buf_band_space=dt_size)
                     ds = None
                     gdal.SetConfigOption(option, old_val)
                     if truncated:
@@ -1537,13 +1650,14 @@ def test_tiff_direct_and_virtual_mem_io():
                         pytest.fail(i)
 
     ds = gdal.Open('data/byte.tif')  # any GTiff file will do
-    unreached = ds.GetMetadataItem('UNREACHED_VIRTUALMEMIO_CODE_PATH', '_DEBUG_')
+    unreached = ds.GetMetadataItem(
+        'UNREACHED_VIRTUALMEMIO_CODE_PATH', '_DEBUG_')
     ds = None
     if unreached:
         print('unreached = %s' % unreached)
         pytest.fail('missing code coverage in VirtualMemIO()')
 
-    
+
 ###############################################################################
 # Check read Digital Globe metadata IMD & RPB format
 
@@ -1577,7 +1691,7 @@ def test_tiff_read_md1():
 
     assert not os.path.exists('data/md_dg.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Digital Globe metadata XML format
 
@@ -1611,7 +1725,7 @@ def test_tiff_read_md2():
 
     assert not os.path.exists('data/md_dg_2.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read GeoEye metadata format
 
@@ -1645,7 +1759,7 @@ def test_tiff_read_md3():
 
     assert not os.path.exists('data/md_ge_rgb_0010000.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read OrbView metadata format
 
@@ -1679,7 +1793,7 @@ def test_tiff_read_md4():
 
     assert not os.path.exists('data/md_ov.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Resurs-DK1 metadata format
 
@@ -1713,7 +1827,7 @@ def test_tiff_read_md5():
 
     assert not os.path.exists('data/md_rdk1.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Landsat metadata format
 
@@ -1747,7 +1861,7 @@ def test_tiff_read_md6():
 
     assert not os.path.exists('data/md_ls_b1.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Spot metadata format
 
@@ -1781,7 +1895,7 @@ def test_tiff_read_md7():
 
     assert not os.path.exists('data/spot/md_spot.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read RapidEye metadata format
 
@@ -1815,7 +1929,7 @@ def test_tiff_read_md8():
 
     assert not os.path.exists('data/md_re.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Alos metadata format
 
@@ -1848,7 +1962,7 @@ def test_tiff_read_md9():
 
     assert not os.path.exists('data/alos/IMG-md_alos.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Eros metadata format
 
@@ -1882,7 +1996,7 @@ def test_tiff_read_md10():
 
     assert not os.path.exists('data/md_eros.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Kompsat metadata format
 
@@ -1916,14 +2030,15 @@ def test_tiff_read_md11():
 
     assert not os.path.exists('data/md_kompsat.tif.aux.xml')
 
-    
+
 ###############################################################################
 # Check read Dimap metadata format
 
 
 def test_tiff_read_md12():
 
-    ds = gdal.Open('../gdrivers/data/dimap2/IMG_foo_R2C1.TIF', gdal.GA_ReadOnly)
+    ds = gdal.Open('../gdrivers/data/dimap2/IMG_foo_R2C1.TIF',
+                   gdal.GA_ReadOnly)
     filelist = ds.GetFileList()
 
     assert len(filelist) == 3, 'did not get expected file list.'
@@ -1950,7 +2065,8 @@ def test_tiff_read_md12():
     assert not os.path.exists('data/md_kompsat.tif.aux.xml')
 
     # Test not valid DIMAP product [https://github.com/OSGeo/gdal/issues/431]
-    shutil.copy('../gdrivers/data/dimap2/IMG_foo_R2C1.TIF', 'tmp/IMG_foo_temp.TIF')
+    shutil.copy('../gdrivers/data/dimap2/IMG_foo_R2C1.TIF',
+                'tmp/IMG_foo_temp.TIF')
     shutil.copy('../gdrivers/data/dimap2/DIM_foo.XML', 'tmp/DIM_foo.XML')
     shutil.copy('../gdrivers/data/dimap2/RPC_foo.XML', 'tmp/RPC_foo.XML')
     ds = gdal.Open('tmp/IMG_foo_temp.TIF', gdal.GA_ReadOnly)
@@ -2029,7 +2145,8 @@ def test_tiff_read_minisblack_as_rgba():
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
     ds = gdal.Open('data/byte.tif')
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-    got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+    got_cs = [ds.GetRasterBand(i + 1).Checksum()
+              for i in range(ds.RasterCount)]
     assert got_cs == [4672, 4672, 4672, 4873]
     ds = None
 
@@ -2045,7 +2162,8 @@ def test_tiff_read_colortable_as_rgba():
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
     ds = gdal.Open('data/test_average_palette.tif')
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-    got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+    got_cs = [ds.GetRasterBand(i + 1).Checksum()
+              for i in range(ds.RasterCount)]
     assert got_cs == [2433, 2433, 2433, 4873]
     ds = None
 
@@ -2061,7 +2179,8 @@ def test_tiff_read_logl_as_rgba():
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
     ds = gdal.Open('data/uint16_sgilog.tif')
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-    got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+    got_cs = [ds.GetRasterBand(i + 1).Checksum()
+              for i in range(ds.RasterCount)]
     # I'm pretty sure this isn't the expected result...
     assert got_cs == [0, 0, 0, 4873]
     ds = None
@@ -2082,7 +2201,8 @@ def test_tiff_read_strip_separate_as_rgba():
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
     ds = gdal.Open('/vsimem/tiff_read_strip_separate_as_rgba.tif')
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-    got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+    got_cs = [ds.GetRasterBand(i + 1).Checksum()
+              for i in range(ds.RasterCount)]
     assert got_cs == [21212, 21053, 21349, 30658]
     ds = None
 
@@ -2096,7 +2216,8 @@ def test_tiff_read_strip_separate_as_rgba():
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
     ds = gdal.Open('/vsimem/tiff_read_strip_separate_as_rgba.tif')
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-    got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+    got_cs = [ds.GetRasterBand(i + 1).Checksum()
+              for i in range(ds.RasterCount)]
     assert got_cs == [21212, 21212, 21212, 30658]
     ds = None
 
@@ -2118,7 +2239,8 @@ def test_tiff_read_tiled_separate_as_rgba():
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
     ds = gdal.Open('/vsimem/tiff_read_tiled_separate_as_rgba.tif')
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-    got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+    got_cs = [ds.GetRasterBand(i + 1).Checksum()
+              for i in range(ds.RasterCount)]
     assert got_cs == [21212, 21053, 21349, 30658]
     ds = None
 
@@ -2131,7 +2253,8 @@ def test_tiff_read_tiled_separate_as_rgba():
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', 'YES')
     ds = gdal.Open('/vsimem/tiff_read_tiled_separate_as_rgba.tif')
     gdal.SetConfigOption('GTIFF_FORCE_RGBA', None)
-    got_cs = [ds.GetRasterBand(i + 1).Checksum() for i in range(ds.RasterCount)]
+    got_cs = [ds.GetRasterBand(i + 1).Checksum()
+              for i in range(ds.RasterCount)]
     assert got_cs == [4672, 4672, 4672, 4873]
     ds = None
 
@@ -2161,7 +2284,8 @@ def test_tiff_read_wrong_number_extrasamples():
     with gdaltest.error_handler():
         ds = gdal.Open('data/6band_wrong_number_extrasamples.tif')
     assert gdal.GetLastErrorMsg().find('Wrong number of ExtraSamples') >= 0
-    assert ds.GetRasterBand(6).GetRasterColorInterpretation() == gdal.GCI_AlphaBand
+    assert ds.GetRasterBand(
+        6).GetRasterColorInterpretation() == gdal.GCI_AlphaBand
 
 ###############################################################################
 # Test that we can read a one-trip TIFF without StripByteCounts tag
@@ -2181,39 +2305,60 @@ def test_tiff_read_one_strip_no_bytecount():
 def test_tiff_read_nogeoref():
 
     tests = [(None, True, True, False, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             (None, True, True, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             (None, False, True, True, 'OSGB_1936', (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
-             (None, True, False, False, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             (None, True, True, True,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             (None, False, True, True, 'OSGB_1936',
+              (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
+             (None, True, False, False,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
              (None, False, True, False, '', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
              (None, False, False, False, '', (0.0, 1.0, 0.0, 0.0, 0.0, 1.0)),
              ('INTERNAL', True, True, False, '', (0.0, 1.0, 0.0, 0.0, 0.0, 1.0)),
-             ('INTERNAL,PAM', True, True, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             ('INTERNAL,WORLDFILE', True, True, True, '', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
-             ('INTERNAL,PAM,WORLDFILE', True, True, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             ('INTERNAL,WORLDFILE,PAM', True, True, True, 'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
-             ('WORLDFILE,PAM,INTERNAL', False, False, True, '', (0.0, 1.0, 0.0, 0.0, 0.0, 1.0)),
-             ('PAM,WORLDFILE,INTERNAL', False, False, True, '', (0.0, 1.0, 0.0, 0.0, 0.0, 1.0)),
-             ('TABFILE,WORLDFILE,INTERNAL', True, True, True, 'OSGB_1936', (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
-             ('PAM', True, True, False, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             ('PAM,WORLDFILE', True, True, False, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             ('WORLDFILE', True, True, False, '', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
-             ('WORLDFILE,PAM', True, True, False, 'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
-             ('WORLDFILE,INTERNAL', True, True, False, '', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
-             ('WORLDFILE,PAM,INTERNAL', True, True, False, 'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
-             ('WORLDFILE,INTERNAL,PAM', True, True, False, 'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('INTERNAL,PAM', True, True, True,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             ('INTERNAL,WORLDFILE', True, True, True,
+              '', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('INTERNAL,PAM,WORLDFILE', True, True, True,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             ('INTERNAL,WORLDFILE,PAM', True, True, True,
+              'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('WORLDFILE,PAM,INTERNAL', False, False,
+              True, '', (0.0, 1.0, 0.0, 0.0, 0.0, 1.0)),
+             ('PAM,WORLDFILE,INTERNAL', False, False,
+              True, '', (0.0, 1.0, 0.0, 0.0, 0.0, 1.0)),
+             ('TABFILE,WORLDFILE,INTERNAL', True, True, True,
+              'OSGB_1936', (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
+             ('PAM', True, True, False,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             ('PAM,WORLDFILE', True, True, False,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             ('WORLDFILE', True, True, False, '',
+              (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('WORLDFILE,PAM', True, True, False,
+              'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('WORLDFILE,INTERNAL', True, True, False,
+              '', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('WORLDFILE,PAM,INTERNAL', True, True, False,
+              'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('WORLDFILE,INTERNAL,PAM', True, True, False,
+              'LOCAL_CS["PAM"]', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
              ('NONE', True, True, False, '', (0.0, 1.0, 0.0, 0.0, 0.0, 1.0)),
-            ]
+             ]
 
     for (config_option_value, copy_pam, copy_worldfile, copy_tabfile, expected_srs, expected_gt) in tests:
         for iteration in range(2):
             gdal.SetConfigOption('GDAL_GEOREF_SOURCES', config_option_value)
-            gdal.FileFromMemBuffer('/vsimem/byte_nogeoref.tif', open('data/byte_nogeoref.tif', 'rb').read())
+            gdal.FileFromMemBuffer(
+                '/vsimem/byte_nogeoref.tif', open('data/byte_nogeoref.tif', 'rb').read())
             if copy_pam:
-                gdal.FileFromMemBuffer('/vsimem/byte_nogeoref.tif.aux.xml', open('data/byte_nogeoref.tif.aux.xml', 'rb').read())
+                gdal.FileFromMemBuffer(
+                    '/vsimem/byte_nogeoref.tif.aux.xml', open('data/byte_nogeoref.tif.aux.xml', 'rb').read())
             if copy_worldfile:
-                gdal.FileFromMemBuffer('/vsimem/byte_nogeoref.tfw', open('data/byte_nogeoref.tfw', 'rb').read())
+                gdal.FileFromMemBuffer(
+                    '/vsimem/byte_nogeoref.tfw', open('data/byte_nogeoref.tfw', 'rb').read())
             if copy_tabfile:
-                gdal.FileFromMemBuffer('/vsimem/byte_nogeoref.tab', open('data/byte_nogeoref.tab', 'rb').read())
+                gdal.FileFromMemBuffer(
+                    '/vsimem/byte_nogeoref.tab', open('data/byte_nogeoref.tab', 'rb').read())
 
             ds = gdal.Open('/vsimem/byte_nogeoref.tif')
             if iteration == 0:
@@ -2232,14 +2377,16 @@ def test_tiff_read_nogeoref():
             if gt != expected_gt:
                 print('Got ' + str(gt))
                 print('Expected ' + str(expected_gt))
-                pytest.fail('Iteration %d, did not get expected gt for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
+                pytest.fail('Iteration %d, did not get expected gt for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (
+                    iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
 
             if (expected_srs == '' and srs_wkt != '') or (expected_srs != '' and expected_srs not in srs_wkt):
                 print('Got ' + srs_wkt)
                 print('Expected ' + expected_srs)
-                pytest.fail('Iteration %d, did not get expected SRS for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
+                pytest.fail('Iteration %d, did not get expected SRS for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (
+                    iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
 
-    
+
 ###############################################################################
 # Test GDAL_GEOREF_SOURCES
 
@@ -2247,32 +2394,50 @@ def test_tiff_read_nogeoref():
 def test_tiff_read_inconsistent_georef():
 
     tests = [(None, True, True, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             (None, False, True, True, '26711', (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
-             (None, False, False, True, '26711', (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
-             (None, False, True, False, '26711', (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
-             (None, False, False, False, '26711', (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
-             (None, True, True, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             (None, True, False, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             (None, True, True, False, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             (None, True, False, False, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             ('INTERNAL', True, True, True, '26711', (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
-             ('PAM', True, True, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             ('PAM,TABFILE', True, True, True, 'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
-             ('WORLDFILE', True, True, True, '', (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
-             ('TABFILE', True, True, True, 'OSGB_1936', (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
-             ('TABFILE,PAM', True, True, True, 'OSGB_1936', (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
-            ]
+             (None, False, True, True, '26711',
+              (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
+             (None, False, False, True, '26711',
+              (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
+             (None, False, True, False, '26711',
+              (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
+             (None, False, False, False, '26711',
+              (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
+             (None, True, True, True,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             (None, True, False, True,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             (None, True, True, False,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             (None, True, False, False,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             ('INTERNAL', True, True, True, '26711',
+              (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)),
+             ('PAM', True, True, True,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             ('PAM,TABFILE', True, True, True,
+              'LOCAL_CS["PAM"]', (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)),
+             ('WORLDFILE', True, True, True, '',
+              (99.5, 1.0, 0.0, 200.5, 0.0, -1.0)),
+             ('TABFILE', True, True, True, 'OSGB_1936',
+              (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
+             ('TABFILE,PAM', True, True, True, 'OSGB_1936',
+              (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0)),
+             ]
 
     for (config_option_value, copy_pam, copy_worldfile, copy_tabfile, expected_srs, expected_gt) in tests:
         for iteration in range(2):
             gdal.SetConfigOption('GDAL_GEOREF_SOURCES', config_option_value)
-            gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tif', open('data/byte_inconsistent_georef.tif', 'rb').read())
+            gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tif',
+                                   open('data/byte_inconsistent_georef.tif', 'rb').read())
             if copy_pam:
-                gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tif.aux.xml', open('data/byte_inconsistent_georef.tif.aux.xml', 'rb').read())
+                gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tif.aux.xml', open(
+                    'data/byte_inconsistent_georef.tif.aux.xml', 'rb').read())
             if copy_worldfile:
-                gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tfw', open('data/byte_inconsistent_georef.tfw', 'rb').read())
+                gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tfw',
+                                       open('data/byte_inconsistent_georef.tfw', 'rb').read())
             if copy_tabfile:
-                gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tab', open('data/byte_inconsistent_georef.tab', 'rb').read())
+                gdal.FileFromMemBuffer('/vsimem/byte_inconsistent_georef.tab',
+                                       open('data/byte_inconsistent_georef.tab', 'rb').read())
             ds = gdal.Open('/vsimem/byte_inconsistent_georef.tif')
             if iteration == 0:
                 gt = ds.GetGeoTransform()
@@ -2290,14 +2455,16 @@ def test_tiff_read_inconsistent_georef():
             if gt != expected_gt:
                 print('Got ' + str(gt))
                 print('Expected ' + str(expected_gt))
-                pytest.fail('Iteration %d, did not get expected gt for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
+                pytest.fail('Iteration %d, did not get expected gt for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (
+                    iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
 
             if (expected_srs == '' and srs_wkt != '') or (expected_srs != '' and expected_srs not in srs_wkt):
                 print('Got ' + srs_wkt)
                 print('Expected ' + expected_srs)
-                pytest.fail('Iteration %d, did not get expected SRS for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
+                pytest.fail('Iteration %d, did not get expected SRS for %s,copy_pam=%s,copy_worldfile=%s,copy_tabfile=%s' % (
+                    iteration, config_option_value, str(copy_pam), str(copy_worldfile), str(copy_tabfile)))
 
-    
+
 ###############################################################################
 # Test GDAL_GEOREF_SOURCES
 
@@ -2314,13 +2481,15 @@ def test_tiff_read_gcp_internal_and_auxxml():
              ('PAM', False, '', 0),
              ('PAM,INTERNAL', True, 'LOCAL_CS["PAM"]', 1),
              ('PAM,INTERNAL', False, '4326', 2),
-            ]
+             ]
 
     for (config_option_value, copy_pam, expected_srs, expected_gcp_count) in tests:
         for iteration in range(2):
-            gdal.FileFromMemBuffer('/vsimem/byte_gcp.tif', open('data/byte_gcp.tif', 'rb').read())
+            gdal.FileFromMemBuffer(
+                '/vsimem/byte_gcp.tif', open('data/byte_gcp.tif', 'rb').read())
             if copy_pam:
-                gdal.FileFromMemBuffer('/vsimem/byte_gcp.tif.aux.xml', open('data/byte_gcp.tif.aux.xml', 'rb').read())
+                gdal.FileFromMemBuffer(
+                    '/vsimem/byte_gcp.tif.aux.xml', open('data/byte_gcp.tif.aux.xml', 'rb').read())
             open_options = []
             if config_option_value is not None:
                 open_options += ['GEOREF_SOURCES=' + config_option_value]
@@ -2338,14 +2507,16 @@ def test_tiff_read_gcp_internal_and_auxxml():
             if gcp_count != expected_gcp_count:
                 print('Got ' + str(gcp_count))
                 print('Expected ' + str(expected_gcp_count))
-                pytest.fail('Iteration %d, did not get expected gcp count for %s,copy_pam=%s' % (iteration, config_option_value, str(copy_pam)))
+                pytest.fail('Iteration %d, did not get expected gcp count for %s,copy_pam=%s' % (
+                    iteration, config_option_value, str(copy_pam)))
 
             if (expected_srs == '' and srs_wkt != '') or (expected_srs != '' and expected_srs not in srs_wkt):
                 print('Got ' + srs_wkt)
                 print('Expected ' + expected_srs)
-                pytest.fail('Iteration %d, did not get expected SRS for %s,copy_pam=%s' % (iteration, config_option_value, str(copy_pam)))
+                pytest.fail('Iteration %d, did not get expected SRS for %s,copy_pam=%s' % (
+                    iteration, config_option_value, str(copy_pam)))
 
-    
+
 ###############################################################################
 # Test reading .tif + .aux
 
@@ -2374,8 +2545,10 @@ def test_tiff_read_aux():
 
 def test_tiff_read_one_band_from_two_bands():
 
-    gdal.Translate('/vsimem/tiff_read_one_band_from_two_bands.tif', 'data/byte.tif', options='-b 1 -b 1')
-    gdal.Translate('/vsimem/tiff_read_one_band_from_two_bands_dst.tif', '/vsimem/tiff_read_one_band_from_two_bands.tif', options='-b 1')
+    gdal.Translate('/vsimem/tiff_read_one_band_from_two_bands.tif',
+                   'data/byte.tif', options='-b 1 -b 1')
+    gdal.Translate('/vsimem/tiff_read_one_band_from_two_bands_dst.tif',
+                   '/vsimem/tiff_read_one_band_from_two_bands.tif', options='-b 1')
 
     ds = gdal.Open('/vsimem/tiff_read_one_band_from_two_bands_dst.tif')
     assert ds.GetRasterBand(1).Checksum() == 4672
@@ -2394,7 +2567,7 @@ def test_tiff_read_jpeg_cloud_optimized():
         assert cs0 == 4743 and cs1 == 1133, i
         ds = None
 
-    
+
 # This one was generated with a buggy code that emit JpegTables with mode == 1
 # when creating the overview directory but failed to properly set this mode while
 # writing the imagery. libjpeg-6b emits a 'JPEGLib:Huffman table 0x00 was not defined'
@@ -2403,7 +2576,8 @@ def test_tiff_read_jpeg_cloud_optimized():
 
 def test_tiff_read_corrupted_jpeg_cloud_optimized():
 
-    ds = gdal.Open('data/byte_ovr_jpeg_tablesmode_not_correctly_set_on_ovr.tif')
+    ds = gdal.Open(
+        'data/byte_ovr_jpeg_tablesmode_not_correctly_set_on_ovr.tif')
     cs0 = ds.GetRasterBand(1).Checksum()
     assert cs0 == 4743
 
@@ -2414,7 +2588,7 @@ def test_tiff_read_corrupted_jpeg_cloud_optimized():
     elif cs1 != 1133:
         pytest.fail(cs1)
 
-    
+
 ###############################################################################
 # Test reading YCbCr images with LZW compression
 
@@ -2445,7 +2619,7 @@ def test_tiff_read_ycbcr_lzw():
         assert got_cs1 == cs1 and got_cs2 == cs2 and got_cs3 == cs3, \
             (filename, got_cs1, got_cs2, got_cs3)
 
-    
+
 ###############################################################################
 # Test reading YCbCr images with nbits > 8
 
@@ -2487,11 +2661,11 @@ def test_tiff_read_arcgis93_geodataxform_gcp():
     assert ds.GetGCPProjection().find('26712') >= 0
     assert ds.GetGCPCount() == 16
     gcp = ds.GetGCPs()[0]
-    assert (gcp.GCPPixel == pytest.approx(565, abs=1e-5) and \
-       gcp.GCPLine == pytest.approx(11041, abs=1e-5) and \
-       gcp.GCPX == pytest.approx(500000, abs=1e-5) and \
-       gcp.GCPY == pytest.approx(4705078.79016612, abs=1e-5) and \
-       gcp.GCPZ == pytest.approx(0, abs=1e-5))
+    assert (gcp.GCPPixel == pytest.approx(565, abs=1e-5) and
+            gcp.GCPLine == pytest.approx(11041, abs=1e-5) and
+            gcp.GCPX == pytest.approx(500000, abs=1e-5) and
+            gcp.GCPY == pytest.approx(4705078.79016612, abs=1e-5) and
+            gcp.GCPZ == pytest.approx(0, abs=1e-5))
 
 ###############################################################################
 # Test reading file with block size > signed int 32 bit
@@ -2601,7 +2775,7 @@ def test_tiff_read_leak_ZIPSetupDecode():
         for i in range(ds.RasterCount):
             ds.GetRasterBand(i + 1).Checksum()
 
-    
+
 ###############################################################################
 
 
@@ -2615,7 +2789,7 @@ def test_tiff_read_excessive_memory_TIFFFillStrip():
         for i in range(ds.RasterCount):
             ds.GetRasterBand(i + 1).Checksum()
 
-    
+
 ###############################################################################
 
 
@@ -2628,7 +2802,7 @@ def test_tiff_read_excessive_memory_TIFFFillStrip2():
         ds = gdal.Open('data/excessive-memory-TIFFFillStrip2.tif')
         ds.GetRasterBand(1).Checksum()
 
-    
+
 ###############################################################################
 
 
@@ -2641,7 +2815,7 @@ def test_tiff_read_excessive_memory_TIFFFillTile():
         ds = gdal.Open('data/excessive-memory-TIFFFillTile.tif')
         ds.GetRasterBand(1).Checksum()
 
-    
+
 ###############################################################################
 
 
@@ -2650,7 +2824,8 @@ def test_tiff_read_big_strip():
     if not check_libtiff_internal_or_at_least(4, 0, 8):
         pytest.skip()
 
-    gdal.Translate('/vsimem/test.tif', 'data/byte.tif', options='-co compress=lzw -outsize 10000 2000  -co blockysize=2000 -r bilinear -ot float32')
+    gdal.Translate('/vsimem/test.tif', 'data/byte.tif',
+                   options='-co compress=lzw -outsize 10000 2000  -co blockysize=2000 -r bilinear -ot float32')
     if gdal.GetLastErrorMsg().find('cannot allocate') >= 0:
         pytest.skip()
     ds = gdal.Open('/vsimem/test.tif')
@@ -2664,7 +2839,8 @@ def test_tiff_read_big_strip():
 
 def test_tiff_read_big_strip_chunky_way():
 
-    gdal.Translate('/vsimem/test.tif', 'data/byte.tif', options='-co compress=lzw -outsize 1000 2001  -co blockysize=2001 -r bilinear')
+    gdal.Translate('/vsimem/test.tif', 'data/byte.tif',
+                   options='-co compress=lzw -outsize 1000 2001  -co blockysize=2001 -r bilinear')
     ds = gdal.Open('/vsimem/test.tif')
     cs = ds.GetRasterBand(1).Checksum()
     assert cs == 38337
@@ -2679,7 +2855,8 @@ def test_tiff_read_big_tile():
     if not check_libtiff_internal_or_at_least(4, 0, 8):
         pytest.skip()
 
-    gdal.Translate('/vsimem/test.tif', 'data/byte.tif', options='-co compress=lzw -outsize 10000 2000 -co tiled=yes -co blockxsize=10000 -co blockysize=2000 -r bilinear -ot float32')
+    gdal.Translate('/vsimem/test.tif', 'data/byte.tif',
+                   options='-co compress=lzw -outsize 10000 2000 -co tiled=yes -co blockxsize=10000 -co blockysize=2000 -r bilinear -ot float32')
     if gdal.GetLastErrorMsg().find('cannot allocate') >= 0:
         pytest.skip()
     ds = gdal.Open('/vsimem/test.tif')
@@ -2709,7 +2886,7 @@ def test_tiff_read_huge_number_strips():
         ds = gdal.Open('data/huge-number-strips.tif')
         ds.GetRasterBand(1).Checksum()
 
-    
+
 ###############################################################################
 
 
@@ -2721,7 +2898,7 @@ def test_tiff_read_huge_implied_number_strips():
     with gdaltest.error_handler():
         gdal.Open('data/huge-implied-number-strips.tif')
 
-    
+
 ###############################################################################
 
 
@@ -2735,7 +2912,8 @@ def test_tiff_read_many_blocks():
     if md['LIBTIFF'] != 'INTERNAL':
         pytest.skip()
 
-    ds = gdal.GetDriverByName('GTiff').Create('/vsimem/test.tif', 1, 2000000, options=['BLOCKYSIZE=1'])
+    ds = gdal.GetDriverByName('GTiff').Create(
+        '/vsimem/test.tif', 1, 2000000, options=['BLOCKYSIZE=1'])
     ds = None
     ds = gdal.Open('/vsimem/test.tif')
     assert ds.GetRasterBand(1).Checksum() == 0
@@ -2781,7 +2959,7 @@ def test_tiff_read_corrupted_deflate_singlestrip():
         ds = gdal.Open('data/corrupted_deflate_singlestrip.tif')
         ds.GetRasterBand(1).Checksum()
 
-    
+
 ###############################################################################
 # Test fix for https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=1563
 
@@ -2795,7 +2973,7 @@ def test_tiff_read_packbits_not_enough_data():
         ds = gdal.Open('data/packbits-not-enough-data.tif')
         ds.GetRasterBand(1).Checksum()
 
-    
+
 ###############################################################################
 # Test reading images with more than 2billion blocks for a single band
 
@@ -2825,12 +3003,16 @@ def test_tiff_read_size_of_stripbytecount_lower_than_stripcount():
 
     ds = gdal.Open('data/size_of_stripbytecount_lower_than_stripcount.tif')
     # There are 3 strips but StripByteCounts has just two elements;
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_0_1', 'TIFF') == '171'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_0_1', 'TIFF') == '171'
     assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_1', 'TIFF') == '1'
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_0_2', 'TIFF') is None
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_2', 'TIFF') is None
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_0_2', 'TIFF') is None
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_SIZE_0_2', 'TIFF') is None
 
-    ds = gdal.Open('data/size_of_stripbytecount_at_1_and_lower_than_stripcount.tif')
+    ds = gdal.Open(
+        'data/size_of_stripbytecount_at_1_and_lower_than_stripcount.tif')
     # There are 3 strips but StripByteCounts has just one element;
     assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_0', 'TIFF') == '1'
 
@@ -2883,7 +3065,7 @@ def test_tiff_read_stripoffset_types():
         if offsets != expected_offsets:
             print(filename, expected_offsets, offsets)
 
-    
+
 ###############################################################################
 # Test reading a JPEG-in-TIFF file that contains the 2 denial of service
 # vulnerabilities listed in
@@ -2914,7 +3096,6 @@ def test_tiff_read_progressive_jpeg_denial_of_service():
         del os.environ['LIBTIFF_JPEG_MAX_ALLOWED_SCAN_NUMBER']
         assert gdal.GetLastErrorMsg() != ''
 
-    
 
 ###############################################################################
 # Test reading old-style LZW
@@ -3005,7 +3186,7 @@ def test_tiff_read_negative_scaley():
     with gdaltest.config_option('GTIFF_HONOUR_NEGATIVE_SCALEY', 'YES'):
         assert ds.GetGeoTransform()[5] == 60
 
-    
+
 ###############################################################################
 # Test ZSTD compression
 
@@ -3125,9 +3306,11 @@ def test_tiff_read_overview_of_external_mask():
 # Test reading GeoTIFF file ModelTiepointTag(z) != 0 and ModelPixelScaleTag(z) = 0
 # Test https://issues.qgis.org/issues/20493
 
+
 def test_tiff_read_ModelTiepointTag_z_non_zero_but_ModelPixelScaleTag_z_zero():
 
-    ds = gdal.Open('data/ModelTiepointTag_z_non_zero_but_ModelPixelScaleTag_z_zero.tif')
+    ds = gdal.Open(
+        'data/ModelTiepointTag_z_non_zero_but_ModelPixelScaleTag_z_zero.tif')
     assert not ds.GetRasterBand(1).GetScale()
     assert not ds.GetRasterBand(1).GetOffset()
 
@@ -3143,22 +3326,30 @@ def test_tiff_read_strip_larger_than_2GB():
     ds = gdal.Open('data/strip_larger_than_2GB_header.tif')
     assert ds
     assert ds.GetRasterBand(1).GetBlockSize() == [50000, 10737]
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_0_0', 'TIFF') == '264'
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_0', 'TIFF') == '536850000'
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_0_1', 'TIFF') == '536850264'
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_1', 'TIFF') == '536850000'
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_OFFSET_0_5', 'TIFF') == '2684250264'
-    assert ds.GetRasterBand(1).GetMetadataItem('BLOCK_SIZE_0_5', 'TIFF') == '65750000'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_0_0', 'TIFF') == '264'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_SIZE_0_0', 'TIFF') == '536850000'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_0_1', 'TIFF') == '536850264'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_SIZE_0_1', 'TIFF') == '536850000'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_OFFSET_0_5', 'TIFF') == '2684250264'
+    assert ds.GetRasterBand(1).GetMetadataItem(
+        'BLOCK_SIZE_0_5', 'TIFF') == '65750000'
 
 ###############################################################################
 # Test reading a deflate compressed file with a uncompressed strip larger than 4 GB
+
 
 def test_tiff_read_deflate_4GB():
 
     if not check_libtiff_internal_or_at_least(4, 0, 11):
         pytest.skip()
 
-    ds = gdal.Open('/vsizip/data/test_deflate_4GB.tif.zip/test_deflate_4GB.tif')
+    ds = gdal.Open(
+        '/vsizip/data/test_deflate_4GB.tif.zip/test_deflate_4GB.tif')
     if sys.maxsize < 2**32:
         assert ds is None
         return
@@ -3167,7 +3358,8 @@ def test_tiff_read_deflate_4GB():
     if not gdaltest.run_slow_tests():
         pytest.skip()
 
-    data  = ds.ReadRaster(0, 0, ds.RasterXSize, ds.RasterYSize, buf_xsize = 20, buf_ysize = 20)
+    data = ds.ReadRaster(0, 0, ds.RasterXSize,
+                         ds.RasterYSize, buf_xsize=20, buf_ysize=20)
     ref_ds = gdal.GetDriverByName('MEM').Create('', 20, 20)
     ref_ds.GetRasterBand(1).Fill(127)
     assert data == ref_ds.ReadRaster()
@@ -3175,6 +3367,7 @@ def test_tiff_read_deflate_4GB():
 ###############################################################################
 # Check that our use of TileByteCounts is minimal for COG (only for last tile)
 # and for interleaved mask that we also hardly use TileOffsets.
+
 
 def test_tiff_read_cog_strile_arrays_zeroified_when_possible():
 
@@ -3197,6 +3390,7 @@ def test_tiff_read_cog_strile_arrays_zeroified_when_possible():
 ###############################################################################
 # Check that our reading of a COG with /vsicurl is efficient
 
+
 def test_tiff_read_cog_vsicurl():
 
     if not check_libtiff_internal_or_at_least(4, 0, 11):
@@ -3210,7 +3404,8 @@ def test_tiff_read_cog_vsicurl():
     webserver_process = None
     webserver_port = 0
 
-    (webserver_process, webserver_port) = webserver.launch(handler=webserver.DispatcherHttpHandler)
+    (webserver_process, webserver_port) = webserver.launch(
+        handler=webserver.DispatcherHttpHandler)
     if webserver_port == 0:
         pytest.skip()
 
@@ -3218,21 +3413,26 @@ def test_tiff_read_cog_vsicurl():
     cog_filename = 'tmp/test_tiff_read_cog_vsicurl_out.tif'
 
     try:
-        src_ds = gdal.GetDriverByName('GTIFF').Create(in_filename, 1024, 1024, options = ['BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'SPARSE_OK=YES'])
+        src_ds = gdal.GetDriverByName('GTIFF').Create(in_filename, 1024, 1024, options=[
+            'BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'SPARSE_OK=YES'])
         src_ds.BuildOverviews('NEAR', [256])
-        gdal.GetDriverByName('GTIFF').CreateCopy(cog_filename, src_ds, options = ['BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'COPY_SRC_OVERVIEWS=YES', 'COMPRESS=LZW'])
+        gdal.GetDriverByName('GTIFF').CreateCopy(cog_filename, src_ds, options=[
+            'BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'COPY_SRC_OVERVIEWS=YES', 'COMPRESS=LZW'])
 
         filesize = gdal.VSIStatL(cog_filename).size
 
         handler = webserver.SequentialHandler()
-        handler.add('HEAD', '/cog.tif', 200, {'Content-Length': '%d' % filesize})
+        handler.add('HEAD', '/cog.tif', 200,
+                    {'Content-Length': '%d' % filesize})
+
         def method(request):
             #sys.stderr.write('%s\n' % request.headers['Range'])
             if request.headers['Range'] == 'bytes=0-16383':
                 request.protocol_version = 'HTTP/1.1'
                 request.send_response(200)
                 request.send_header('Content-type', 'text/plain')
-                request.send_header('Content-Range', 'bytes 0-16383/%d' % filesize)
+                request.send_header(
+                    'Content-Range', 'bytes 0-16383/%d' % filesize)
                 request.send_header('Content-Length', 16384)
                 request.send_header('Connection', 'close')
                 request.end_headers()
@@ -3243,17 +3443,20 @@ def test_tiff_read_cog_vsicurl():
                 request.end_headers()
         handler.add('GET', '/cog.tif', custom_method=method)
         with webserver.install_http_handler(handler):
-            ds = gdal.Open('/vsicurl/http://localhost:%d/cog.tif' % webserver_port)
+            ds = gdal.Open('/vsicurl/http://localhost:%d/cog.tif' %
+                           webserver_port)
         assert(ds)
 
         handler = webserver.SequentialHandler()
+
         def method(request):
             #sys.stderr.write('%s\n' % request.headers['Range'])
             if request.headers['Range'] == 'bytes=32768-49151':
                 request.protocol_version = 'HTTP/1.1'
                 request.send_response(200)
                 request.send_header('Content-type', 'text/plain')
-                request.send_header('Content-Range', 'bytes 32768-49151/%d' % filesize)
+                request.send_header(
+                    'Content-Range', 'bytes 32768-49151/%d' % filesize)
                 request.send_header('Content-Length', 16384)
                 request.send_header('Connection', 'close')
                 request.end_headers()
@@ -3265,13 +3468,15 @@ def test_tiff_read_cog_vsicurl():
                 request.send_header('Content-Length', 0)
                 request.end_headers()
         handler.add('GET', '/cog.tif', custom_method=method)
+
         def method(request):
             #sys.stderr.write('%s\n' % request.headers['Range'])
             if request.headers['Range'] == 'bytes=180224-193497':
                 request.protocol_version = 'HTTP/1.1'
                 request.send_response(200)
                 request.send_header('Content-type', 'text/plain')
-                request.send_header('Content-Range', 'bytes 180224-193497/%d' % filesize)
+                request.send_header(
+                    'Content-Range', 'bytes 180224-193497/%d' % filesize)
                 request.send_header('Content-Length', 13274)
                 request.send_header('Connection', 'close')
                 request.end_headers()
@@ -3284,7 +3489,7 @@ def test_tiff_read_cog_vsicurl():
                 request.end_headers()
         handler.add('GET', '/cog.tif', custom_method=method)
         with webserver.install_http_handler(handler):
-            ret = ds.ReadRaster(1024 - 32,1024 - 32,16,16)
+            ret = ds.ReadRaster(1024 - 32, 1024 - 32, 16, 16)
         assert ret
 
     finally:
@@ -3297,6 +3502,7 @@ def test_tiff_read_cog_vsicurl():
 
 ###############################################################################
 # Check that our reading of a COG with /vsicurl is efficient
+
 
 def test_tiff_read_cog_with_mask_vsicurl():
 
@@ -3311,7 +3517,8 @@ def test_tiff_read_cog_with_mask_vsicurl():
     webserver_process = None
     webserver_port = 0
 
-    (webserver_process, webserver_port) = webserver.launch(handler=webserver.DispatcherHttpHandler)
+    (webserver_process, webserver_port) = webserver.launch(
+        handler=webserver.DispatcherHttpHandler)
     if webserver_port == 0:
         pytest.skip()
 
@@ -3319,24 +3526,29 @@ def test_tiff_read_cog_with_mask_vsicurl():
     cog_filename = 'tmp/test_tiff_read_cog_with_mask_vsicurl_out.tif'
 
     try:
-        src_ds = gdal.GetDriverByName('GTIFF').Create(in_filename, 1024, 1024, options = ['BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'SPARSE_OK=YES'])
+        src_ds = gdal.GetDriverByName('GTIFF').Create(in_filename, 1024, 1024, options=[
+            'BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'SPARSE_OK=YES'])
         src_ds.BuildOverviews('NEAR', [256])
         with gdaltest.config_option('GDAL_TIFF_INTERNAL_MASK', 'YES'):
             src_ds.CreateMaskBand(gdal.GMF_PER_DATASET)
         with gdaltest.config_option('GDAL_TIFF_INTERNAL_MASK', 'YES'):
-            gdal.GetDriverByName('GTIFF').CreateCopy(cog_filename, src_ds, options = ['BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'COPY_SRC_OVERVIEWS=YES', 'COMPRESS=LZW'])
+            gdal.GetDriverByName('GTIFF').CreateCopy(cog_filename, src_ds, options=[
+                'BIGTIFF=YES', 'TILED=YES', 'BLOCKXSIZE=16', 'BLOCKYSIZE=16', 'COPY_SRC_OVERVIEWS=YES', 'COMPRESS=LZW'])
 
         filesize = gdal.VSIStatL(cog_filename).size
 
         handler = webserver.SequentialHandler()
-        handler.add('HEAD', '/cog.tif', 200, {'Content-Length': '%d' % filesize})
+        handler.add('HEAD', '/cog.tif', 200,
+                    {'Content-Length': '%d' % filesize})
+
         def method(request):
             #sys.stderr.write('%s\n' % request.headers['Range'])
             if request.headers['Range'] == 'bytes=0-16383':
                 request.protocol_version = 'HTTP/1.1'
                 request.send_response(200)
                 request.send_header('Content-type', 'text/plain')
-                request.send_header('Content-Range', 'bytes 0-16383/%d' % filesize)
+                request.send_header(
+                    'Content-Range', 'bytes 0-16383/%d' % filesize)
                 request.send_header('Content-Length', 16384)
                 request.send_header('Connection', 'close')
                 request.end_headers()
@@ -3347,17 +3559,20 @@ def test_tiff_read_cog_with_mask_vsicurl():
                 request.end_headers()
         handler.add('GET', '/cog.tif', custom_method=method)
         with webserver.install_http_handler(handler):
-            ds = gdal.Open('/vsicurl/http://localhost:%d/cog.tif' % webserver_port)
+            ds = gdal.Open('/vsicurl/http://localhost:%d/cog.tif' %
+                           webserver_port)
         assert(ds)
 
         handler = webserver.SequentialHandler()
+
         def method(request):
             #sys.stderr.write('%s\n' % request.headers['Range'])
             if request.headers['Range'] == 'bytes=32768-49151':
                 request.protocol_version = 'HTTP/1.1'
                 request.send_response(200)
                 request.send_header('Content-type', 'text/plain')
-                request.send_header('Content-Range', 'bytes 32768-49151/%d' % filesize)
+                request.send_header(
+                    'Content-Range', 'bytes 32768-49151/%d' % filesize)
                 request.send_header('Content-Length', 16384)
                 request.send_header('Connection', 'close')
                 request.end_headers()
@@ -3369,13 +3584,15 @@ def test_tiff_read_cog_with_mask_vsicurl():
                 request.send_header('Content-Length', 0)
                 request.end_headers()
         handler.add('GET', '/cog.tif', custom_method=method)
+
         def method(request):
             #sys.stderr.write('%s\n' % request.headers['Range'])
             if request.headers['Range'] == 'bytes=294912-311295':
                 request.protocol_version = 'HTTP/1.1'
                 request.send_response(200)
                 request.send_header('Content-type', 'text/plain')
-                request.send_header('Content-Range', 'bytes 294912-311295/%d' % filesize)
+                request.send_header(
+                    'Content-Range', 'bytes 294912-311295/%d' % filesize)
                 request.send_header('Content-Length', 32768)
                 request.send_header('Connection', 'close')
                 request.end_headers()
@@ -3388,10 +3605,11 @@ def test_tiff_read_cog_with_mask_vsicurl():
                 request.end_headers()
         handler.add('GET', '/cog.tif', custom_method=method)
         with webserver.install_http_handler(handler):
-            ret = ds.ReadRaster(1024 - 32,1024 - 32,16,16)
+            ret = ds.ReadRaster(1024 - 32, 1024 - 32, 16, 16)
         assert ret
 
-        ret = ds.GetRasterBand(1).GetMaskBand().ReadRaster(1024 - 32,1024 - 32,16,16)
+        ret = ds.GetRasterBand(1).GetMaskBand().ReadRaster(
+            1024 - 32, 1024 - 32, 16, 16)
         assert ret
 
     finally:

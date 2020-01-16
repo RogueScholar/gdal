@@ -7,22 +7,22 @@
 # Howard Butler hobu.inc@gmail.com
 
 
+from distutils.errors import CompileError
+from distutils.ccompiler import get_default_compiler
+from distutils.command.build_ext import build_ext
+from distutils.sysconfig import get_config_vars
+from glob import glob
+import os
+import sys
 gdal_version = '3.0.0'
 
-import sys
-import os
-
-from glob import glob
-from distutils.sysconfig import get_config_vars
-from distutils.command.build_ext import build_ext
-from distutils.ccompiler import get_default_compiler
-from distutils.errors import CompileError
 
 # Strip -Wstrict-prototypes from compiler options, if present. This is
 # not required when compiling a C++ extension.
 (opt,) = get_config_vars('OPT')
 if opt is not None:
-    os.environ['OPT'] = " ".join(f for f in opt.split() if f != '-Wstrict-prototypes')
+    os.environ['OPT'] = " ".join(
+        f for f in opt.split() if f != '-Wstrict-prototypes')
 
 # If CXX is defined in the environment, it will be used to link the .so
 # but distutils will be confused if it is made of several words like 'ccache g++'
@@ -37,13 +37,15 @@ if 'CXX' in os.environ and os.environ['CXX'].strip().find(' ') >= 0:
     if os.environ['CXX'].strip().startswith('ccache ') and os.environ['CXX'].strip()[len('ccache '):].find(' ') < 0:
         os.environ['CXX'] = os.environ['CXX'].strip()[len('ccache '):]
     else:
-        print('WARNING: "CXX=%s" was defined in the environment and contains more than one word. Unsetting it since that is incompatible of distutils' % os.environ['CXX'])
+        print('WARNING: "CXX=%s" was defined in the environment and contains more than one word. Unsetting it since that is incompatible of distutils' %
+              os.environ['CXX'])
         del os.environ['CXX']
 if 'CC' in os.environ and os.environ['CC'].strip().find(' ') >= 0:
     if os.environ['CC'].strip().startswith('ccache ') and os.environ['CC'].strip()[len('ccache '):].find(' ') < 0:
         os.environ['CC'] = os.environ['CC'].strip()[len('ccache '):]
     else:
-        print('WARNING: "CC=%s" was defined in the environment and contains more than one word. Unsetting it since that is incompatible of distutils' % os.environ['CC'])
+        print('WARNING: "CC=%s" was defined in the environment and contains more than one word. Unsetting it since that is incompatible of distutils' %
+              os.environ['CC'])
         del os.environ['CC']
 
 # ---------------------------------------------------------------------------
@@ -60,7 +62,8 @@ GNM_ENABLED = True
 # (may be overridden with setup.cfg or command line switches).
 # ---------------------------------------------------------------------------
 
-include_dirs = ['../../port', '../../gcore', '../../alg', '../../ogr/', '../../ogr/ogrsf_frmts', '../../gnm', '../../apps']
+include_dirs = ['../../port', '../../gcore', '../../alg',
+                '../../ogr/', '../../ogr/ogrsf_frmts', '../../gnm', '../../apps']
 library_dirs = ['../../.libs', '../../']
 libraries = ['gdal']
 
@@ -91,7 +94,8 @@ try:
     else:
         #  print ('numpy include', get_numpy_include())
         if get_numpy_include() == '.':
-            print("WARNING: numpy headers were not found!  Array support will not be enabled")
+            print(
+                "WARNING: numpy headers were not found!  Array support will not be enabled")
             HAVE_NUMPY = False
 except ImportError:
     print('WARNING: numpy not available!  Array support will not be enabled')
@@ -211,7 +215,9 @@ int main () { return 0; }""")
         os.unlink('gdal_python_cxx11_test.o')
     return ret
 
-###Based on: https://stackoverflow.com/questions/28641408/how-to-tell-which-compiler-will-be-invoked-for-a-python-c-extension-in-setuptool
+# Based on: https://stackoverflow.com/questions/28641408/how-to-tell-which-compiler-will-be-invoked-for-a-python-c-extension-in-setuptool
+
+
 def has_flag(compiler, flagname):
     import tempfile
     from distutils.errors import CompileError
@@ -240,7 +246,7 @@ class gdal_ext(build_ext):
         self.gdaldir = None
         self.gdal_config = self.GDAL_CONFIG
         self.extra_cflags = []
-        self.parallel = True # Python 3.5 only
+        self.parallel = True  # Python 3.5 only
 
     def get_compiler(self):
         return self.compiler or get_default_compiler()
@@ -259,9 +265,9 @@ class gdal_ext(build_ext):
                 msg = 'Could not find gdal-config. Make sure you have installed the GDAL native library and development headers.'
                 import sys
                 import traceback
-                traceback_string = ''.join(traceback.format_exception(*sys.exc_info()))
+                traceback_string = ''.join(
+                    traceback.format_exception(*sys.exc_info()))
                 raise gdal_config_error(traceback_string + '\n' + msg)
-
 
     def build_extensions(self):
 
@@ -331,6 +337,7 @@ class gdal_ext(build_ext):
         # logic to resolve the location of gdal-config throughout.
         ext.extra_compile_args.extend(self.extra_cflags)
         return build_ext.build_extension(self, ext)
+
 
 # This is only needed with Python 2.
 if sys.version_info < (3,):
