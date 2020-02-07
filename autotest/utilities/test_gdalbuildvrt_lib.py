@@ -39,28 +39,29 @@ from osgeo import gdal
 def test_gdalbuildvrt_lib_1():
 
     # Source = String
-    ds = gdal.BuildVRT('', '../gcore/data/byte.tif')
-    assert ds is not None, 'got error/warning'
+    ds = gdal.BuildVRT("", "../gcore/data/byte.tif")
+    assert ds is not None, "got error/warning"
 
-    assert ds.GetRasterBand(1).Checksum() == 4672, 'Bad checksum'
+    assert ds.GetRasterBand(1).Checksum() == 4672, "Bad checksum"
 
     # Source = Array of string
-    ds = gdal.BuildVRT('', ['../gcore/data/byte.tif'])
-    assert ds is not None, 'got error/warning'
+    ds = gdal.BuildVRT("", ["../gcore/data/byte.tif"])
+    assert ds is not None, "got error/warning"
 
-    assert ds.GetRasterBand(1).Checksum() == 4672, 'Bad checksum'
+    assert ds.GetRasterBand(1).Checksum() == 4672, "Bad checksum"
 
     # Source = Dataset
-    ds = gdal.BuildVRT('', gdal.Open('../gcore/data/byte.tif'))
-    assert ds is not None, 'got error/warning'
+    ds = gdal.BuildVRT("", gdal.Open("../gcore/data/byte.tif"))
+    assert ds is not None, "got error/warning"
 
-    assert ds.GetRasterBand(1).Checksum() == 4672, 'Bad checksum'
+    assert ds.GetRasterBand(1).Checksum() == 4672, "Bad checksum"
 
     # Source = Array of dataset
-    ds = gdal.BuildVRT('', [gdal.Open('../gcore/data/byte.tif')])
-    assert ds is not None, 'got error/warning'
+    ds = gdal.BuildVRT("", [gdal.Open("../gcore/data/byte.tif")])
+    assert ds is not None, "got error/warning"
 
-    assert ds.GetRasterBand(1).Checksum() == 4672, 'Bad checksum'
+    assert ds.GetRasterBand(1).Checksum() == 4672, "Bad checksum"
+
 
 ###############################################################################
 # Test callback
@@ -75,13 +76,14 @@ def mycallback(pct, msg, user_data):
 def test_gdalbuildvrt_lib_2():
 
     tab = [0]
-    ds = gdal.BuildVRT('', '../gcore/data/byte.tif',
-                       callback=mycallback, callback_data=tab)
+    ds = gdal.BuildVRT(
+        "", "../gcore/data/byte.tif", callback=mycallback, callback_data=tab
+    )
     assert ds is not None
 
-    assert ds.GetRasterBand(1).Checksum() == 4672, 'Bad checksum'
+    assert ds.GetRasterBand(1).Checksum() == 4672, "Bad checksum"
 
-    assert tab[0] == 1.0, 'Bad percentage'
+    assert tab[0] == 1.0, "Bad percentage"
 
     ds = None
 
@@ -92,11 +94,11 @@ def test_gdalbuildvrt_lib_2():
 
 def test_gdalbuildvrt_lib_ovr():
 
-    tmpfilename = '/vsimem/my.vrt'
-    ds = gdal.BuildVRT(tmpfilename, '../gcore/data/byte.tif')
-    ds.BuildOverviews('NEAR', [2])
+    tmpfilename = "/vsimem/my.vrt"
+    ds = gdal.BuildVRT(tmpfilename, "../gcore/data/byte.tif")
+    ds.BuildOverviews("NEAR", [2])
     ds = None
     ds = gdal.Open(tmpfilename)
     assert ds.GetRasterBand(1).GetOverviewCount() == 1
     ds = None
-    gdal.GetDriverByName('VRT').Delete(tmpfilename)
+    gdal.GetDriverByName("VRT").Delete(tmpfilename)
