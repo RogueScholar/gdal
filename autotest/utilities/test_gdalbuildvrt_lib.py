@@ -74,9 +74,10 @@ def mycallback(pct, msg, user_data):
 def test_gdalbuildvrt_lib_2():
 
     tab = [0]
-    ds = gdal.BuildVRT(
-        "", "../gcore/data/byte.tif", callback=mycallback, callback_data=tab
-    )
+    ds = gdal.BuildVRT("",
+                       "../gcore/data/byte.tif",
+                       callback=mycallback,
+                       callback_data=tab)
     assert ds is not None
 
     assert ds.GetRasterBand(1).Checksum() == 4672, "Bad checksum"
