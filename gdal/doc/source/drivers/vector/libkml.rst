@@ -705,8 +705,8 @@ LinearRing to
 and Polygon to
 `<Polygon> <https://developers.google.com/kml/documentation/kmlreference#polygon>`__.
 In OGR a polygon contains an array of LinearRings, the first one being
-the outer ring. KML has the tags  
-`<outerBoundaryIs> <https://developers.google.com/kml/documentation/kmlreference#outerboundaryis>`__ and 
+the outer ring. KML has the tags �
+`<outerBoundaryIs> <https://developers.google.com/kml/documentation/kmlreference#outerboundaryis>`__ and�
 `<innerBoundaryIs> <https://developers.google.com/kml/documentation/kmlreference#innerboundaryis>`__ to
 differentiate between the two. OGR has several Multi types of geometry :
 GeometryCollection, MultiPolygon, MultiPoint, and MultiLineString. When
@@ -846,5 +846,3 @@ file with timestamps and styling.
    EOF
 
    ogr2ogr -f libkml qed.kml qed.vrt
-
-     
