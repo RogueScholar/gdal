@@ -62,8 +62,7 @@ def test_ogr_basic_2():
 
     count = gdaltest.lyr.GetFeatureCount()
     assert count == 10, (
-        "Got wrong count with GetFeatureCount() - %d, expecting 10" % count
-    )
+        "Got wrong count with GetFeatureCount() - %d, expecting 10" % count)
 
     # Now actually iterate through counting the features and ensure they agree.
     gdaltest.lyr.ResetReading()
@@ -75,8 +74,7 @@ def test_ogr_basic_2():
         feat = gdaltest.lyr.GetNextFeature()
 
     assert count2 == 10, (
-        "Got wrong count with GetNextFeature() - %d, expecting 10" % count2
-    )
+        "Got wrong count with GetNextFeature() - %d, expecting 10" % count2)
 
 
 ###############################################################################
@@ -109,22 +107,20 @@ def test_ogr_basic_3():
 
     count = gdaltest.lyr.GetFeatureCount()
     assert count == 1, (
-        "Got wrong feature count with spatial filter, expected 1, got %d" % count
-    )
+        "Got wrong feature count with spatial filter, expected 1, got %d" %
+        count)
 
     feat1 = gdaltest.lyr.GetNextFeature()
     feat2 = gdaltest.lyr.GetNextFeature()
 
-    assert (
-        feat1 is not None and feat2 is None
-    ), "Got too few or too many features with spatial filter."
+    assert (feat1 is not None and feat2 is None
+            ), "Got too few or too many features with spatial filter."
 
     gdaltest.lyr.SetSpatialFilter(None)
     count = gdaltest.lyr.GetFeatureCount()
     assert count == 10, (
         "Clearing spatial query may not have worked properly, getting\n%d features instead of expected 10 features."
-        % count
-    )
+        % count)
 
 
 ###############################################################################
@@ -135,9 +131,8 @@ def test_ogr_basic_4():
     driver = gdaltest.ds.GetDriver()
     assert driver is not None, "GetDriver() returns None"
 
-    assert driver.GetName() == "ESRI Shapefile", (
-        "Got wrong driver name: " + driver.GetName()
-    )
+    assert driver.GetName() == "ESRI Shapefile", ("Got wrong driver name: " +
+                                                  driver.GetName())
 
 
 ###############################################################################
@@ -419,9 +414,8 @@ def test_ogr_basic_10():
     if test_cli_utilities.get_test_ogrsf_path() is None:
         pytest.skip()
 
-    ret = gdaltest.runexternal(
-        test_cli_utilities.get_test_ogrsf_path() + " -all_drivers"
-    )
+    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() +
+                               " -all_drivers")
 
     assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
@@ -439,8 +433,7 @@ def test_ogr_basic_11():
     for _ in range(2):
         ogr.UseExceptions()
         geom = ogr.CreateGeometryFromWkt(
-            "POLYGON ((-65 0, -30 -30, -30 0, -65 -30, -65 0))"
-        )
+            "POLYGON ((-65 0, -30 -30, -30 0, -65 -30, -65 0))")
         with gdaltest.error_handler():
             geom.IsValid()
     if used_exceptions_before == 0:
@@ -637,12 +630,9 @@ def test_ogr_basic_15():
     try:
         lyr.CreateFeature(ogr.Feature(lyr.GetLayerDefn()))
     except RuntimeError as e:
-        ok = (
-            str(e).find(
-                "CreateFeature : unsupported operation on a read-only datasource"
-            )
-            >= 0
-        )
+        ok = (str(e).find(
+            "CreateFeature : unsupported operation on a read-only datasource")
+              >= 0)
         assert ok, "Got: %s" + str(e)
         return
     finally:
@@ -734,7 +724,9 @@ def test_ogr_basic_dataset_copy_layer_dst_srswkt():
     sr = osr.SpatialReference()
     sr.SetFromUserInput("WGS84")
     sr.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
-    out_lyr = ds.CopyLayer(src_lyr, "lyr2", options=["DST_SRSWKT=" + sr.ExportToWkt()])
+    out_lyr = ds.CopyLayer(src_lyr,
+                           "lyr2",
+                           options=["DST_SRSWKT=" + sr.ExportToWkt()])
     assert out_lyr.GetSpatialRef() is not None
     assert out_lyr.GetSpatialRef().IsSame(sr)
 

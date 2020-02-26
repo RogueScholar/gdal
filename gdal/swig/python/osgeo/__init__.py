@@ -33,8 +33,7 @@ if version_info >= (2, 7, 0):
                     import traceback
 
                     traceback_string = "".join(
-                        traceback.format_exception(*sys.exc_info())
-                    )
+                        traceback.format_exception(*sys.exc_info()))
                     raise ImportError(traceback_string + "\n" + msg)
             return importlib.import_module("_gdal", pkg)
 
@@ -48,7 +47,8 @@ elif version_info >= (2, 6, 0):
 
         fp = None
         try:
-            fp, pathname, description = imp.find_module("_gdal", [dirname(__file__)])
+            fp, pathname, description = imp.find_module(
+                "_gdal", [dirname(__file__)])
         except ImportError:
             import _gdal
 
@@ -69,8 +69,7 @@ elif version_info >= (2, 6, 0):
                         import traceback
 
                         traceback_string = "".join(
-                            traceback.format_exception(*sys.exc_info())
-                        )
+                            traceback.format_exception(*sys.exc_info()))
                         raise ImportError(traceback_string + "\n" + msg)
                 raise
             finally:

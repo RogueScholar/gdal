@@ -38,7 +38,6 @@ import pytest
 from osgeo import gdal
 from osgeo import osr
 
-
 pytestmark = pytest.mark.require_driver("GRIB")
 
 
@@ -82,7 +81,8 @@ def test_grib_read_different_sizes_messages():
     gdal.PopErrorHandler()
 
     msg = gdal.GetLastErrorMsg()
-    if msg.find("data access may be incomplete") == -1 or gdal.GetLastErrorType() != 2:
+    if msg.find("data access may be incomplete"
+                ) == -1 or gdal.GetLastErrorType() != 2:
         gdaltest.post_reason("did not get expected warning.")
 
     return result
@@ -100,11 +100,13 @@ def test_grib_grib2_read_nodata():
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
         "GRIB_REF_TIME": "  1203613200 sec UTC",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "0 5 2 0 0 255 255 1 19 1 0 0 255 -1 -2147483647 2008 2 22 12 0 0 1 0 3 255 1 12 1 0",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "0 5 2 0 0 255 255 1 19 1 0 0 255 -1 -2147483647 2008 2 22 12 0 0 1 0 3 255 1 12 1 0",
         "GRIB_VALID_TIME": "  1203681600 sec UTC",
         "GRIB_FORECAST_SECONDS": "68400 sec",
         "GRIB_UNIT": "[C]",
-        "GRIB_PDS_TEMPLATE_NUMBERS": "0 5 2 0 0 0 255 255 1 0 0 0 19 1 0 0 0 0 0 255 129 255 255 255 255 7 216 2 22 12 0 0 1 0 0 0 0 3 255 1 0 0 0 12 1 0 0 0 0",
+        "GRIB_PDS_TEMPLATE_NUMBERS":
+        "0 5 2 0 0 0 255 255 1 0 0 0 19 1 0 0 0 0 0 255 129 255 255 255 255 7 216 2 22 12 0 0 1 0 0 0 0 3 255 1 0 0 0 12 1 0 0 0 0",
         "GRIB_DISCIPLINE": "0(Meteorological)",
         "GRIB_PDS_PDTN": "8",
         "GRIB_COMMENT": "Minimum temperature [C]",
@@ -112,7 +114,8 @@ def test_grib_grib2_read_nodata():
         "GRIB_ELEMENT": "MinT",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
 
 
 ###############################################################################
@@ -126,7 +129,8 @@ def test_grib_read_units():
     shutil.copy("data/grib/ds.mint.bin", "tmp/ds.mint.bin")
     ds = gdal.Open("tmp/ds.mint.bin")
     md = ds.GetRasterBand(1).GetMetadata()
-    if md["GRIB_UNIT"] != "[C]" or md["GRIB_COMMENT"] != "Minimum temperature [C]":
+    if md["GRIB_UNIT"] != "[C]" or md[
+            "GRIB_COMMENT"] != "Minimum temperature [C]":
         print(md)
         return
     ds.GetRasterBand(1).ComputeStatistics(False)
@@ -141,7 +145,8 @@ def test_grib_read_units():
     ds = gdal.Open("tmp/ds.mint.bin")
     gdal.SetConfigOption("GRIB_NORMALIZE_UNITS", None)
     md = ds.GetRasterBand(1).GetMetadata()
-    if md["GRIB_UNIT"] != "[K]" or md["GRIB_COMMENT"] != "Minimum temperature [K]":
+    if md["GRIB_UNIT"] != "[K]" or md[
+            "GRIB_COMMENT"] != "Minimum temperature [K]":
         print(md)
         return
     ds.GetRasterBand(1).ComputeStatistics(False)
@@ -179,8 +184,7 @@ def test_grib_read_geotransform_one_n_or_n_one():
 def test_grib_read_vsizip():
 
     ds = gdal.Open(
-        "/vsizip/data/grib/gfs.t00z.mastergrb2f03.zip/gfs.t00z.mastergrb2f03"
-    )
+        "/vsizip/data/grib/gfs.t00z.mastergrb2f03.zip/gfs.t00z.mastergrb2f03")
     assert ds is not None
 
 
@@ -190,8 +194,7 @@ def test_grib_read_vsizip():
 
 def test_grib_grib2_test_grib_pds_all_bands():
     ds = gdal.Open(
-        "/vsizip/data/grib/gfs.t00z.mastergrb2f03.zip/gfs.t00z.mastergrb2f03"
-    )
+        "/vsizip/data/grib/gfs.t00z.mastergrb2f03.zip/gfs.t00z.mastergrb2f03")
     assert ds is not None
     band = ds.GetRasterBand(2)
     md = band.GetMetadataItem("GRIB_PDS_TEMPLATE_NUMBERS")
@@ -200,8 +203,7 @@ def test_grib_grib2_test_grib_pds_all_bands():
 
     gdal.SetConfigOption("GRIB_PDS_ALL_BANDS", "OFF")
     ds = gdal.Open(
-        "/vsizip/data/grib/gfs.t00z.mastergrb2f03.zip/gfs.t00z.mastergrb2f03"
-    )
+        "/vsizip/data/grib/gfs.t00z.mastergrb2f03.zip/gfs.t00z.mastergrb2f03")
     assert ds is not None
     band = ds.GetRasterBand(2)
     md = band.GetMetadataItem("GRIB_PDS_TEMPLATE_NUMBERS")
@@ -222,14 +224,12 @@ def test_grib_grib2_read_template_4_15():
         pytest.skip()
 
     ret, err = gdaltest.runexternal_out_and_err(
-        test_cli_utilities.get_gdalinfo_path()
-        + " data/grib/template_4_15.grb2 -checksum"
-    )
+        test_cli_utilities.get_gdalinfo_path() +
+        " data/grib/template_4_15.grb2 -checksum")
 
     # This is a JPEG2000 compressed file, so just check we can open it or that we get a message saying there's no JPEG2000 driver available
-    assert (
-        "Checksum=" in ret or "Is the JPEG2000 driver available?" in err
-    ), "Could not open file"
+    assert ("Checksum=" in ret or
+            "Is the JPEG2000 driver available?" in err), "Could not open file"
 
 
 ###############################################################################
@@ -259,23 +259,33 @@ def test_grib_grib2_read_template_4_32():
     cs = ds.GetRasterBand(1).Checksum()
     assert cs == 48230, "Could not open file"
     assert ds.GetRasterBand(1).ComputeRasterMinMax() == pytest.approx(
-        (-9.765, 2.415), 1e-3
-    )  # Reasonable range for Celcius
+        (-9.765, 2.415), 1e-3)  # Reasonable range for Celcius
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_REF_TIME": "  1508479200 sec UTC",
-        "GRIB_VALID_TIME": "  1508479200 sec UTC",
-        "GRIB_FORECAST_SECONDS": "0 sec",
-        "GRIB_UNIT": "[C]",
-        "GRIB_PDS_TEMPLATE_NUMBERS": "5 7 2 0 0 0 0 0 1 0 0 0 0 1 0 31 1 29 67 140 2 0 0 238 217",
-        "GRIB_PDS_PDTN": "32",
-        "GRIB_COMMENT": "Brightness Temperature [C]",
-        "GRIB_SHORT_NAME": "0 undefined",
-        "GRIB_ELEMENT": "BRTEMP",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "5 7 2 0 0 0 0 1 0 1 31 285 17292 2 61145",
+        "GRIB_REF_TIME":
+        "  1508479200 sec UTC",
+        "GRIB_VALID_TIME":
+        "  1508479200 sec UTC",
+        "GRIB_FORECAST_SECONDS":
+        "0 sec",
+        "GRIB_UNIT":
+        "[C]",
+        "GRIB_PDS_TEMPLATE_NUMBERS":
+        "5 7 2 0 0 0 0 0 1 0 0 0 0 1 0 31 1 29 67 140 2 0 0 238 217",
+        "GRIB_PDS_PDTN":
+        "32",
+        "GRIB_COMMENT":
+        "Brightness Temperature [C]",
+        "GRIB_SHORT_NAME":
+        "0 undefined",
+        "GRIB_ELEMENT":
+        "BRTEMP",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "5 7 2 0 0 0 0 1 0 1 31 285 17292 2 61145",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
 
 
 ###############################################################################
@@ -296,14 +306,16 @@ def test_grib_grib2_read_all_zero_data():
         "GRIB_VALID_TIME": "  1510963200 sec UTC",
         "GRIB_FORECAST_SECONDS": "0 sec",
         "GRIB_UNIT": "[Proportion]",
-        "GRIB_PDS_TEMPLATE_NUMBERS": "2 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 255 255 255 255 255 255",
+        "GRIB_PDS_TEMPLATE_NUMBERS":
+        "2 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 255 255 255 255 255 255",
         "GRIB_PDS_PDTN": "0",
         "GRIB_COMMENT": "Ice cover [Proportion]",
         "GRIB_SHORT_NAME": "0-SFC",
         "GRIB_ELEMENT": "ICEC",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
 
 
 ###############################################################################
@@ -314,9 +326,8 @@ def test_grib_grib1_read_rotated_pole_lonlat():
 
     ds = gdal.Open("/vsisparse/data/grib/rotated_pole.grb.xml")
 
-    assert (
-        ds.RasterXSize == 726 and ds.RasterYSize == 550
-    ), "Did not get expected dimensions"
+    assert (ds.RasterXSize == 726
+            and ds.RasterYSize == 550), "Did not get expected dimensions"
 
     projection = ds.GetProjectionRef()
     expected_projection_proj_7 = 'GEOGCRS["Coordinate System imported from GRIB file",BASEGEOGCRS["Coordinate System imported from GRIB file",DATUM["unnamed",ELLIPSOID["Sphere",6367470,0,LENGTHUNIT["metre",1,ID["EPSG",9001]]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]]],DERIVINGCONVERSION["Pole rotation (GRIB convention)",METHOD["Pole rotation (GRIB convention)"],PARAMETER["Latitude of the southern pole (GRIB convention)",-30,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],PARAMETER["Longitude of the southern pole (GRIB convention)",-15,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],PARAMETER["Axis rotation (GRIB convention)",0,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]]],CS[ellipsoidal,2],AXIS["latitude",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],AXIS["longitude",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]]]'
@@ -328,9 +339,8 @@ def test_grib_grib1_read_rotated_pole_lonlat():
 
     gt = ds.GetGeoTransform()
     expected_gt = (-30.25, 0.1, 0.0, 24.15, 0.0, -0.1)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
@@ -343,7 +353,8 @@ def test_grib_grib1_read_rotated_pole_lonlat():
         "GRIB_ELEMENT": "GP",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
 
 
 ###############################################################################
@@ -392,18 +403,21 @@ def test_grib_grib2_read_template_4_40():
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
         "GRIB_REF_TIME": "  1505088000 sec UTC",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "20 0 40008 0 255 99 0 0 1 0 1 -127 -2147483647 255 -127 -2147483647",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "20 0 40008 0 255 99 0 0 1 0 1 -127 -2147483647 255 -127 -2147483647",
         "GRIB_VALID_TIME": "  1505088000 sec UTC",
         "GRIB_FORECAST_SECONDS": "0 sec",
         "GRIB_UNIT": "[kg/(m^3)]",
-        "GRIB_PDS_TEMPLATE_NUMBERS": "20 0 156 72 0 255 99 0 0 0 1 0 0 0 0 1 255 255 255 255 255 255 255 255 255 255 255",
+        "GRIB_PDS_TEMPLATE_NUMBERS":
+        "20 0 156 72 0 255 99 0 0 0 1 0 0 0 0 1 255 255 255 255 255 255 255 255 255 255 255",
         "GRIB_PDS_PDTN": "40",
         "GRIB_COMMENT": "Mass Density (Concentration) [kg/(m^3)]",
         "GRIB_SHORT_NAME": "0-SFC",
         "GRIB_ELEMENT": "MASSDEN",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
 
 
 ###############################################################################
@@ -415,9 +429,13 @@ def test_grib_grib2_read_template_4_unhandled():
     with gdaltest.error_handler():
         ds = gdal.Open("data/grib/template_4_65535.grb2")
     md = ds.GetRasterBand(1).GetMetadata()
-    expected_md = {"GRIB_PDS_TEMPLATE_NUMBERS": "0 1 2 3 4 5", "GRIB_PDS_PDTN": "65535"}
+    expected_md = {
+        "GRIB_PDS_TEMPLATE_NUMBERS": "0 1 2 3 4 5",
+        "GRIB_PDS_PDTN": "65535"
+    }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
 
 
 ###############################################################################
@@ -434,9 +452,8 @@ def test_grib_grib2_read_transverse_mercator():
 
     gt = ds.GetGeoTransform()
     expected_gt = (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
 
 ###############################################################################
@@ -452,10 +469,10 @@ def test_grib_grib2_read_mercator():
     assert projection == expected_projection, "Did not get expected projection"
 
     gt = ds.GetGeoTransform()
-    expected_gt = (-13095853.598139772, 72.237, 0.0, 3991876.4600486886, 0.0, -72.237)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    expected_gt = (-13095853.598139772, 72.237, 0.0, 3991876.4600486886, 0.0,
+                   -72.237)
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
 
 ###############################################################################
@@ -471,10 +488,10 @@ def test_grib_grib2_read_mercator_2sp():
     assert projection == expected_projection, "Did not get expected projection"
 
     gt = ds.GetGeoTransform()
-    expected_gt = (-10931598.94836207, 60.299, 0.0, 3332168.629121481, 0.0, -60.299)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    expected_gt = (-10931598.94836207, 60.299, 0.0, 3332168.629121481, 0.0,
+                   -60.299)
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
 
 ###############################################################################
@@ -490,10 +507,10 @@ def test_grib_grib2_read_lcc():
     assert projection == expected_projection, "Did not get expected projection"
 
     gt = ds.GetGeoTransform()
-    expected_gt = (8974734.737685828, 60.021, 0.0, 6235918.9698001575, 0.0, -60.021)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    expected_gt = (8974734.737685828, 60.021, 0.0, 6235918.9698001575, 0.0,
+                   -60.021)
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
 
 ###############################################################################
@@ -509,10 +526,10 @@ def test_grib_grib2_read_polar_stereo():
     assert projection == expected_projection, "Did not get expected projection"
 
     gt = ds.GetGeoTransform()
-    expected_gt = (-5621962.072511509, 71.86, 0.0, 2943991.8007649644, 0.0, -71.86)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    expected_gt = (-5621962.072511509, 71.86, 0.0, 2943991.8007649644, 0.0,
+                   -71.86)
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
 
 ###############################################################################
@@ -528,10 +545,10 @@ def test_grib_grib2_read_aea():
     assert projection == expected_projection, "Did not get expected projection"
 
     gt = ds.GetGeoTransform()
-    expected_gt = (8974979.714292033, 60.022, 0.0, 6235686.52464211, 0.0, -60.022)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    expected_gt = (8974979.714292033, 60.022, 0.0, 6235686.52464211, 0.0,
+                   -60.022)
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
 
 ###############################################################################
@@ -547,10 +564,10 @@ def test_grib_grib2_read_laea():
     assert projection == expected_projection, "Did not get expected projection"
 
     gt = ds.GetGeoTransform()
-    expected_gt = (-59384.01063035424, 60.021, 0.0, 44812.5792223211, 0.0, -60.021)
-    assert (
-        max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <= 1e-3
-    ), "Did not get expected geotransform"
+    expected_gt = (-59384.01063035424, 60.021, 0.0, 44812.5792223211, 0.0,
+                   -60.021)
+    assert (max([abs(gt[i] - expected_gt[i]) for i in range(6)]) <=
+            1e-3), "Did not get expected geotransform"
 
 
 ###############################################################################
@@ -625,13 +642,16 @@ def test_grib_grib2_write_creation_options():
     ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_IDS": "CENTER=85(Toulouse) SUBCENTER=3 MASTER_TABLE=5 LOCAL_TABLE=0 SIGNF_REF_TIME=0(Analysis) REF_TIME=2017-09-11T12:34:56Z PROD_STATUS=2(Research) TYPE=0(Analysis)",
-        "GRIB_PDS_TEMPLATE_NUMBERS": "20 0 156 72 0 255 99 0 0 0 1 0 0 0 0 1 255 255 255 255 255 255 255 255 255 255 255",
+        "GRIB_IDS":
+        "CENTER=85(Toulouse) SUBCENTER=3 MASTER_TABLE=5 LOCAL_TABLE=0 SIGNF_REF_TIME=0(Analysis) REF_TIME=2017-09-11T12:34:56Z PROD_STATUS=2(Research) TYPE=0(Analysis)",
+        "GRIB_PDS_TEMPLATE_NUMBERS":
+        "20 0 156 72 0 255 99 0 0 0 1 0 0 0 0 1 255 255 255 255 255 255 255 255 255 255 255",
         "GRIB_DISCIPLINE": "1(Hydrological)",
         "GRIB_PDS_PDTN": "40",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -651,11 +671,14 @@ def test_grib_grib2_write_creation_options():
     ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_PDS_PDTN": "40",
-        "GRIB_PDS_TEMPLATE_NUMBERS": "20 0 156 72 0 255 99 0 0 0 1 0 0 0 0 1 255 255 255 255 255 255 255 255 255 255 255 0",
+        "GRIB_PDS_PDTN":
+        "40",
+        "GRIB_PDS_TEMPLATE_NUMBERS":
+        "20 0 156 72 0 255 99 0 0 0 1 0 0 0 0 1 255 255 255 255 255 255 255 255 255 255 255 0",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -686,11 +709,14 @@ def test_grib_grib2_write_creation_options():
     ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_PDS_PDTN": "40",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "20 0 40008 0 255 99 0 0 1 0 1 -127 -2147483647 255 -127 -2147483647",
+        "GRIB_PDS_PDTN":
+        "40",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "20 0 40008 0 255 99 0 0 1 0 1 -127 -2147483647 255 -127 -2147483647",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -710,11 +736,14 @@ def test_grib_grib2_write_creation_options():
     ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_PDS_PDTN": "40",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "20 0 40008 0 255 99 0 0 1 0 1 -127 -2147483647 255 -127 -2147483647",
+        "GRIB_PDS_PDTN":
+        "40",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "20 0 40008 0 255 99 0 0 1 0 1 -127 -2147483647 255 -127 -2147483647",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -745,11 +774,14 @@ def test_grib_grib2_write_creation_options():
     ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_PDS_PDTN": "32",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "5 7 2 0 0 0 0 1 0 2 31 285 17292 2 61145 31 285 17292 2 61145",
+        "GRIB_PDS_PDTN":
+        "32",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "5 7 2 0 0 0 0 1 0 2 31 285 17292 2 61145 31 285 17292 2 61145",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -781,11 +813,14 @@ def test_grib_grib2_write_creation_options():
     ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_PDS_PDTN": "32",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "5 7 2 0 0 0 0 1 0 2 31 285 17292 2 61145 31 285 17292 2 61145",
+        "GRIB_PDS_PDTN":
+        "32",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "5 7 2 0 0 0 0 1 0 2 31 285 17292 2 61145 31 285 17292 2 61145",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -802,11 +837,14 @@ def test_grib_grib2_write_creation_options():
     ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
     expected_md = {
-        "GRIB_PDS_PDTN": "32",
-        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES": "5 7 2 0 0 0 0 1 0 2 31 285 17292 2 61145 31 285 17292 2 61145",
+        "GRIB_PDS_PDTN":
+        "32",
+        "GRIB_PDS_TEMPLATE_ASSEMBLED_VALUES":
+        "5 7 2 0 0 0 0 1 0 2 31 285 17292 2 61145 31 285 17292 2 61145",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -816,16 +854,22 @@ def test_grib_grib2_write_creation_options():
             tmpfilename,
             "data/byte.tif",
             format="GRIB",
-            creationOptions=["PDS_PDTN=65535", "PDS_TEMPLATE_NUMBERS=1 2 3 4 5"],
+            creationOptions=[
+                "PDS_PDTN=65535", "PDS_TEMPLATE_NUMBERS=1 2 3 4 5"
+            ],
         )
     assert out_ds is not None
     out_ds = None
     with gdaltest.error_handler():
         ds = gdal.Open(tmpfilename)
     md = ds.GetRasterBand(1).GetMetadata()
-    expected_md = {"GRIB_PDS_PDTN": "65535", "GRIB_PDS_TEMPLATE_NUMBERS": "1 2 3 4 5"}
+    expected_md = {
+        "GRIB_PDS_PDTN": "65535",
+        "GRIB_PDS_TEMPLATE_NUMBERS": "1 2 3 4 5"
+    }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
     ds = None
     gdal.Unlink(tmpfilename)
 
@@ -845,9 +889,10 @@ def test_grib_grib2_write_creation_options():
 
     # Test with PDS_PDTN != 0 without template numbers
     with gdaltest.error_handler():
-        out_ds = gdal.Translate(
-            tmpfilename, "data/byte.tif", format="GRIB", creationOptions=["PDS_PDTN=32"]
-        )
+        out_ds = gdal.Translate(tmpfilename,
+                                "data/byte.tif",
+                                format="GRIB",
+                                creationOptions=["PDS_PDTN=32"])
     assert out_ds is None
     gdal.Unlink(tmpfilename)
 
@@ -857,7 +902,9 @@ def test_grib_grib2_write_creation_options():
             tmpfilename,
             "data/byte.tif",
             format="GRIB",
-            creationOptions=["PDS_PDTN=254", "PDS_TEMPLATE_NUMBERS=-1 256 0 0 0 0"],
+            creationOptions=[
+                "PDS_PDTN=254", "PDS_TEMPLATE_NUMBERS=-1 256 0 0 0 0"
+            ],
         )
     assert out_ds is not None
     out_ds = None
@@ -918,14 +965,13 @@ def test_grib_grib2_write_projections():
         out_ds = gdal.Open(tmpfilename)
 
         assert src_ds.GetProjectionRef() == out_ds.GetProjectionRef(), (
-            "did not get expected projection for %s" % filename
-        )
+            "did not get expected projection for %s" % filename)
 
         expected_gt = src_ds.GetGeoTransform()
         got_gt = out_ds.GetGeoTransform()
-        assert max([abs(expected_gt[i] - got_gt[i]) for i in range(6)]) <= 1e-5, (
-            "did not get expected geotransform for %s" % filename
-        )
+        assert max([abs(expected_gt[i] - got_gt[i])
+                    for i in range(6)]) <= 1e-5, (
+                        "did not get expected geotransform for %s" % filename)
 
         out_ds = None
         gdal.Unlink(tmpfilename)
@@ -933,13 +979,11 @@ def test_grib_grib2_write_projections():
     # Test writing GRS80
     src_ds = gdal.GetDriverByName("MEM").Create("", 2, 2, 1, gdal.GDT_Float32)
     src_ds.SetGeoTransform([2, 1, 0, 49, 0, -1])
-    src_ds.SetProjection(
-        """GEOGCS["GRS 1980(IUGG, 1980)",
+    src_ds.SetProjection("""GEOGCS["GRS 1980(IUGG, 1980)",
     DATUM["unknown",
         SPHEROID["GRS80",6378137,298.257222101]],
     PRIMEM["Greenwich",0],
-    UNIT["degree",0.0174532925199433]]"""
-    )
+    UNIT["degree",0.0174532925199433]]""")
     tmpfilename = "/vsimem/out.grb2"
     out_ds = gdaltest.grib_drv.CreateCopy(tmpfilename, src_ds)
     wkt = out_ds.GetProjectionRef()
@@ -982,11 +1026,11 @@ def test_grib_grib2_write_projections():
     if got_sr.IsSame(expected_sr) == 0:
         print(out_ds.GetProjectionRef())
         pytest.fail("did not get expected projection for Mercator_1SP")
-    expected_gt = (-10931635.565066436, 60.297, 0.0, 3331982.221608528, 0.0, -60.297)
+    expected_gt = (-10931635.565066436, 60.297, 0.0, 3331982.221608528, 0.0,
+                   -60.297)
     got_gt = out_ds.GetGeoTransform()
-    assert (
-        max([abs(expected_gt[i] - got_gt[i]) for i in range(6)]) <= 1e-5
-    ), "did not get expected geotransform for Mercator_1SP"
+    assert (max([abs(expected_gt[i] - got_gt[i]) for i in range(6)]) <=
+            1e-5), "did not get expected geotransform for Mercator_1SP"
     out_ds = None
     gdal.Unlink(tmpfilename)
 
@@ -1025,11 +1069,11 @@ def test_grib_grib2_write_projections():
     if got_sr.IsSame(expected_sr) == 0:
         print(out_ds.GetProjectionRef())
         pytest.fail("did not get expected projection for LCC_1SP")
-    expected_gt = (8974472.884926716, 60.017, 0.0, 6235685.688523474, 0.0, -60.017)
+    expected_gt = (8974472.884926716, 60.017, 0.0, 6235685.688523474, 0.0,
+                   -60.017)
     got_gt = out_ds.GetGeoTransform()
-    assert (
-        max([abs(expected_gt[i] - got_gt[i]) for i in range(6)]) <= 1e-5
-    ), "did not get expected geotransform for LCC_1SP"
+    assert (max([abs(expected_gt[i] - got_gt[i]) for i in range(6)]) <=
+            1e-5), "did not get expected geotransform for LCC_1SP"
     out_ds = None
     gdal.Unlink(tmpfilename)
 
@@ -1053,11 +1097,8 @@ def _grib_read_section(filename, sect_num_to_read):
         sect_num_bytes = gdal.VSIFReadL(1, 1, f)
         sect_num = ord(sect_num_bytes)
         if sect_num == sect_num_to_read:
-            ret = (
-                sect_size_bytes
-                + sect_num_bytes
-                + gdal.VSIFReadL(1, sect_size_num - 5, f)
-            )
+            ret = (sect_size_bytes + sect_num_bytes +
+                   gdal.VSIFReadL(1, sect_size_num - 5, f))
             break
         gdal.VSIFSeekL(f, sect_size_num - 5, 1)
 
@@ -1081,122 +1122,130 @@ def test_grib_grib2_write_data_encodings():
 
     tests = []
     tests += [["data/byte.tif", [], 4672, GS5_SIMPLE]]
-    tests += [["data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING"], 4672, GS5_SIMPLE]]
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING"], 4672, GS5_SIMPLE
+    ]]
 
-    tests += [["data/byte.tif", ["DATA_ENCODING=IEEE_FLOATING_POINT"], 4672, GS5_IEEE]]
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=IEEE_FLOATING_POINT"], 4672, GS5_IEEE
+    ]]
 
-    tests += [
-        ["data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=8"], 4672, GS5_SIMPLE]
-    ]
-    tests += [
-        ["data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=9"], 4672, GS5_SIMPLE]
-    ]
-    tests += [
-        ["data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=7"], 4484, GS5_SIMPLE]
-    ]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=SIMPLE_PACKING", "DECIMAL_SCALE_FACTOR=-1"],
-            4820,
-            GS5_SIMPLE,
-        ]
-    ]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=5", "DECIMAL_SCALE_FACTOR=-1"],
-            4820,
-            GS5_SIMPLE,
-        ]
-    ]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=8", "DECIMAL_SCALE_FACTOR=-1"],
-            4855,
-            GS5_SIMPLE,
-        ]
-    ]
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=8"], 4672,
+        GS5_SIMPLE
+    ]]
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=9"], 4672,
+        GS5_SIMPLE
+    ]]
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=7"], 4484,
+        GS5_SIMPLE
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=SIMPLE_PACKING", "DECIMAL_SCALE_FACTOR=-1"],
+        4820,
+        GS5_SIMPLE,
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=5", "DECIMAL_SCALE_FACTOR=-1"],
+        4820,
+        GS5_SIMPLE,
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=SIMPLE_PACKING", "NBITS=8", "DECIMAL_SCALE_FACTOR=-1"],
+        4855,
+        GS5_SIMPLE,
+    ]]
 
-    tests += [
+    tests += [[
+        "data/grib/ds.mint.bin",
         [
-            "data/grib/ds.mint.bin",
-            [
-                "PDS_PDTN=8",
-                "PDS_TEMPLATE_ASSEMBLED_VALUES=0 5 2 0 0 255 255 1 19 1 0 0 255 -1 -2147483647 2008 2 22 12 0 0 1 0 3 255 1 12 1 0",
-            ],
-            46650,
-            GS5_CMPLX,
-        ]
-    ]  # has nodata, hence complex packing
-    tests += [["data/byte.tif", ["DATA_ENCODING=COMPLEX_PACKING"], 4672, GS5_CMPLX]]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=COMPLEX_PACKING", "SPATIAL_DIFFERENCING_ORDER=0"],
-            4672,
-            GS5_CMPLX,
-        ]
-    ]
-    tests += [["data/byte.tif", ["SPATIAL_DIFFERENCING_ORDER=1"], 4672, GS5_CMPLXSEC]]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=COMPLEX_PACKING", "SPATIAL_DIFFERENCING_ORDER=1"],
-            4672,
-            GS5_CMPLXSEC,
-        ]
-    ]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=COMPLEX_PACKING", "SPATIAL_DIFFERENCING_ORDER=2"],
-            4672,
-            GS5_CMPLXSEC,
-        ]
-    ]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=COMPLEX_PACKING", "DECIMAL_SCALE_FACTOR=-1"],
-            4820,
-            GS5_CMPLX,
-        ]
-    ]
-    tests += [
-        ["data/byte.tif", ["DATA_ENCODING=COMPLEX_PACKING", "NBITS=7"], 4484, GS5_CMPLX]
-    ]
+            "PDS_PDTN=8",
+            "PDS_TEMPLATE_ASSEMBLED_VALUES=0 5 2 0 0 255 255 1 19 1 0 0 255 -1 -2147483647 2008 2 22 12 0 0 1 0 3 255 1 12 1 0",
+        ],
+        46650,
+        GS5_CMPLX,
+    ]]  # has nodata, hence complex packing
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=COMPLEX_PACKING"], 4672, GS5_CMPLX
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=COMPLEX_PACKING", "SPATIAL_DIFFERENCING_ORDER=0"],
+        4672,
+        GS5_CMPLX,
+    ]]
+    tests += [[
+        "data/byte.tif", ["SPATIAL_DIFFERENCING_ORDER=1"], 4672, GS5_CMPLXSEC
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=COMPLEX_PACKING", "SPATIAL_DIFFERENCING_ORDER=1"],
+        4672,
+        GS5_CMPLXSEC,
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=COMPLEX_PACKING", "SPATIAL_DIFFERENCING_ORDER=2"],
+        4672,
+        GS5_CMPLXSEC,
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=COMPLEX_PACKING", "DECIMAL_SCALE_FACTOR=-1"],
+        4820,
+        GS5_CMPLX,
+    ]]
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=COMPLEX_PACKING", "NBITS=7"], 4484,
+        GS5_CMPLX
+    ]]
 
     if gdal.GetDriverByName("PNG") is not None:
         tests += [["data/byte.tif", ["DATA_ENCODING=PNG"], 4672, GS5_PNG]]
-        tests += [["data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=8"], 4672, GS5_PNG]]
-        tests += [
-            [
-                "data/byte.tif",
-                ["DATA_ENCODING=PNG", "DECIMAL_SCALE_FACTOR=-1"],
-                4820,
-                GS5_PNG,
-            ]
-        ]
-        tests += [
-            [
-                "data/byte.tif",
-                ["DATA_ENCODING=PNG", "NBITS=8", "DECIMAL_SCALE_FACTOR=-1"],
-                4855,
-                GS5_PNG,
-            ]
-        ]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=8"], 4672, GS5_PNG
+        ]]
+        tests += [[
+            "data/byte.tif",
+            ["DATA_ENCODING=PNG", "DECIMAL_SCALE_FACTOR=-1"],
+            4820,
+            GS5_PNG,
+        ]]
+        tests += [[
+            "data/byte.tif",
+            ["DATA_ENCODING=PNG", "NBITS=8", "DECIMAL_SCALE_FACTOR=-1"],
+            4855,
+            GS5_PNG,
+        ]]
         # rounded to 16 bit
-        tests += [["data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=9"], 4672, GS5_PNG]]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=9"], 4672, GS5_PNG
+        ]]
         # rounded to 8 bit
-        tests += [["data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=7"], 4672, GS5_PNG]]
-        tests += [["data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=4"], 5103, GS5_PNG]]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=7"], 4672, GS5_PNG
+        ]]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=4"], 5103, GS5_PNG
+        ]]
         # rounded to 4 bit
-        tests += [["data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=3"], 5103, GS5_PNG]]
-        tests += [["data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=2"], 5103, GS5_PNG]]
-        tests += [["data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=1"], 5103, GS5_PNG]]
-        tests += [["../gcore/data/float32.tif", ["DATA_ENCODING=PNG"], 4672, GS5_PNG]]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=3"], 5103, GS5_PNG
+        ]]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=2"], 5103, GS5_PNG
+        ]]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=PNG", "NBITS=1"], 5103, GS5_PNG
+        ]]
+        tests += [[
+            "../gcore/data/float32.tif", ["DATA_ENCODING=PNG"], 4672, GS5_PNG
+        ]]
 
     found_j2k_drivers = []
     for drvname in ["JP2KAK", "JP2OPENJPEG", "JPEG2000", "JP2ECW"]:
@@ -1210,58 +1259,53 @@ def test_grib_grib2_write_data_encodings():
                     found_j2k_drivers.append(drvname)
 
     if found_j2k_drivers:
-        tests += [["data/byte.tif", ["DATA_ENCODING=JPEG2000"], 4672, GS5_JPEG2000]]
-        tests += [
-            [
-                "data/byte.tif",
-                ["DATA_ENCODING=JPEG2000", "COMPRESSION_RATIO=2"],
-                4672,
-                GS5_JPEG2000,
-            ]
-        ]  # COMPRESSION_RATIO ignored in that case
-        tests += [
-            ["data/byte.tif", ["DATA_ENCODING=JPEG2000", "NBITS=8"], 4672, GS5_JPEG2000]
-        ]
-        tests += [
-            [
-                "data/byte.tif",
-                ["DATA_ENCODING=JPEG2000", "DECIMAL_SCALE_FACTOR=-1"],
-                (4820, 4722),
-                GS5_JPEG2000,
-            ]
-        ]
-        tests += [
-            [
-                "data/byte.tif",
-                ["DATA_ENCODING=JPEG2000", "NBITS=8", "DECIMAL_SCALE_FACTOR=-1"],
-                (4855, 4795),
-                GS5_JPEG2000,
-            ]
-        ]
-        tests += [
-            ["data/byte.tif", ["DATA_ENCODING=JPEG2000", "NBITS=9"], 4672, GS5_JPEG2000]
-        ]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=JPEG2000"], 4672, GS5_JPEG2000
+        ]]
+        tests += [[
+            "data/byte.tif",
+            ["DATA_ENCODING=JPEG2000", "COMPRESSION_RATIO=2"],
+            4672,
+            GS5_JPEG2000,
+        ]]  # COMPRESSION_RATIO ignored in that case
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=JPEG2000", "NBITS=8"], 4672,
+            GS5_JPEG2000
+        ]]
+        tests += [[
+            "data/byte.tif",
+            ["DATA_ENCODING=JPEG2000", "DECIMAL_SCALE_FACTOR=-1"],
+            (4820, 4722),
+            GS5_JPEG2000,
+        ]]
+        tests += [[
+            "data/byte.tif",
+            ["DATA_ENCODING=JPEG2000", "NBITS=8", "DECIMAL_SCALE_FACTOR=-1"],
+            (4855, 4795),
+            GS5_JPEG2000,
+        ]]
+        tests += [[
+            "data/byte.tif", ["DATA_ENCODING=JPEG2000", "NBITS=9"], 4672,
+            GS5_JPEG2000
+        ]]
         # 4899 for JP2ECW, 4440 for JP2OPENJPEG
-        tests += [
-            [
-                "data/byte.tif",
-                ["DATA_ENCODING=JPEG2000", "NBITS=7"],
-                (4484, 4899, 4440),
-                GS5_JPEG2000,
-            ]
-        ]
+        tests += [[
+            "data/byte.tif",
+            ["DATA_ENCODING=JPEG2000", "NBITS=7"],
+            (4484, 4899, 4440),
+            GS5_JPEG2000,
+        ]]
         for drvname in found_j2k_drivers:
-            tests += [
-                ["data/byte.tif", ["JPEG2000_DRIVER=" + drvname], 4672, GS5_JPEG2000]
-            ]
-        tests += [
-            [
-                "../gcore/data/float32.tif",
-                ["DATA_ENCODING=JPEG2000"],
-                4672,
-                GS5_JPEG2000,
-            ]
-        ]
+            tests += [[
+                "data/byte.tif", ["JPEG2000_DRIVER=" + drvname], 4672,
+                GS5_JPEG2000
+            ]]
+        tests += [[
+            "../gcore/data/float32.tif",
+            ["DATA_ENCODING=JPEG2000"],
+            4672,
+            GS5_JPEG2000,
+        ]]
 
     tests += [["../gcore/data/int16.tif", [], 4672, GS5_SIMPLE]]
     tests += [["../gcore/data/uint16.tif", [], 4672, GS5_SIMPLE]]
@@ -1269,30 +1313,24 @@ def test_grib_grib2_write_data_encodings():
     tests += [["../gcore/data/uint32.tif", [], 4672, GS5_SIMPLE]]
     tests += [["../gcore/data/float32.tif", [], 4672, GS5_IEEE]]
     tests += [["../gcore/data/float64.tif", [], 4672, GS5_IEEE]]
-    tests += [
-        [
-            "../gcore/data/float32.tif",
-            ["DATA_ENCODING=IEEE_FLOATING_POINT"],
-            4672,
-            GS5_IEEE,
-        ]
-    ]
-    tests += [
-        [
-            "../gcore/data/float64.tif",
-            ["DATA_ENCODING=IEEE_FLOATING_POINT"],
-            4672,
-            GS5_IEEE,
-        ]
-    ]
-    tests += [
-        [
-            "../gcore/data/float32.tif",
-            ["DATA_ENCODING=COMPLEX_PACKING"],
-            4672,
-            GS5_CMPLX,
-        ]
-    ]
+    tests += [[
+        "../gcore/data/float32.tif",
+        ["DATA_ENCODING=IEEE_FLOATING_POINT"],
+        4672,
+        GS5_IEEE,
+    ]]
+    tests += [[
+        "../gcore/data/float64.tif",
+        ["DATA_ENCODING=IEEE_FLOATING_POINT"],
+        4672,
+        GS5_IEEE,
+    ]]
+    tests += [[
+        "../gcore/data/float32.tif",
+        ["DATA_ENCODING=COMPLEX_PACKING"],
+        4672,
+        GS5_CMPLX,
+    ]]
 
     one_ds = gdal.GetDriverByName("MEM").Create("", 1, 1)
     one_ds.SetGeoTransform([2, 1, 0, 49, 0, -1])
@@ -1322,10 +1360,14 @@ def test_grib_grib2_write_data_encodings():
 
     tests += [[all_nodata_ds, ["DATA_ENCODING=COMPLEX_PACKING"], 0, GS5_CMPLX]]
 
-    for (filename, options, expected_cs, expected_section5_template_number) in tests:
+    for (filename, options, expected_cs,
+         expected_section5_template_number) in tests:
         tmpfilename = "/vsimem/out.grb2"
         gdal.ErrorReset()
-        gdal.Translate(tmpfilename, filename, format="GRIB", creationOptions=options)
+        gdal.Translate(tmpfilename,
+                       filename,
+                       format="GRIB",
+                       creationOptions=options)
         error_msg = gdal.GetLastErrorMsg()
         assert error_msg == "", "did not expect error for %s, %s" % (
             str(filename),
@@ -1335,9 +1377,8 @@ def test_grib_grib2_write_data_encodings():
         section5 = _grib_read_section(tmpfilename, 5)
         section5_template_number = struct.unpack(">h", section5[9:11])[0]
         assert section5_template_number == expected_section5_template_number, (
-            "did not get expected section 5 template number for %s, %s"
-            % (str(filename), str(options))
-        )
+            "did not get expected section 5 template number for %s, %s" %
+            (str(filename), str(options)))
 
         out_ds = gdal.Open(tmpfilename)
         cs = out_ds.GetRasterBand(1).Checksum()
@@ -1345,7 +1386,7 @@ def test_grib_grib2_write_data_encodings():
         out_ds = None
         gdal.Unlink(tmpfilename)
         if not isinstance(expected_cs, tuple):
-            expected_cs = (expected_cs,)
+            expected_cs = (expected_cs, )
         assert cs in expected_cs, "did not get expected checksum for %s, %s" % (
             str(filename),
             str(options),
@@ -1366,17 +1407,15 @@ def test_grib_grib2_write_data_encodings():
     test_ds = gdal.GetDriverByName("MEM").Create("", 2, 2, 1, gdal.GDT_Float32)
     test_ds.SetGeoTransform([2, 1, 0, 49, 0, -1])
     test_ds.SetProjection(sr.ExportToWkt())
-    test_ds.WriteRaster(0, 0, 2, 2, struct.pack(4 * "f", 1.23, 1.45, 1.56, 1.78))
+    test_ds.WriteRaster(0, 0, 2, 2, struct.pack(4 * "f", 1.23, 1.45, 1.56,
+                                                1.78))
 
     encodings = ["SIMPLE_PACKING", "COMPLEX_PACKING", "IEEE_FLOATING_POINT"]
     if gdal.GetDriverByName("PNG") is not None:
         encodings += ["PNG"]
     # JPEG2000 doesn't result in an appropriate result
-    if (
-        found_j2k_drivers
-        and found_j2k_drivers != ["JPEG2000"]
-        and found_j2k_drivers != ["JPEG2000", "JP2ECW"]
-    ):
+    if (found_j2k_drivers and found_j2k_drivers != ["JPEG2000"]
+            and found_j2k_drivers != ["JPEG2000", "JP2ECW"]):
         encodings += ["JPEG2000"]
 
     for encoding in encodings:
@@ -1385,15 +1424,19 @@ def test_grib_grib2_write_data_encodings():
         options = ["DATA_ENCODING=" + encoding]
         if encoding == "COMPLEX_PACKING":
             with gdaltest.error_handler():
-                success = gdal.Translate(
-                    tmpfilename, test_ds, format="GRIB", creationOptions=options
-                )
+                success = gdal.Translate(tmpfilename,
+                                         test_ds,
+                                         format="GRIB",
+                                         creationOptions=options)
             assert not success, "expected error for %s, %s" % (
                 "floating point data with dynamic < 1",
                 str(options),
             )
         else:
-            gdal.Translate(tmpfilename, test_ds, format="GRIB", creationOptions=options)
+            gdal.Translate(tmpfilename,
+                           test_ds,
+                           format="GRIB",
+                           creationOptions=options)
             error_msg = gdal.GetLastErrorMsg()
             assert error_msg == "", "did not expect error for %s, %s" % (
                 "floating point data with dynamic < 1",
@@ -1411,9 +1454,9 @@ def test_grib_grib2_write_data_encodings():
                     1.5581250190734863,
                     1.7807812690734863,
                 )
-            assert (
-                max([abs(got_vals[i] - expected_vals[i]) for i in range(4)]) <= 1e-7
-            ), "did not get expected values"
+            assert (max(
+                [abs(got_vals[i] - expected_vals[i])
+                 for i in range(4)]) <= 1e-7), "did not get expected values"
         gdal.Unlink(tmpfilename)
 
     test_ds = None
@@ -1423,18 +1466,14 @@ def test_grib_grib2_write_data_encodings():
     test_ds.SetGeoTransform([2, 1, 0, 49, 0, -1])
     test_ds.SetProjection(sr.ExportToWkt())
     test_ds.WriteRaster(
-        0, 0, 2, 2, struct.pack(4 * "f", 1.23e10, -2.45e10, 1.23e10, -2.45e10)
-    )
+        0, 0, 2, 2, struct.pack(4 * "f", 1.23e10, -2.45e10, 1.23e10, -2.45e10))
 
     encodings = ["SIMPLE_PACKING"]
     if gdal.GetDriverByName("PNG") is not None:
         encodings += ["PNG"]
     # JP2ECW doesn't manage to compress such a small file
-    if (
-        found_j2k_drivers
-        and found_j2k_drivers != ["JP2ECW"]
-        and found_j2k_drivers != ["JPEG2000", "JP2ECW"]
-    ):
+    if (found_j2k_drivers and found_j2k_drivers != ["JP2ECW"]
+            and found_j2k_drivers != ["JPEG2000", "JP2ECW"]):
         encodings += ["JPEG2000"]
 
     for encoding in encodings:
@@ -1455,15 +1494,10 @@ def test_grib_grib2_write_data_encodings():
         out_ds = None
         gdal.Unlink(tmpfilename)
         expected_vals = (1.23e10, -2.45e10, 1.23e10, -2.45e10)
-        assert (
-            max(
-                [
-                    abs((got_vals[i] - expected_vals[i]) / expected_vals[i])
-                    for i in range(4)
-                ]
-            )
-            <= 1e-4
-        ), ("did not get expected values for " + encoding)
+        assert (max([
+            abs((got_vals[i] - expected_vals[i]) / expected_vals[i])
+            for i in range(4)
+        ]) <= 1e-4), ("did not get expected values for " + encoding)
     test_ds = None
 
     # Test lossy J2K compression
@@ -1474,7 +1508,9 @@ def test_grib_grib2_write_data_encodings():
             tmpfilename,
             "data/utm.tif",
             format="GRIB",
-            creationOptions=["JPEG2000_DRIVER=" + drvname, "COMPRESSION_RATIO=20"],
+            creationOptions=[
+                "JPEG2000_DRIVER=" + drvname, "COMPRESSION_RATIO=20"
+            ],
         )
         error_msg = gdal.GetLastErrorMsg()
         assert error_msg == "", "did not expect error for %s, %s" % (
@@ -1487,8 +1523,8 @@ def test_grib_grib2_write_data_encodings():
         gdal.Unlink(tmpfilename)
         if cs == 0 or cs == 50235:  # 50235: lossless checksum
             gdaltest.post_reason(
-                "did not get expected checksum for lossy JPEG2000 with " + drvname
-            )
+                "did not get expected checksum for lossy JPEG2000 with " +
+                drvname)
             print(cs)
 
 
@@ -1500,43 +1536,45 @@ def test_grib_grib2_write_data_encodings_warnings_and_errors():
 
     # Cases where warnings are expected
     tests = []
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=SIMPLE_PACKING", "DECIMAL_SCALE_FACTOR=1"],
-            4672,
-        ]
-    ]
-    tests += [
-        ["data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "JPEG2000_DRIVER=FOO"], 4672]
-    ]
-    tests += [
-        ["data/byte.tif", ["DATA_ENCODING=SIMPLE_PACKING", "JPEG2000_DRIVER=FOO"], 4672]
-    ]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=SIMPLE_PACKING", "SPATIAL_DIFFERENCING_ORDER=1"],
-            4672,
-        ]
-    ]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=SIMPLE_PACKING", "DECIMAL_SCALE_FACTOR=1"],
+        4672,
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=SIMPLE_PACKING", "JPEG2000_DRIVER=FOO"], 4672
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=SIMPLE_PACKING", "JPEG2000_DRIVER=FOO"], 4672
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=SIMPLE_PACKING", "SPATIAL_DIFFERENCING_ORDER=1"],
+        4672,
+    ]]
     # should warn since simple packing doesn't support nodata
-    tests += [["data/grib/ds.mint.bin", ["DATA_ENCODING=SIMPLE_PACKING"], 41640]]
+    tests += [[
+        "data/grib/ds.mint.bin", ["DATA_ENCODING=SIMPLE_PACKING"], 41640
+    ]]
     tests += [["data/byte.tif", ["NBITS=32"], 4672]]
-    tests += [["data/byte.tif", ["DATA_ENCODING=IEEE_FLOATING_POINT", "NBITS=8"], 4672]]
-    tests += [
-        [
-            "data/byte.tif",
-            ["DATA_ENCODING=IEEE_FLOATING_POINT", "DECIMAL_SCALE_FACTOR=-1"],
-            4672,
-        ]
-    ]
+    tests += [[
+        "data/byte.tif", ["DATA_ENCODING=IEEE_FLOATING_POINT", "NBITS=8"], 4672
+    ]]
+    tests += [[
+        "data/byte.tif",
+        ["DATA_ENCODING=IEEE_FLOATING_POINT", "DECIMAL_SCALE_FACTOR=-1"],
+        4672,
+    ]]
     for (filename, options, expected_cs) in tests:
         tmpfilename = "/vsimem/out.grb2"
         src_ds = gdal.Open(filename)
         gdal.ErrorReset()
         with gdaltest.error_handler():
-            out_ds = gdaltest.grib_drv.CreateCopy(tmpfilename, src_ds, options=options)
+            out_ds = gdaltest.grib_drv.CreateCopy(tmpfilename,
+                                                  src_ds,
+                                                  options=options)
 
         error_msg = gdal.GetLastErrorMsg()
         assert error_msg != "", "expected warning for %s, %s" % (
@@ -1553,7 +1591,7 @@ def test_grib_grib2_write_data_encodings_warnings_and_errors():
         out_ds = None
         gdal.Unlink(tmpfilename)
         if not isinstance(expected_cs, tuple):
-            expected_cs = (expected_cs,)
+            expected_cs = (expected_cs, )
         assert cs in expected_cs, "did not get expected checksum for %s, %s" % (
             str(filename),
             str(options),
@@ -1563,9 +1601,10 @@ def test_grib_grib2_write_data_encodings_warnings_and_errors():
     tests = []
     # invalid DATA_ENCODING
     tests += [["data/byte.tif", ["DATA_ENCODING=FOO"]]]
-    tests += [
-        ["data/byte.tif", ["JPEG2000_DRIVER=FOO", "SPATIAL_DIFFERENCING_ORDER=BAR"]]
-    ]  # both cannot be used together
+    tests += [[
+        "data/byte.tif",
+        ["JPEG2000_DRIVER=FOO", "SPATIAL_DIFFERENCING_ORDER=BAR"]
+    ]]  # both cannot be used together
     tests += [["data/byte.tif", ["SPATIAL_DIFFERENCING_ORDER=3"]]]
     # non-existing driver
     tests += [["data/byte.tif", ["JPEG2000_DRIVER=THIS_IS_NOT_A_J2K_DRIVER"]]]
@@ -1575,17 +1614,24 @@ def test_grib_grib2_write_data_encodings_warnings_and_errors():
     tests += [["data/float64.asc", []]]  # no projection
     tests += [["data/byte.sgi", []]]  # no geotransform
     tests += [["data/rotation.img", []]]  # geotransform with rotation terms
-    gdal.GetDriverByName("GTiff").Create(
-        "/vsimem/huge.tif", 65535, 65535, 1, options=["SPARSE_OK=YES"]
-    )
+    gdal.GetDriverByName("GTiff").Create("/vsimem/huge.tif",
+                                         65535,
+                                         65535,
+                                         1,
+                                         options=["SPARSE_OK=YES"])
     tests += [["/vsimem/huge.tif", []]]  # too many pixels
 
-    for (filename, options,) in tests:
+    for (
+            filename,
+            options,
+    ) in tests:
         tmpfilename = "/vsimem/out.grb2"
         src_ds = gdal.Open(filename)
         gdal.ErrorReset()
         with gdaltest.error_handler():
-            out_ds = gdaltest.grib_drv.CreateCopy(tmpfilename, src_ds, options=options)
+            out_ds = gdaltest.grib_drv.CreateCopy(tmpfilename,
+                                                  src_ds,
+                                                  options=options)
 
         error_msg = gdal.GetLastErrorMsg()
         assert error_msg != "", "expected warning for %s, %s" % (
@@ -1602,7 +1648,9 @@ def test_grib_grib2_write_data_encodings_warnings_and_errors():
     gdal.Unlink("/vsimem/huge.tif")
 
     with gdaltest.error_handler():
-        out_ds = gdal.Translate("/i/do_not/exist.grb2", "data/byte.tif", format="GRIB")
+        out_ds = gdal.Translate("/i/do_not/exist.grb2",
+                                "data/byte.tif",
+                                format="GRIB")
     assert out_ds is None, "expected null return"
 
 
@@ -1651,16 +1699,13 @@ def test_grib_grib2_write_temperatures():
         if input_unit != "K":
             expected_vals = (25.0, 25.1, 25.1, 25.2)
         else:
-            expected_vals = (25.0 - 273.15, 25.1 - 273.15, 25.1 - 273.15, 25.2 - 273.15)
-        assert (
-            max(
-                [
-                    abs((got_vals[i] - expected_vals[i]) / expected_vals[i])
-                    for i in range(4)
-                ]
-            )
-            <= 1e-4
-        ), "fail with data_encoding = %s and type = %s" % (data_encoding, str(src_type))
+            expected_vals = (25.0 - 273.15, 25.1 - 273.15, 25.1 - 273.15,
+                             25.2 - 273.15)
+        assert (max([
+            abs((got_vals[i] - expected_vals[i]) / expected_vals[i])
+            for i in range(4)
+        ]) <= 1e-4), "fail with data_encoding = %s and type = %s" % (
+            data_encoding, str(src_type))
 
 
 ###############################################################################
@@ -1695,9 +1740,8 @@ def test_grib_online_grib2_jpeg2000_single_line():
         pytest.skip()
 
     filename = "CMC_hrdps_continental_PRATE_SFC_0_ps2.5km_2017111712_P001-00.grib2"
-    if not gdaltest.download_file(
-        "http://download.osgeo.org/gdal/data/grib/" + filename
-    ):
+    if not gdaltest.download_file("http://download.osgeo.org/gdal/data/grib/" +
+                                  filename):
         pytest.skip()
 
     ds = gdal.Open("tmp/cache/" + filename)
@@ -1711,14 +1755,16 @@ def test_grib_online_grib2_jpeg2000_single_line():
         "GRIB_VALID_TIME": "  1510923600 sec UTC",
         "GRIB_FORECAST_SECONDS": "3600 sec",
         "GRIB_UNIT": "[kg/(m^2 s)]",
-        "GRIB_PDS_TEMPLATE_NUMBERS": "1 7 2 50 50 0 0 0 0 0 0 0 60 1 0 0 0 0 0 255 255 255 255 255 255",
+        "GRIB_PDS_TEMPLATE_NUMBERS":
+        "1 7 2 50 50 0 0 0 0 0 0 0 60 1 0 0 0 0 0 255 255 255 255 255 255",
         "GRIB_PDS_PDTN": "0",
         "GRIB_COMMENT": "Precipitation rate [kg/(m^2 s)]",
         "GRIB_SHORT_NAME": "0-SFC",
         "GRIB_ELEMENT": "PRATE",
     }
     for k in expected_md:
-        assert k in md and md[k] == expected_md[k], "Did not get expected metadata"
+        assert k in md and md[k] == expected_md[
+            k], "Did not get expected metadata"
 
 
 ###############################################################################
@@ -1730,12 +1776,14 @@ def test_grib_grib2_derived_forecast_spread():
     ds = gdal.Open("data/grib/template_4_12_spread.grb2")
     band = ds.GetRasterBand(1)
     assert band.GetMetadataItem("GRIB_UNIT") == "[spread]"
-    assert band.ComputeRasterMinMax() == (0.24296024441719055, 0.24296024441719055)
+    assert band.ComputeRasterMinMax() == (0.24296024441719055,
+                                          0.24296024441719055)
 
     out_ds = gdaltest.grib_drv.CreateCopy("/vsimem/out.grb2", ds)
     band = out_ds.GetRasterBand(1)
     assert band.GetMetadataItem("GRIB_UNIT") == "[spread]"
-    assert band.ComputeRasterMinMax() == (0.24296024441719055, 0.24296024441719055)
+    assert band.ComputeRasterMinMax() == (0.24296024441719055,
+                                          0.24296024441719055)
     out_ds = None
 
     gdal.Unlink("/vsimem/out.grb2")
@@ -1760,7 +1808,8 @@ def test_grib_grib2_template_4_48():
 
 def test_grib_grib2_scan_flag_not_64():
 
-    ds = gdal.Open("/vsisparse/data/blend.t17z.master.f001.co.grib2.sparse.xml")
+    ds = gdal.Open(
+        "/vsisparse/data/blend.t17z.master.f001.co.grib2.sparse.xml")
     gt = ds.GetGeoTransform()
     expected_gt = (
         -3272421.457337171,

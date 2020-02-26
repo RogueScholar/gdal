@@ -90,12 +90,8 @@ def verify_flatgeobuf_copy(name, fids, names):
             print("Failed trying to read feature")
             return False
 
-        if (
-            ogrtest.check_feature_geometry(
-                feat, orig_feat.GetGeometryRef(), max_error=0.001
-            )
-            != 0
-        ):
+        if (ogrtest.check_feature_geometry(
+                feat, orig_feat.GetGeometryRef(), max_error=0.001) != 0):
             print("Geometry test failed")
             gdaltest.features = None
             return False
@@ -135,7 +131,8 @@ def copy_shape_to_flatgeobuf(name, wkbType, compress=None, options=[]):
 
     ######################################################
     # Setup schema (all test shapefiles use common schmea)
-    ogrtest.quick_create_layer_def(lyr, [("FID", ogr.OFTReal), ("NAME", ogr.OFTString)])
+    ogrtest.quick_create_layer_def(lyr, [("FID", ogr.OFTReal),
+                                         ("NAME", ogr.OFTString)])
 
     ######################################################
     # Copy in shp
@@ -182,20 +179,19 @@ def test_ogr_flatgeobuf_2():
     fgb_lyr = fgb_ds.GetLayer(0)
 
     assert fgb_lyr.TestCapability(ogr.OLCFastGetExtent)
-    assert fgb_lyr.GetExtent() == (478315.53125, 481645.3125, 4762880.5, 4765610.5)
+    assert fgb_lyr.GetExtent() == (478315.53125, 481645.3125, 4762880.5,
+                                   4765610.5)
 
     # test expected spatial filter feature count consistency
     assert fgb_lyr.TestCapability(ogr.OLCFastFeatureCount)
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(
-        478315.531250, 4762880.500000, 481645.312500, 4765610.500000
-    )
+    c = fgb_lyr.SetSpatialFilterRect(478315.531250, 4762880.500000,
+                                     481645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(
-        878315.531250, 4762880.500000, 881645.312500, 4765610.500000
-    )
+    c = fgb_lyr.SetSpatialFilterRect(878315.531250, 4762880.500000,
+                                     881645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 0
     c = fgb_lyr.SetSpatialFilterRect(479586.0, 4764618.6, 479808.2, 4764797.8)
@@ -230,20 +226,19 @@ def test_ogr_flatgeobuf_2_1():
     fgb_lyr = fgb_ds.GetLayer(0)
 
     assert fgb_lyr.TestCapability(ogr.OLCFastGetExtent) is False
-    assert fgb_lyr.GetExtent() == (478315.53125, 481645.3125, 4762880.5, 4765610.5)
+    assert fgb_lyr.GetExtent() == (478315.53125, 481645.3125, 4762880.5,
+                                   4765610.5)
 
     # test expected spatial filter feature count consistency
     assert fgb_lyr.TestCapability(ogr.OLCFastFeatureCount) is False
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(
-        478315.531250, 4762880.500000, 481645.312500, 4765610.500000
-    )
+    c = fgb_lyr.SetSpatialFilterRect(478315.531250, 4762880.500000,
+                                     481645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(
-        878315.531250, 4762880.500000, 881645.312500, 4765610.500000
-    )
+    c = fgb_lyr.SetSpatialFilterRect(878315.531250, 4762880.500000,
+                                     881645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 0
     c = fgb_lyr.SetSpatialFilterRect(479586.0, 4764618.6, 479808.2, 4764797.8)
@@ -298,9 +293,11 @@ def wktRoundtrip(expected):
 def test_ogr_flatgeobuf_3():
     if gdaltest.flatgeobuf_drv is None:
         pytest.skip()
-    wkts = ogrtest.get_wkt_data_series(
-        with_z=True, with_m=True, with_gc=True, with_circular=True, with_surface=True
-    )
+    wkts = ogrtest.get_wkt_data_series(with_z=True,
+                                       with_m=True,
+                                       with_gc=True,
+                                       with_circular=True,
+                                       with_surface=True)
     for wkt in wkts:
         wktRoundtrip(wkt)
 
@@ -314,9 +311,8 @@ def test_ogr_flatgeobuf_8():
     if test_cli_utilities.get_test_ogrsf_path() is None:
         pytest.skip()
 
-    ret = gdaltest.runexternal(
-        test_cli_utilities.get_test_ogrsf_path() + " -ro data/testfgb/poly.fgb"
-    )
+    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() +
+                               " -ro data/testfgb/poly.fgb")
 
     assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
@@ -346,7 +342,8 @@ def test_ogr_flatgeobuf_9():
     for i in range(len(gdaltest.tests)):
         test = gdaltest.tests[i]
 
-        rc = copy_shape_to_flatgeobuf(test[0], test[3], None, ["SPATIAL_INDEX=NO"])
+        rc = copy_shape_to_flatgeobuf(test[0], test[3], None,
+                                      ["SPATIAL_INDEX=NO"])
         assert rc, "Failed making copy of " + test[0] + ".shp"
 
         rc = verify_flatgeobuf_copy(test[0], test[1], test[2])
@@ -360,7 +357,8 @@ def test_ogr_flatgeobuf_directory():
     if gdaltest.flatgeobuf_drv is None:
         pytest.skip()
 
-    ds = ogr.GetDriverByName("FlatGeobuf").CreateDataSource("/vsimem/multi_layer")
+    ds = ogr.GetDriverByName("FlatGeobuf").CreateDataSource(
+        "/vsimem/multi_layer")
     with gdaltest.error_handler():  # name will be laundered
         ds.CreateLayer("foo<", geom_type=ogr.wkbPoint)
     ds.CreateLayer("bar", geom_type=ogr.wkbPoint)
@@ -368,8 +366,7 @@ def test_ogr_flatgeobuf_directory():
 
     ds = gdal.OpenEx("/vsimem/multi_layer")
     assert set(ds.GetFileList()) == set(
-        ["/vsimem/multi_layer/bar.fgb", "/vsimem/multi_layer/foo_.fgb"]
-    )
+        ["/vsimem/multi_layer/bar.fgb", "/vsimem/multi_layer/foo_.fgb"])
     assert ds.GetLayer("foo<")
     assert ds.GetLayer("bar")
     ds = None
@@ -484,11 +481,10 @@ class WFSHTTPHandler(BaseHTTPRequestHandler):
 
             if self.path.find("/fakewfs") != -1:
 
-                if (
-                    self.path == "/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities"
-                    or self.path
-                    == "/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities&ACCEPTVERSIONS=1.1.0,1.0.0"
-                ):
+                if (self.path == "/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities"
+                        or self.path ==
+                        "/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities&ACCEPTVERSIONS=1.1.0,1.0.0"
+                    ):
                     self.send_response(200)
                     self.send_header("Content-type", "application/xml")
                     self.end_headers()
@@ -498,23 +494,22 @@ class WFSHTTPHandler(BaseHTTPRequestHandler):
                     self.wfile.write(content)
                     return
 
-                if (
-                    self.path
-                    == "/fakewfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=topp:tasmania_water_bodies"
-                ):
+                if (self.path ==
+                        "/fakewfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=topp:tasmania_water_bodies"
+                    ):
                     self.send_response(200)
                     self.send_header("Content-type", "application/xml")
                     self.end_headers()
-                    f = open("data/testfgb/wfs/describe_feature_type.xml", "rb")
+                    f = open("data/testfgb/wfs/describe_feature_type.xml",
+                             "rb")
                     content = f.read()
                     f.close()
                     self.wfile.write(content)
                     return
 
-                if (
-                    self.path
-                    == "/fakewfs?OUTPUTFORMAT=application/flatgeobuf&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=topp:tasmania_water_bodies"
-                ):
+                if (self.path ==
+                        "/fakewfs?OUTPUTFORMAT=application/flatgeobuf&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=topp:tasmania_water_bodies"
+                    ):
                     self.send_response(200)
                     self.send_header("Content-type", "application/flatgeobuf")
                     self.end_headers()
@@ -546,8 +541,8 @@ def test_ogr_wfs_fake_wfs_server():
 
     gdal.SetConfigOption("OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN", "NO")
     ds = ogr.Open(
-        "WFS:http://127.0.0.1:%d/fakewfs?OUTPUTFORMAT=application/flatgeobuf" % port
-    )
+        "WFS:http://127.0.0.1:%d/fakewfs?OUTPUTFORMAT=application/flatgeobuf" %
+        port)
     gdal.SetConfigOption("OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN", None)
     if ds is None:
         webserver.server_stop(process, port)
@@ -564,15 +559,13 @@ def test_ogr_wfs_fake_wfs_server():
         pytest.fail("did not get expected layer name (got %s)" % name)
 
     feat = lyr.GetNextFeature()
-    if (
-        feat.GetField("CONTINENT") != "Australia"
-        or ogrtest.check_feature_geometry(
+    if (feat.GetField(
+            "CONTINENT"
+    ) != "Australia" or ogrtest.check_feature_geometry(
             feat,
             "MULTIPOLYGON (((146.232727 -42.157501,146.238007 -42.16111,146.24411 -42.169724,146.257202 -42.193329,146.272217 -42.209442,146.274689 -42.214165,146.27832 -42.21833,146.282471 -42.228882,146.282745 -42.241943,146.291351 -42.255836,146.290253 -42.261948,146.288025 -42.267502,146.282471 -42.269997,146.274994 -42.271111,146.266663 -42.270279,146.251373 -42.262505,146.246918 -42.258057,146.241333 -42.256111,146.23468 -42.257782,146.221344 -42.269165,146.210785 -42.274445,146.20163 -42.27417,146.196075 -42.271385,146.186646 -42.258057,146.188568 -42.252785,146.193298 -42.249443,146.200806 -42.248055,146.209137 -42.249168,146.217468 -42.248611,146.222473 -42.245277,146.22525 -42.240555,146.224121 -42.22805,146.224396 -42.221382,146.228302 -42.217216,146.231354 -42.212502,146.231628 -42.205559,146.219421 -42.186943,146.21637 -42.17028,146.216644 -42.16333,146.219696 -42.158607,146.225525 -42.156105,146.232727 -42.157501)))",
             max_error=0.00001,
-        )
-        != 0
-    ):
+    ) != 0):
         feat.DumpReadable()
         webserver.server_stop(process, port)
         pytest.fail("did not get expected feature")
