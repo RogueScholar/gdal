@@ -27,10 +27,10 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
-from osgeo import gdal
-import pytest
 import struct
+
+import pytest
+from osgeo import gdal
 
 pytestmark = pytest.mark.require_driver("GRIB")
 

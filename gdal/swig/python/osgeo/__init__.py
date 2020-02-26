@@ -1,7 +1,7 @@
 # __init__ for osgeo package.
-
 # making the osgeo package version the same as the gdal version:
-from sys import platform, version_info
+from sys import platform
+from sys import version_info
 
 if version_info >= (3, 8, 0) and platform == "win32":
     import os
