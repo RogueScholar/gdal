@@ -36,12 +36,11 @@
 #define INCLUDE_SEGMENT_SYSBLOCKMAP_H
 
 #include "pcidsk_config.h"
-#include "pcidsk_types.h"
 #include "pcidsk_segment.h"
+#include "pcidsk_types.h"
 #include "segment/cpcidsksegment.h"
 
-namespace PCIDSK
-{
+namespace PCIDSK {
 class SysVirtualFile;
 class PCIDSKFile;
 
@@ -49,48 +48,44 @@ class PCIDSKFile;
 /*                             SysBlockMap                              */
 /************************************************************************/
 
-class SysBlockMap final: virtual public CPCIDSKSegment
-{
+class SysBlockMap final : virtual public CPCIDSKSegment {
 public:
-    SysBlockMap( PCIDSKFile *file, int segment,const char *segment_pointer );
+  SysBlockMap(PCIDSKFile *file, int segment, const char *segment_pointer);
 
-    virtual        ~SysBlockMap();
+  virtual ~SysBlockMap();
 
-    virtual void    Synchronize() override;
-    virtual void    Initialize() override;
+  virtual void Synchronize() override;
+  virtual void Initialize() override;
 
-    SysVirtualFile *GetVirtualFile( int image );
-    int             CreateVirtualFile();
-    int             CreateVirtualImageFile( int width, int height,
-                                            int block_width, int block_height,
-                                            eChanType chan_type,
-                                            std::string compression );
-    int             GrowVirtualFile( int image, int &last_block,
-                                     int &block_segment_ret );
-    void            SetVirtualFileSize( int image, uint64 file_length );
+  SysVirtualFile *GetVirtualFile(int image);
+  int CreateVirtualFile();
+  int CreateVirtualImageFile(int width, int height, int block_width,
+                             int block_height, eChanType chan_type,
+                             std::string compression);
+  int GrowVirtualFile(int image, int &last_block, int &block_segment_ret);
+  void SetVirtualFileSize(int image, uint64 file_length);
 
-    int             GetNextBlockMapEntry( int bm_index,
-                                          uint16 &segment,
-                                          int &block_in_segment );
+  int GetNextBlockMapEntry(int bm_index, uint16 &segment,
+                           int &block_in_segment);
 
 private:
-    bool         partial_loaded;
-    bool         full_loaded;
-    bool         dirty;
+  bool partial_loaded;
+  bool full_loaded;
+  bool dirty;
 
-    void         PartialLoad();
-    void         FullLoad();
-    void         AllocateBlocks();
+  void PartialLoad();
+  void FullLoad();
+  void AllocateBlocks();
 
-    PCIDSKBuffer layer_data; // only if partial_loaded
-    PCIDSKBuffer blockmap_data; // only if full_loaded.
+  PCIDSKBuffer layer_data;    // only if partial_loaded
+  PCIDSKBuffer blockmap_data; // only if full_loaded.
 
-    int          block_count;
-    int          first_free_block;
+  int block_count;
+  int first_free_block;
 
-    int          growing_segment;
+  int growing_segment;
 
-    std::vector<SysVirtualFile*> virtual_files;
+  std::vector<SysVirtualFile *> virtual_files;
 };
 } // end namespace PCIDSK
 

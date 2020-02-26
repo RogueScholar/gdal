@@ -13,18 +13,18 @@
  * NOTES
  *****************************************************************************
  */
+#include "grib2api.h"
+#include "drstemplates.h"
+#include "grib2.h"
+#include "gridtemplates.h"
+#include "myassert.h"
+#include "pdstemplates.h"
+#include "scan.h"
+#include "tendian.h"
 #include <limits.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "grib2api.h"
-#include "grib2.h"
-#include "scan.h"
-#include "tendian.h"
-#include "myassert.h"
-#include "gridtemplates.h"
-#include "pdstemplates.h"
-#include "drstemplates.h"
 
 #include "cpl_port.h"
 
@@ -38,7 +38,7 @@
 extern sInt4 getgridindex(sInt4 number);
 
 /* have now put this in grib2api.h... may bring it back. */
-#define MAXGRIDTEMP 23  /* maximum number of templates */
+#define MAXGRIDTEMP 23    /* maximum number of templates */
 #define MAXGRIDMAPLEN 200 /* maximum template map length */
 struct gridtemplate {
     sInt4 template_num;
@@ -55,8 +55,8 @@ extern const struct gridtemplate templatesgrid[MAXGRIDTEMP];
 extern sInt4 getpdsindex(sInt4 number);
 
 /* have now put this in grib2api.h... may bring it back. */
-#define MAXPDSTEMP 23   /* maximum number of templates */
-#define MAXPDSMAPLEN 200 /* maximum template map length */
+#define MAXPDSTEMP 23     /* maximum number of templates */
+#define MAXPDSMAPLEN 200  /* maximum template map length */
 struct pdstemplate {
     sInt4 template_num;
     sInt4 mappdslen;
@@ -71,7 +71,7 @@ extern const struct pdstemplate templatespds[MAXPDSTEMP];
  */
 extern sInt4 getdrsindex(sInt4 number);
 
-#define MAXDRSTEMP 8    /* maximum number of templates */
+#define MAXDRSTEMP 8     /* maximum number of templates */
 #define MAXDRSMAPLEN 200 /* maximum template map length */
 struct drstemplate {
     sInt4 template_num;
@@ -83,10 +83,13 @@ extern const struct drstemplate templatesdrs[MAXDRSTEMP];
 #endif
 
 static sInt4 FloatToSInt4Clamp(float val) {
-    if ((double)val >= (double)INT_MAX) return INT_MAX;
-    if ((double)val <= (double)INT_MIN) return INT_MIN;
-    if (CPLIsNan(val)) return 0;
-    return (sInt4)val;
+  if ((double)val >= (double)INT_MAX)
+    return INT_MAX;
+  if ((double)val <= (double)INT_MIN)
+    return INT_MIN;
+  if (CPLIsNan(val))
+    return 0;
+  return (sInt4)val;
 }
 
 /*****************************************************************************
@@ -128,125 +131,121 @@ static sInt4 FloatToSInt4Clamp(float val) {
  * NOTES
  *****************************************************************************
  */
-#define GRIB_UNSIGN_INT2(a,b) ((a<<8)+b)
-static int mdl_LocalUnpack(unsigned char *local, sInt4 locallen,
-                           sInt4 *idat, sInt4 *nidat, float *rdat,
-                           sInt4 *nrdat)
-{
-    int BytesUsed = 0;   /* How many bytes have been used. */
-    unsigned int numGroup; /* Number of groups */
-    int i;               /* Counter over the groups. */
-    sInt4 numVal;        /* Number of values in a given group. */
-    float refVal;        /* The reference value in a given group. */
-    unsigned int scale;  /* The power of 10 scale value in the group. */
-    sInt4 recScale10;    /* 1 / 10**scale.. For faster computations. */
-    unsigned char numBits; /* # of bits for a single element in the group. */
-    char f_dataType;     /* If the local data is a float or integer. */
-    char f_firstType = 0; /* The type of the first group of local data. */
-    int curIndex = 0;    /* Where to store the current data. */
-    int j;               /* Counter over the number of values in a group. */
-    size_t numUsed;      /* Number of bytes used in call to memBitRead. */
-    uChar bufLoc;        /* Where to read for more bits in the data stream. */
-    uInt4 uli_temp;      /* Temporary storage to hold unpacked data. */
+#define GRIB_UNSIGN_INT2(a, b) ((a << 8) + b)
+static int mdl_LocalUnpack(unsigned char *local, sInt4 locallen, sInt4 *idat,
+                           sInt4 *nidat, float *rdat, sInt4 *nrdat) {
+  int BytesUsed = 0;     /* How many bytes have been used. */
+  unsigned int numGroup; /* Number of groups */
+  int i;                 /* Counter over the groups. */
+  sInt4 numVal;          /* Number of values in a given group. */
+  float refVal;          /* The reference value in a given group. */
+  unsigned int scale;    /* The power of 10 scale value in the group. */
+  sInt4 recScale10;      /* 1 / 10**scale.. For faster computations. */
+  unsigned char numBits; /* # of bits for a single element in the group. */
+  char f_dataType;       /* If the local data is a float or integer. */
+  char f_firstType = 0;  /* The type of the first group of local data. */
+  int curIndex = 0;      /* Where to store the current data. */
+  int j;                 /* Counter over the number of values in a group. */
+  size_t numUsed;        /* Number of bytes used in call to memBitRead. */
+  uChar bufLoc;          /* Where to read for more bits in the data stream. */
+  uInt4 uli_temp;        /* Temporary storage to hold unpacked data. */
 
-    if (locallen < BytesUsed + 3) {
+  if (locallen < BytesUsed + 3) {
 #ifdef DEBUG
-        printf("Locallen is too small.\n");
+    printf("Locallen is too small.\n");
 #endif
-        return 5;
-    }
-    /* The calling routine should check octet 6, which is local[0], to be 1,
-     * so we just assert it is 1. */
-    myAssert(local[0] == 1);
-    numGroup = GRIB_UNSIGN_INT2(local[1], local[2]);
-    local += 3;
-    BytesUsed += 3;
-    myAssert(*nrdat > 1);
-    myAssert(*nidat > 1);
-    idat[0] = 0;
-    rdat[0] = 0;
+    return 5;
+  }
+  /* The calling routine should check octet 6, which is local[0], to be 1,
+   * so we just assert it is 1. */
+  myAssert(local[0] == 1);
+  numGroup = GRIB_UNSIGN_INT2(local[1], local[2]);
+  local += 3;
+  BytesUsed += 3;
+  myAssert(*nrdat > 1);
+  myAssert(*nidat > 1);
+  idat[0] = 0;
+  rdat[0] = 0;
 
-    for (i = 0; (unsigned int)i < numGroup; i++) {
-        if (locallen < BytesUsed + 12) {
+  for (i = 0; (unsigned int)i < numGroup; i++) {
+    if (locallen < BytesUsed + 12) {
 #ifdef DEBUG
-            printf("Locallen is too small.\n");
+      printf("Locallen is too small.\n");
 #endif
-            return 5;
-        }
-        MEMCPY_BIG(&numVal, local, sizeof (sInt4));
-        MEMCPY_BIG(&refVal, local + 4, sizeof (float));
-        scale = GRIB_UNSIGN_INT2(local[8], local[9]);
-        recScale10 = (sInt4)(1 / pow (10.0, scale));
-        numBits = local[10];
-        if (numBits >= 32) {
-#ifdef DEBUG
-            printf("Too many bits too unpack.\n");
-#endif
-            return 4;
-        }
-        f_dataType = local[11];
-        local += 12;
-        BytesUsed += 12;
-        if (locallen < BytesUsed + ((numBits * numVal) + 7) / 8) {
-#ifdef DEBUG
-            printf("Locallen is too small.\n");
-#endif
-            return 5;
-        }
-        if (i == 0) {
-            f_firstType = f_dataType;
-        } else if (f_firstType != f_dataType) {
-#ifdef DEBUG
-            printf("Local use data has mixed float/integer type?\n");
-#endif
-            return 1;
-        }
-        bufLoc = 8;
-        if (f_dataType == 0) {
-            /* Floating point data. */
-            if (*nrdat < (curIndex + numVal + 3)) {
-#ifdef DEBUG
-                printf("nrdat is not large enough.\n");
-#endif
-                return 2;
-            }
-            rdat[curIndex] = numVal;
-            curIndex++;
-            rdat[curIndex] = scale;
-            curIndex++;
-            for (j = 0; j < numVal; j++) {
-                memBitRead(&uli_temp, sizeof(sInt4), local, numBits,
-                           &bufLoc, &numUsed);
-                local += numUsed;
-                BytesUsed += (int) numUsed;
-                rdat[curIndex] = (refVal + uli_temp) * recScale10;
-                curIndex++;
-            }
-            rdat[curIndex] = 0;
-        } else {
-            /* Integer point data. */
-            if (*nidat < (curIndex + numVal + 3)) {
-#ifdef DEBUG
-                printf("nidat is not large enough.\n");
-#endif
-                return 3;
-            }
-            idat[curIndex] = numVal;
-            curIndex++;
-            idat[curIndex] = scale;
-            curIndex++;
-            for (j = 0; j < numVal; j++) {
-                memBitRead(&uli_temp, sizeof(sInt4), local, numBits,
-                           &bufLoc, &numUsed);
-                local += numUsed;
-                BytesUsed += (int) numUsed;
-                idat[curIndex] = (sInt4)((refVal + uli_temp) * recScale10);
-                curIndex++;
-            }
-            idat[curIndex] = 0;
-        }
+      return 5;
     }
-    return 0;
+    MEMCPY_BIG(&numVal, local, sizeof(sInt4));
+    MEMCPY_BIG(&refVal, local + 4, sizeof(float));
+    scale = GRIB_UNSIGN_INT2(local[8], local[9]);
+    recScale10 = (sInt4)(1 / pow(10.0, scale));
+    numBits = local[10];
+    if (numBits >= 32) {
+#ifdef DEBUG
+      printf("Too many bits too unpack.\n");
+#endif
+      return 4;
+    }
+    f_dataType = local[11];
+    local += 12;
+    BytesUsed += 12;
+    if (locallen < BytesUsed + ((numBits * numVal) + 7) / 8) {
+#ifdef DEBUG
+      printf("Locallen is too small.\n");
+#endif
+      return 5;
+    }
+    if (i == 0) {
+      f_firstType = f_dataType;
+    } else if (f_firstType != f_dataType) {
+#ifdef DEBUG
+      printf("Local use data has mixed float/integer type?\n");
+#endif
+      return 1;
+    }
+    bufLoc = 8;
+    if (f_dataType == 0) {
+      /* Floating point data. */
+      if (*nrdat < (curIndex + numVal + 3)) {
+#ifdef DEBUG
+        printf("nrdat is not large enough.\n");
+#endif
+        return 2;
+      }
+      rdat[curIndex] = numVal;
+      curIndex++;
+      rdat[curIndex] = scale;
+      curIndex++;
+      for (j = 0; j < numVal; j++) {
+        memBitRead(&uli_temp, sizeof(sInt4), local, numBits, &bufLoc, &numUsed);
+        local += numUsed;
+        BytesUsed += (int)numUsed;
+        rdat[curIndex] = (refVal + uli_temp) * recScale10;
+        curIndex++;
+      }
+      rdat[curIndex] = 0;
+    } else {
+      /* Integer point data. */
+      if (*nidat < (curIndex + numVal + 3)) {
+#ifdef DEBUG
+        printf("nidat is not large enough.\n");
+#endif
+        return 3;
+      }
+      idat[curIndex] = numVal;
+      curIndex++;
+      idat[curIndex] = scale;
+      curIndex++;
+      for (j = 0; j < numVal; j++) {
+        memBitRead(&uli_temp, sizeof(sInt4), local, numBits, &bufLoc, &numUsed);
+        local += numUsed;
+        BytesUsed += (int)numUsed;
+        idat[curIndex] = (sInt4)((refVal + uli_temp) * recScale10);
+        curIndex++;
+      }
+      idat[curIndex] = 0;
+    }
+  }
+  return 0;
 }
 
 /*****************************************************************************
@@ -285,69 +284,68 @@ static int mdl_LocalUnpack(unsigned char *local, sInt4 locallen,
  * NOTES
  *****************************************************************************
  */
-static int fillOutSectLen(unsigned char *c_ipack, int lenCpack,
-                          int subgNum, sInt4 *is2, sInt4 *is3,
-                          sInt4 *is4, sInt4 *is5, sInt4 *is6, sInt4 *is7)
-{
-    sInt4 offset = 0;    /* How far in c_ipack we have read. */
-    sInt4 sectLen;       /* The length of the current section. */
-    int sectId;          /* The current section number. */
-    unsigned int gNum = 0; /* Which sub group we are currently working with. */
+static int fillOutSectLen(unsigned char *c_ipack, int lenCpack, int subgNum,
+                          sInt4 *is2, sInt4 *is3, sInt4 *is4, sInt4 *is5,
+                          sInt4 *is6, sInt4 *is7) {
+  sInt4 offset = 0;      /* How far in c_ipack we have read. */
+  sInt4 sectLen;         /* The length of the current section. */
+  int sectId;            /* The current section number. */
+  unsigned int gNum = 0; /* Which sub group we are currently working with. */
 
-    if (lenCpack < 5) {
+  if (lenCpack < 5) {
 #ifdef DEBUG
-        printf("Cpack is not large enough.\n");
+    printf("Cpack is not large enough.\n");
 #endif
-        return 1;
+    return 1;
+  }
+  /* assert that we start with data in either section 2 or 3. */
+  myAssert((c_ipack[4] == 2) || (c_ipack[4] == 3));
+  while (gNum <= (unsigned int)subgNum) {
+    if (lenCpack < offset + 5) {
+#ifdef DEBUG
+      printf("Cpack is not large enough.\n");
+#endif
+      return 1;
     }
-    /* assert that we start with data in either section 2 or 3. */
-    myAssert((c_ipack[4] == 2) || (c_ipack[4] == 3));
-    while (gNum <= (unsigned int)subgNum) {
-        if (lenCpack < offset + 5) {
+    MEMCPY_BIG(&sectLen, c_ipack + offset, sizeof(sInt4));
+    /* Check if we just read section 8.  If so, then it is "7777" =
+     * 926365495 regardless of endian'ness. */
+    if (sectLen == 926365495L) {
 #ifdef DEBUG
-            printf("Cpack is not large enough.\n");
+      printf("Shouldn't see sect 8. Should stop after correct sect 7\n");
 #endif
-            return 1;
-        }
-        MEMCPY_BIG(&sectLen, c_ipack + offset, sizeof(sInt4));
-        /* Check if we just read section 8.  If so, then it is "7777" =
-         * 926365495 regardless of endian'ness. */
-        if (sectLen == 926365495L) {
-#ifdef DEBUG
-            printf("Shouldn't see sect 8. Should stop after correct sect 7\n");
-#endif
-            return 2;
-        }
-        sectId = c_ipack[offset + 4];
-        switch (sectId) {
-        case 2:
-            is2[0] = sectLen;
-            break;
-        case 3:
-            is3[0] = sectLen;
-            break;
-        case 4:
-            is4[0] = sectLen;
-            break;
-        case 5:
-            is5[0] = sectLen;
-            break;
-        case 6:
-            is6[0] = sectLen;
-            break;
-        case 7:
-            is7[0] = sectLen;
-            gNum++;
-            break;
-        default:
-#ifdef DEBUG
-            printf("Invalid section id %d.\n", sectId);
-#endif
-            return 2;
-        }
-        offset += sectLen;
+      return 2;
     }
-    return 0;
+    sectId = c_ipack[offset + 4];
+    switch (sectId) {
+    case 2:
+      is2[0] = sectLen;
+      break;
+    case 3:
+      is3[0] = sectLen;
+      break;
+    case 4:
+      is4[0] = sectLen;
+      break;
+    case 5:
+      is5[0] = sectLen;
+      break;
+    case 6:
+      is6[0] = sectLen;
+      break;
+    case 7:
+      is7[0] = sectLen;
+      gNum++;
+      break;
+    default:
+#ifdef DEBUG
+      printf("Invalid section id %d.\n", sectId);
+#endif
+      return 2;
+    }
+    offset += sectLen;
+  }
+  return 0;
 }
 
 /*****************************************************************************
@@ -389,76 +387,74 @@ static int fillOutSectLen(unsigned char *c_ipack, int lenCpack,
  *   May want to disable the scan adjustment in the future.
  *****************************************************************************
  */
-static int TransferInt(float *fld, sInt4 ngrdpts, sInt4 ibitmap,
-                       sInt4 *bmap, char f_ignoreScan, sInt4 *scan,
-                       sInt4 nx, sInt4 ny, sInt4 iclean, float xmissp,
-                       sInt4 *iain, sInt4 nd2x3, sInt4 *ib)
-{
-    int i;               /* loop counter over all grid points. */
-    sInt4 x, y;          /* Where we are in a grid of scan value 0100???? */
-    int curIndex;        /* Where in iain to store the current data. */
+static int TransferInt(float *fld, sInt4 ngrdpts, sInt4 ibitmap, sInt4 *bmap,
+                       char f_ignoreScan, sInt4 *scan, sInt4 nx, sInt4 ny,
+                       sInt4 iclean, float xmissp, sInt4 *iain, sInt4 nd2x3,
+                       sInt4 *ib) {
+  int i;        /* loop counter over all grid points. */
+  sInt4 x, y;   /* Where we are in a grid of scan value 0100???? */
+  int curIndex; /* Where in iain to store the current data. */
 
-    if (nd2x3 < ngrdpts) {
+  if (nd2x3 < ngrdpts) {
 #ifdef DEBUG
-        printf("nd2x3(%d) is < ngrdpts(%d)\n", nd2x3, ngrdpts);
+    printf("nd2x3(%d) is < ngrdpts(%d)\n", nd2x3, ngrdpts);
 #endif
-        return 1;
-    }
-    if (f_ignoreScan || ((*scan & 0xf0) == 64)) {
-        if (ibitmap) {
-            for (i = 0; i < ngrdpts; i++) {
-                ib[i] = bmap[i];
-                /* Check if we are supposed to insert xmissp into the field */
-                if ((iclean != 0) && (ib[i] == 0)) {
-                    iain[i] = FloatToSInt4Clamp(xmissp);
-                } else {
-                    iain[i] = FloatToSInt4Clamp(fld[i]);
-                }
-            }
+    return 1;
+  }
+  if (f_ignoreScan || ((*scan & 0xf0) == 64)) {
+    if (ibitmap) {
+      for (i = 0; i < ngrdpts; i++) {
+        ib[i] = bmap[i];
+        /* Check if we are supposed to insert xmissp into the field */
+        if ((iclean != 0) && (ib[i] == 0)) {
+          iain[i] = FloatToSInt4Clamp(xmissp);
         } else {
-            for (i = 0; i < ngrdpts; i++) {
-                iain[i] = FloatToSInt4Clamp(fld[i]);
-            }
+          iain[i] = FloatToSInt4Clamp(fld[i]);
         }
+      }
     } else {
-        if( nx <= 0 || ny <= 0 )
-        {
-            return 1;
-        }
-        if (ny != ngrdpts / nx) {
-#ifdef DEBUG
-            printf("nx(%d) * ny(%d) != ngrdpts(%d)\n", nx, ny, ngrdpts);
-#endif
-            return 2;
-        }
-        if (ibitmap) {
-            for (i = 0; i < ngrdpts; i++) {
-                ScanIndex2XY(i, &x, &y, *scan, nx, ny);
-                /* ScanIndex returns value as if scan was 0100(0000) */
-                curIndex = (x - 1) + (y - 1) * nx;
-                if( curIndex < 0 || curIndex >= nd2x3 )
-                    return 1;
-                ib[curIndex] = bmap[i];
-                /* Check if we are supposed to insert xmissp into the field */
-                if ((iclean != 0) && (ib[curIndex] == 0)) {
-                    iain[i] = FloatToSInt4Clamp(xmissp);
-                } else {
-                    iain[curIndex] = FloatToSInt4Clamp(fld[i]);
-                }
-            }
-        } else {
-            for (i = 0; i < ngrdpts; i++) {
-                ScanIndex2XY (i, &x, &y, *scan, nx, ny);
-                /* ScanIndex returns value as if scan was 0100(0000) */
-                curIndex = (x - 1) + (y - 1) * nx;
-                if( curIndex < 0 || curIndex >= nd2x3 )
-                    return 1;
-                iain[curIndex] = FloatToSInt4Clamp(fld[i]);
-            }
-        }
-        *scan = 64 + (*scan & 0x0f);
+      for (i = 0; i < ngrdpts; i++) {
+        iain[i] = FloatToSInt4Clamp(fld[i]);
+      }
     }
-    return 0;
+  } else {
+    if (nx <= 0 || ny <= 0) {
+      return 1;
+    }
+    if (ny != ngrdpts / nx) {
+#ifdef DEBUG
+      printf("nx(%d) * ny(%d) != ngrdpts(%d)\n", nx, ny, ngrdpts);
+#endif
+      return 2;
+    }
+    if (ibitmap) {
+      for (i = 0; i < ngrdpts; i++) {
+        ScanIndex2XY(i, &x, &y, *scan, nx, ny);
+        /* ScanIndex returns value as if scan was 0100(0000) */
+        curIndex = (x - 1) + (y - 1) * nx;
+        if (curIndex < 0 || curIndex >= nd2x3)
+          return 1;
+        ib[curIndex] = bmap[i];
+        /* Check if we are supposed to insert xmissp into the field */
+        if ((iclean != 0) && (ib[curIndex] == 0)) {
+          iain[i] = FloatToSInt4Clamp(xmissp);
+        } else {
+          iain[curIndex] = FloatToSInt4Clamp(fld[i]);
+        }
+      }
+    } else {
+      for (i = 0; i < ngrdpts; i++) {
+        ScanIndex2XY(i, &x, &y, *scan, nx, ny);
+        /* ScanIndex returns value as if scan was 0100(0000) */
+        curIndex = (x - 1) + (y - 1) * nx;
+        if (curIndex < 0 || curIndex >= nd2x3)
+          return 1;
+        iain[curIndex] = FloatToSInt4Clamp(fld[i]);
+      }
+    }
+    *scan = 64 + (*scan & 0x0f);
+  }
+  return 0;
 }
 
 /*****************************************************************************
@@ -500,183 +496,175 @@ static int TransferInt(float *fld, sInt4 ngrdpts, sInt4 ibitmap,
  *   May want to disable the scan adjustment in the future.
  *****************************************************************************
  */
-static int TransferFloat(float *fld, sInt4 ngrdpts, sInt4 ibitmap,
-                         sInt4 *bmap, char f_ignoreScan, sInt4 *scan,
-                         sInt4 nx, sInt4 ny, sInt4 iclean, float xmissp,
-                         float *ain, sInt4 nd2x3, sInt4 *ib)
-{
-    int i;               /* loop counter over all grid points. */
-    sInt4 x, y;          /* Where we are in a grid of scan value 0100???? */
-    uInt4 curIndex;      /* Where in ain to store the current data. */
+static int TransferFloat(float *fld, sInt4 ngrdpts, sInt4 ibitmap, sInt4 *bmap,
+                         char f_ignoreScan, sInt4 *scan, sInt4 nx, sInt4 ny,
+                         sInt4 iclean, float xmissp, float *ain, sInt4 nd2x3,
+                         sInt4 *ib) {
+  int i;          /* loop counter over all grid points. */
+  sInt4 x, y;     /* Where we are in a grid of scan value 0100???? */
+  uInt4 curIndex; /* Where in ain to store the current data. */
 
-    if (nd2x3 < ngrdpts) {
+  if (nd2x3 < ngrdpts) {
 #ifdef DEBUG
-        printf("nd2x3(%d) is < ngrdpts(%d)\n", nd2x3, ngrdpts);
+    printf("nd2x3(%d) is < ngrdpts(%d)\n", nd2x3, ngrdpts);
 #endif
-        return 1;
-    }
-    if (f_ignoreScan || ((*scan & 0xf0) == 64)) {
-        if( ain ) {
-            if (ibitmap) {
-                for (i = 0; i < ngrdpts; i++) {
-                    ib[i] = bmap[i];
-                    /* Check if we are supposed to insert xmissp into the field */
-                    if ((iclean != 0) && (ib[i] == 0)) {
-                        ain[i] = xmissp;
-                    } else {
-                        ain[i] = fld[i];
-                    }
-                }
-            } else {
-                for (i = 0; i < ngrdpts; i++) {
-                    ain[i] = fld[i];
-                }
-            }
-        }
-    } else {
-        if( nx <= 0 || ny <= 0 )
-        {
-            return 1;
-        }
-        if (ny != ngrdpts / nx) {
-#ifdef DEBUG
-            printf("nx(%d) * ny(%d) != ngrdpts(%d)\n", nx, ny, ngrdpts);
-#endif
-            return 2;
-        }
-        if (ibitmap) {
-            for (i = 0; i < ngrdpts; i++) {
-                ScanIndex2XY(i, &x, &y, *scan, nx, ny);
-                if (x <= 0 || y <= 0 )
-                    return 1;
-                /* ScanIndex returns value as if scan was 0100(0000) */
-                curIndex = (uInt4)(x - 1) + (uInt4)(y - 1) * (uInt4)nx;
-                if (curIndex >= (uInt4)nd2x3)
-                    return 1;
-                ib[curIndex] = bmap[i];
-                if( ain )
-                {
-                    /* Check if we are supposed to insert xmissp into the field */
-                    if ((iclean != 0) && (ib[curIndex] == 0)) {
-                        ain[i] = xmissp;
-                    } else {
-                        ain[curIndex] = fld[i];
-                    }
-                }
-            }
-        } else {
-            for (i = 0; i < ngrdpts; i++) {
-                ScanIndex2XY(i, &x, &y, *scan, nx, ny);
-                if (x <= 0 || y <= 0 )
-                    return 1;
-                /* ScanIndex returns value as if scan was 0100(0000) */
-                curIndex = (uInt4)(x - 1) + (uInt4)(y - 1) * (uInt4)nx;
-                if( curIndex >= (uInt4)nd2x3 )
-                    return 1;
-                if( ain )
-                    ain[curIndex] = fld[i];
-            }
-        }
-        *scan = 64 + (*scan & 0x0f);
-    }
-    /*
-       if (1==1) {
-          int i;
-          for (i=0; i < ngrdpts; i++) {
-             if (ain[i] != 9999) {
-                fprintf (stderr, "grib2api.c: ain[%d] %f, fld[%d] %f\n", i, ain[i],
-                         i, fld[i]);
-             }
+    return 1;
+  }
+  if (f_ignoreScan || ((*scan & 0xf0) == 64)) {
+    if (ain) {
+      if (ibitmap) {
+        for (i = 0; i < ngrdpts; i++) {
+          ib[i] = bmap[i];
+          /* Check if we are supposed to insert xmissp into the field */
+          if ((iclean != 0) && (ib[i] == 0)) {
+            ain[i] = xmissp;
+          } else {
+            ain[i] = fld[i];
           }
-       }
-    */
-    return 0;
+        }
+      } else {
+        for (i = 0; i < ngrdpts; i++) {
+          ain[i] = fld[i];
+        }
+      }
+    }
+  } else {
+    if (nx <= 0 || ny <= 0) {
+      return 1;
+    }
+    if (ny != ngrdpts / nx) {
+#ifdef DEBUG
+      printf("nx(%d) * ny(%d) != ngrdpts(%d)\n", nx, ny, ngrdpts);
+#endif
+      return 2;
+    }
+    if (ibitmap) {
+      for (i = 0; i < ngrdpts; i++) {
+        ScanIndex2XY(i, &x, &y, *scan, nx, ny);
+        if (x <= 0 || y <= 0)
+          return 1;
+        /* ScanIndex returns value as if scan was 0100(0000) */
+        curIndex = (uInt4)(x - 1) + (uInt4)(y - 1) * (uInt4)nx;
+        if (curIndex >= (uInt4)nd2x3)
+          return 1;
+        ib[curIndex] = bmap[i];
+        if (ain) {
+          /* Check if we are supposed to insert xmissp into the field */
+          if ((iclean != 0) && (ib[curIndex] == 0)) {
+            ain[i] = xmissp;
+          } else {
+            ain[curIndex] = fld[i];
+          }
+        }
+      }
+    } else {
+      for (i = 0; i < ngrdpts; i++) {
+        ScanIndex2XY(i, &x, &y, *scan, nx, ny);
+        if (x <= 0 || y <= 0)
+          return 1;
+        /* ScanIndex returns value as if scan was 0100(0000) */
+        curIndex = (uInt4)(x - 1) + (uInt4)(y - 1) * (uInt4)nx;
+        if (curIndex >= (uInt4)nd2x3)
+          return 1;
+        if (ain)
+          ain[curIndex] = fld[i];
+      }
+    }
+    *scan = 64 + (*scan & 0x0f);
+  }
+  /*
+     if (1==1) {
+        int i;
+        for (i=0; i < ngrdpts; i++) {
+           if (ain[i] != 9999) {
+              fprintf (stderr, "grib2api.c: ain[%d] %f, fld[%d] %f\n", i,
+     ain[i], i, fld[i]);
+           }
+        }
+     }
+  */
+  return 0;
 }
 
 #ifdef PKNCEP
-int pk_g2ncep(sInt4 *kfildo, float *ain, sInt4 *iain, sInt4 *nx,
-              sInt4 *ny, sInt4 *idat, sInt4 *nidat, float *rdat,
-              sInt4 *nrdat, sInt4 *is0, sInt4 *ns0, sInt4 *is1,
-              sInt4 *ns1, sInt4 *is3, sInt4 *ns3, sInt4 *is4,
-              sInt4 *ns4, sInt4 *is5, sInt4 *ns5, sInt4 *is6,
-              sInt4 *ns6, sInt4 *is7, sInt4 *ns7, sInt4 *ib,
-              sInt4 *ibitmap, unsigned char *cgrib, sInt4 *nd5,
-              sInt4 *missp, float *xmissp, sInt4 *misss,
-              float *xmisss, sInt4 *inew, sInt4 *minpk, sInt4 *iclean,
-              sInt4 *l3264b, sInt4 *jer, sInt4 *ndjer, sInt4 *kjer)
-{
-    g2int listsec0[2];
-    g2int listsec1[13];
-    g2int igds[5];
-    g2int igdstmpl[];
-    int ierr;            /* Holds the error code from a called routine. */
-    int i;
+int pk_g2ncep(sInt4 *kfildo, float *ain, sInt4 *iain, sInt4 *nx, sInt4 *ny,
+              sInt4 *idat, sInt4 *nidat, float *rdat, sInt4 *nrdat, sInt4 *is0,
+              sInt4 *ns0, sInt4 *is1, sInt4 *ns1, sInt4 *is3, sInt4 *ns3,
+              sInt4 *is4, sInt4 *ns4, sInt4 *is5, sInt4 *ns5, sInt4 *is6,
+              sInt4 *ns6, sInt4 *is7, sInt4 *ns7, sInt4 *ib, sInt4 *ibitmap,
+              unsigned char *cgrib, sInt4 *nd5, sInt4 *missp, float *xmissp,
+              sInt4 *misss, float *xmisss, sInt4 *inew, sInt4 *minpk,
+              sInt4 *iclean, sInt4 *l3264b, sInt4 *jer, sInt4 *ndjer,
+              sInt4 *kjer) {
+  g2int listsec0[2];
+  g2int listsec1[13];
+  g2int igds[5];
+  g2int igdstmpl[];
+  int ierr; /* Holds the error code from a called routine. */
+  int i;
 
-    listsec0[0] = is0[6];
-    listsec0[1] = is0[7];
+  listsec0[0] = is0[6];
+  listsec0[1] = is0[7];
 
-    listsec1[0] = is1[5];
-    listsec1[1] = is1[7];
-    listsec1[2] = is1[9];
-    listsec1[3] = is1[10];
-    listsec1[4] = is1[11];
-    listsec1[5] = is1[12];
-    listsec1[6] = is1[14];
-    listsec1[7] = is1[15];
-    listsec1[8] = is1[16];
-    listsec1[9] = is1[17];
-    listsec1[10] = is1[18];
-    listsec1[11] = is1[19];
-    listsec1[12] = is1[20];
+  listsec1[0] = is1[5];
+  listsec1[1] = is1[7];
+  listsec1[2] = is1[9];
+  listsec1[3] = is1[10];
+  listsec1[4] = is1[11];
+  listsec1[5] = is1[12];
+  listsec1[6] = is1[14];
+  listsec1[7] = is1[15];
+  listsec1[8] = is1[16];
+  listsec1[9] = is1[17];
+  listsec1[10] = is1[18];
+  listsec1[11] = is1[19];
+  listsec1[12] = is1[20];
 
-    ierr = g2_create(cgrib, listsec0, listsec1);
-    printf("Length = %d\n", ierr);
+  ierr = g2_create(cgrib, listsec0, listsec1);
+  printf("Length = %d\n", ierr);
 
-    if ((idat[0] != 0) || (rdat[0] != 0)) {
-        printf("Don't handle this yet.\n");
-        /*
-              ierr = g2_addlocal (cgrib, unsigned char *csec2, g2int lcsec2);
-        */
-    }
-
-    igds[0] = is3[5];
-    igds[1] = is3[6];
-    igds[2] = is3[10];
-    igds[3] = is3[11];
-    igds[4] = is3[12];
-
-    IS3(15) - IS3(nn) = Grid Definition Template, stored in bytes 15 - nn(*)
-
-                        ierr = g2_addgrid(cgrib, igds, g2int * igdstmpl, g2int * ideflist,
-                                          g2int idefnum)
-
-
-
-
-                               return 0;
+  if ((idat[0] != 0) || (rdat[0] != 0)) {
+    printf("Don't handle this yet.\n");
     /*
-
-    To start a new GRIB2 message, call function g2_create.  G2_create
-    encodes Sections 0 and 1 at the beginning of the message.  This routine
-    must be used to create each message.
-
-    Routine g2_addlocal can be used to add a Local Use Section ( Section 2 ).
-    Note that this section is optional and need not appear in a GRIB2 message.
-
-    Function g2_addgrid is used to encode a grid definition into Section 3.
-    This grid definition defines the geometry of the data values in the
-    fields that follow it.  g2_addgrid can be called again to change the grid
-    definition describing subsequent data fields.
-
-    Each data field is added to the GRIB2 message using routine g2_addfield,
-    which adds Sections 4, 5, 6, and 7 to the message.
-
-    After all desired data fields have been added to the GRIB2 message, a
-    call to function g2_gribend is needed to add the final section 8 to the
-    message and to update the length of the message.  A call to g2_gribend
-    is required for each GRIB2 message.
+          ierr = g2_addlocal (cgrib, unsigned char *csec2, g2int lcsec2);
     */
+  }
 
+  igds[0] = is3[5];
+  igds[1] = is3[6];
+  igds[2] = is3[10];
+  igds[3] = is3[11];
+  igds[4] = is3[12];
+
+  IS3(15) - IS3(nn) = Grid Definition Template,
+            stored in bytes 15 - nn(*)
+
+                                     ierr = g2_addgrid(
+                cgrib, igds, g2int * igdstmpl, g2int * ideflist, g2int idefnum)
+
+                return 0;
+  /*
+
+  To start a new GRIB2 message, call function g2_create.  G2_create
+  encodes Sections 0 and 1 at the beginning of the message.  This routine
+  must be used to create each message.
+
+  Routine g2_addlocal can be used to add a Local Use Section ( Section 2 ).
+  Note that this section is optional and need not appear in a GRIB2 message.
+
+  Function g2_addgrid is used to encode a grid definition into Section 3.
+  This grid definition defines the geometry of the data values in the
+  fields that follow it.  g2_addgrid can be called again to change the grid
+  definition describing subsequent data fields.
+
+  Each data field is added to the GRIB2 message using routine g2_addfield,
+  which adds Sections 4, 5, 6, and 7 to the message.
+
+  After all desired data fields have been added to the GRIB2 message, a
+  call to function g2_gribend is needed to add the final section 8 to the
+  message and to update the length of the message.  A call to g2_gribend
+  is required for each GRIB2 message.
+  */
 }
 #endif
 
@@ -794,303 +782,301 @@ int pk_g2ncep(sInt4 *kfildo, float *ain, sInt4 *iain, sInt4 *nx,
  * gfld->num_coord = number of values in array gfld->coord_list[].
  *****************************************************************************
  */
-void unpk_g2ncep(CPL_UNUSED sInt4 *kfildo, float *ain, sInt4 *iain, sInt4 *nd2x3,
-                 sInt4 *idat, sInt4 *nidat, float *rdat, sInt4 *nrdat,
-                 sInt4 *is0, CPL_UNUSED sInt4 *ns0, sInt4 *is1, CPL_UNUSED sInt4 *ns1,
-                 sInt4 *is2, sInt4 *ns2, sInt4 *is3, sInt4 *ns3,
-                 sInt4 *is4, sInt4 *ns4, sInt4 *is5, CPL_UNUSED sInt4 *ns5,
-                 sInt4 *is6, CPL_UNUSED sInt4 *ns6, sInt4 *is7, CPL_UNUSED sInt4 *ns7,
-                 sInt4 *ib, sInt4 *ibitmap, unsigned char *c_ipack,
-                 sInt4 *nd5, float *xmissp, float *xmisss,
-                 sInt4 *inew, sInt4 *iclean, CPL_UNUSED sInt4 *l3264b,
-                 sInt4 *iendpk, sInt4 *jer, sInt4 *ndjer, sInt4 *kjer)
-{
-    int i;               /* A counter used for a number of purposes. */
-    static unsigned int subgNum = 0; /* The sub grid we read most recently.
-                                     * This is primarily to help with the
-                                     * inew option. */
-    int ierr;            /* Holds the error code from a called routine. */
-    sInt4 listsec0[3];
-    sInt4 listsec1[13];
-    static sInt4 numfields = 1; /* Number of sub Grids in this message */
-    sInt4 numlocal;      /* Number of local sections in this message. */
-    int unpack;          /* Tell g2_getfld to unpack the message. */
-    int expand;          /* Tell g2_getflt to attempt to expand the bitmap. */
-    gribfield *gfld;     /* Holds the data after g2_getfld unpacks it. */
-    sInt4 gridIndex;     /* index in templatesgrid[] for this sect 3 templat */
-    sInt4 pdsIndex;      /* index in templatespds[] for this sect 4 template */
-    sInt4 drsIndex;      /* index in templatesdrs[] for this sect 5 template */
-    int curIndex;        /* Where in is3, is4, or is5 to store meta data */
-    int scanIndex;       /* Where in is3 to find the scan mode. */
-    int nxIndex;         /* Where in is3 to find the number of x values. */
-    int nyIndex;         /* Where in is3 to find the number of y values. */
-    float f_temp;        /* Assist with handling weird MDL behavior in is5[] */
-    char f_ignoreScan;   /* Flag to ignore the attempt at changing the scan */
-    sInt4 dummyScan;     /* Dummy place holder for call to Transfer routines
-                         * if ignoring scan. */
-    const struct gridtemplate *templatesgrid = get_templatesgrid();
+void unpk_g2ncep(CPL_UNUSED sInt4 *kfildo, float *ain, sInt4 *iain,
+                 sInt4 *nd2x3, sInt4 *idat, sInt4 *nidat, float *rdat,
+                 sInt4 *nrdat, sInt4 *is0, CPL_UNUSED sInt4 *ns0, sInt4 *is1,
+                 CPL_UNUSED sInt4 *ns1, sInt4 *is2, sInt4 *ns2, sInt4 *is3,
+                 sInt4 *ns3, sInt4 *is4, sInt4 *ns4, sInt4 *is5,
+                 CPL_UNUSED sInt4 *ns5, sInt4 *is6, CPL_UNUSED sInt4 *ns6,
+                 sInt4 *is7, CPL_UNUSED sInt4 *ns7, sInt4 *ib, sInt4 *ibitmap,
+                 unsigned char *c_ipack, sInt4 *nd5, float *xmissp,
+                 float *xmisss, sInt4 *inew, sInt4 *iclean,
+                 CPL_UNUSED sInt4 *l3264b, sInt4 *iendpk, sInt4 *jer,
+                 sInt4 *ndjer, sInt4 *kjer) {
+  int i; /* A counter used for a number of purposes. */
+  static unsigned int subgNum = 0; /* The sub grid we read most recently.
+                                    * This is primarily to help with the
+                                    * inew option. */
+  int ierr; /* Holds the error code from a called routine. */
+  sInt4 listsec0[3];
+  sInt4 listsec1[13];
+  static sInt4 numfields = 1; /* Number of sub Grids in this message */
+  sInt4 numlocal;             /* Number of local sections in this message. */
+  int unpack;                 /* Tell g2_getfld to unpack the message. */
+  int expand;        /* Tell g2_getflt to attempt to expand the bitmap. */
+  gribfield *gfld;   /* Holds the data after g2_getfld unpacks it. */
+  sInt4 gridIndex;   /* index in templatesgrid[] for this sect 3 templat */
+  sInt4 pdsIndex;    /* index in templatespds[] for this sect 4 template */
+  sInt4 drsIndex;    /* index in templatesdrs[] for this sect 5 template */
+  int curIndex;      /* Where in is3, is4, or is5 to store meta data */
+  int scanIndex;     /* Where in is3 to find the scan mode. */
+  int nxIndex;       /* Where in is3 to find the number of x values. */
+  int nyIndex;       /* Where in is3 to find the number of y values. */
+  float f_temp;      /* Assist with handling weird MDL behavior in is5[] */
+  char f_ignoreScan; /* Flag to ignore the attempt at changing the scan */
+  sInt4 dummyScan;   /* Dummy place holder for call to Transfer routines
+                      * if ignoring scan. */
+  const struct gridtemplate *templatesgrid = get_templatesgrid();
 
-    myAssert(*ndjer >= 8);
-    /* Init the error handling array. */
-    memset((void *)jer, 0, 2 * *ndjer * sizeof(sInt4));
-    for (i = 0; i < 8; i++) {
-        jer[i] = i * 100;
-    }
-    *kjer = 8;
+  myAssert(*ndjer >= 8);
+  /* Init the error handling array. */
+  memset((void *)jer, 0, 2 * *ndjer * sizeof(sInt4));
+  for (i = 0; i < 8; i++) {
+    jer[i] = i * 100;
+  }
+  *kjer = 8;
 
-    /* The first time in, figure out how many grids there are, and store it in
-     * numfields for subsequent calls with inew != 1. */
-    if (*inew == 1) {
-        subgNum = 0;
-        ierr = g2_info(c_ipack, listsec0, listsec1, &numfields, &numlocal);
-        if (ierr != 0) {
-            switch (ierr) {
-            case 1:    /* Beginning characters "GRIB" not found. */
-            case 2:    /* GRIB message is not Edition 2. */
-            case 3:    /* Could not find Section 1, where expected. */
-            case 4:    /* End string "7777" found, but not where expected. */
-            case 5:    /* End string "7777" not found at end of message. */
-            case 6:    /* Invalid section number found. */
-                jer[0 + *ndjer] = 2;
-                *kjer = 1;
-                break;
-            default:
-                jer[8 + *ndjer] = 2;
-                jer[8] = 9999; /* Unknown error message. */
-                *kjer = 9;
-            }
-            return;
-        }
-    } else {
-        if (subgNum + 1 >= (unsigned int)numfields) {
-            /* Field request error. */
-            jer[0 + *ndjer] = 2;
-            *kjer = 1;
-            return;
-        }
-        subgNum++;
-    }
-
-    /* Expand the desired subgrid. */
-    unpack = ain != NULL || iain != NULL;
-    expand = 1;
-    /* The size of c_ipack is *nd5 * sizeof(sInt4) */
-    ierr = g2_getfld(c_ipack, *nd5 * sizeof(sInt4), subgNum + 1, unpack, expand, &gfld);
+  /* The first time in, figure out how many grids there are, and store it in
+   * numfields for subsequent calls with inew != 1. */
+  if (*inew == 1) {
+    subgNum = 0;
+    ierr = g2_info(c_ipack, listsec0, listsec1, &numfields, &numlocal);
     if (ierr != 0) {
-        switch (ierr) {
-        case 1:       /* Beginning characters "GRIB" not found. */
-        case 2:       /* GRIB message is not Edition 2. */
-        case 3:       /* The data field request number was not positive. */
-        case 4:       /* End string "7777" found, but not where expected. */
-        case 6:       /* message did not contain requested # of fields */
-        case 7:       /* End string "7777" not found at end of message. */
-        case 8:       /* Unrecognized Section encountered. */
-            jer[0 + *ndjer] = 2;
-            *kjer = 1;
-            break;
-        case 15:      /* Error unpacking Section 1. */
-            jer[1 + *ndjer] = 2;
-            *kjer = 2;
-            break;
-        case 16:      /* Error unpacking Section 2. */
-            jer[2 + *ndjer] = 2;
-            *kjer = 3;
-            break;
-        case 10:      /* Error unpacking Section 3. */
-            jer[3 + *ndjer] = 2;
-            *kjer = 4;
-            break;
-        case 11:      /* Error unpacking Section 4. */
-            jer[4 + *ndjer] = 2;
-            *kjer = 5;
-            break;
-        case 9:       /* Data Template 5.NN not implemented. */
-        case 12:      /* Error unpacking Section 5. */
-            jer[5 + *ndjer] = 2;
-            *kjer = 6;
-            break;
-        case 13:      /* Error unpacking Section 6. */
-            jer[6 + *ndjer] = 2;
-            *kjer = 7;
-            break;
-        case 14:      /* Error unpacking Section 7. */
-            jer[7 + *ndjer] = 2;
-            *kjer = 8;
-            break;
-        default:
-            jer[8 + *ndjer] = 2;
-            jer[8] = 9999; /* Unknown error message. */
-            *kjer = 9;
-            break;
-        }
-        g2_free(gfld);
-        return;
-    }
-    /* Check if data was not unpacked. */
-    if (unpack && !gfld->unpacked) {
+      switch (ierr) {
+      case 1: /* Beginning characters "GRIB" not found. */
+      case 2: /* GRIB message is not Edition 2. */
+      case 3: /* Could not find Section 1, where expected. */
+      case 4: /* End string "7777" found, but not where expected. */
+      case 5: /* End string "7777" not found at end of message. */
+      case 6: /* Invalid section number found. */
         jer[0 + *ndjer] = 2;
         *kjer = 1;
-        g2_free(gfld);
-        return;
-    }
-
-    /* Start going through the gfld structure and converting it to the needed
-     * data output formats. */
-    myAssert(*ns0 >= 16);
-    MEMCPY_BIG(&(is0[0]), c_ipack, sizeof(sInt4));
-    is0[6] = gfld->discipline;
-    is0[7] = gfld->version;
-    MEMCPY_BIG(&(is0[8]), c_ipack + 8, sizeof(sInt4));
-    /* The following assert fails only if the GRIB message is more that 4
-     * giga-bytes large, which I think would break the fortran library. */
-    myAssert(is0[8] == 0);
-    MEMCPY_BIG(&(is0[8]), c_ipack + 12, sizeof(sInt4));
-
-    myAssert(*ns1 >= 21);
-    myAssert(gfld->idsectlen >= 13);
-    MEMCPY_BIG(&(is1[0]), c_ipack + 16, sizeof(sInt4));
-    is1[4] = c_ipack[20];
-    is1[5] = gfld->idsect[0];
-    is1[7] = gfld->idsect[1];
-    is1[9] = gfld->idsect[2];
-    is1[10] = gfld->idsect[3];
-    is1[11] = gfld->idsect[4];
-    is1[12] = gfld->idsect[5]; /* Year */
-    is1[14] = gfld->idsect[6]; /* Month */
-    is1[15] = gfld->idsect[7]; /* Day */
-    is1[16] = gfld->idsect[8]; /* Hour */
-    is1[17] = gfld->idsect[9]; /* Min */
-    is1[18] = gfld->idsect[10]; /* Sec */
-    is1[19] = gfld->idsect[11];
-    is1[20] = gfld->idsect[12];
-
-    /* Fill out section lengths (separate procedure because of possibility of
-     * having multiple grids.  Should combine fillOutSectLen g2_info, and
-     * g2_getfld into one procedure to optimize it. */
-    fillOutSectLen(c_ipack + 16 + is1[0], 4 * *nd5 - 15 - is1[0], subgNum,
-                   is2, is3, is4, is5, is6, is7);
-
-    /* Check if there is section 2 data. */
-    if (gfld->locallen > 0) {
-        /* The + 1 is so we don't overwrite the section length */
-        memset((void *)(is2 + 1), 0, (*ns2 - 1) * sizeof(sInt4));
-        is2[4] = 2;
-        is2[5] = gfld->local[0];
-        /* check if MDL Local use simple packed data */
-        if (is2[5] == 1) {
-            mdl_LocalUnpack(gfld->local, gfld->locallen, idat, nidat, rdat,
-                            nrdat);
-        } else {
-            /* local use section was not MDL packed, return it in is2. */
-            for (i = 0; i < gfld->locallen; i++) {
-                is2[i + 5] = gfld->local[i];
-            }
-        }
-    } else {
-        /* API specified that is2[0] = 0; idat[0] = 0, and rdat[0] = 0 */
-        is2[0] = 0;
-        idat[0] = 0;
-        rdat[0] = 0;
-    }
-
-    is3[4] = 3;
-    is3[5] = gfld->griddef;
-    is3[6] = gfld->ngrdpts;
-    if (*nd2x3 < gfld->ngrdpts) {
+        break;
+      default:
         jer[8 + *ndjer] = 2;
-        jer[8] = 2001;    /* nd2x3 is not large enough */
+        jer[8] = 9999; /* Unknown error message. */
         *kjer = 9;
-        g2_free(gfld);
-        return;
+      }
+      return;
     }
-    is3[10] = gfld->numoct_opt;
-    is3[11] = gfld->interp_opt;
-    is3[12] = gfld->igdtnum;
-    gridIndex = getgridindex(gfld->igdtnum);
-    if (gridIndex == -1) {
-        jer[8 + *ndjer] = 2;
-        jer[8] = 2003;    /* undefined sect 3 template */
-        *kjer = 9;
-        g2_free(gfld);
-        return;
+  } else {
+    if (subgNum + 1 >= (unsigned int)numfields) {
+      /* Field request error. */
+      jer[0 + *ndjer] = 2;
+      *kjer = 1;
+      return;
     }
-    if( gfld->igdtlen > templatesgrid[gridIndex].mapgridlen )
-    {
-        jer[8 + *ndjer] = 2;
-        jer[8] = 2003;    /* undefined sect 3 template: FIXME: wrong code probably */
-        *kjer = 9;
-        g2_free (gfld);
-        return;
-    }
-    curIndex = 14;
-    for (i = 0; i < gfld->igdtlen; i++) {
-        if( curIndex < 0 || curIndex >= *ns3 )
-        {
-            jer[8 + *ndjer] = 2;
-            jer[8] = 2003;    /* undefined sect 3 template: FIXME: wrong code probably */
-            *kjer = 9;
-            g2_free (gfld);
-            return;
-        }
-        is3[curIndex] = gfld->igdtmpl[i];
-        curIndex += abs(templatesgrid[gridIndex].mapgrid[i]);
-    }
-    /* API attempts to return grid in scan mode 0100????.  Find the necessary
-     * indexes into the is3 array for the attempt. */
-    switch (gfld->igdtnum) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 40:
-    case 41:
-    case 42:
-    case 43:
-        scanIndex = 72 - 1;
-        nxIndex = 31 - 1;
-        nyIndex = 35 - 1;
-        break;
-    case 10:
-    case 12: // Transverse Mercator
-        scanIndex = 60 - 1;
-        nxIndex = 31 - 1;
-        nyIndex = 35 - 1;
-        break;
-    case 20:
-    case 30:
-    case 31:
-        scanIndex = 65 - 1;
-        nxIndex = 31 - 1;
-        nyIndex = 35 - 1;
-        break;
-    case 90:
-        scanIndex = 64 - 1;
-        nxIndex = 31 - 1;
-        nyIndex = 35 - 1;
-        break;
-    case 110:
-        scanIndex = 57 - 1;
-        nxIndex = 31 - 1;
-        nyIndex = 35 - 1;
-        break;
-    case 50:
-    case 51:
-    case 52:
-    case 53:
-    case 100:
-    case 120:
-    case 1000:
-    case 1200:
+    subgNum++;
+  }
+
+  /* Expand the desired subgrid. */
+  unpack = ain != NULL || iain != NULL;
+  expand = 1;
+  /* The size of c_ipack is *nd5 * sizeof(sInt4) */
+  ierr = g2_getfld(c_ipack, *nd5 * sizeof(sInt4), subgNum + 1, unpack, expand,
+                   &gfld);
+  if (ierr != 0) {
+    switch (ierr) {
+    case 1: /* Beginning characters "GRIB" not found. */
+    case 2: /* GRIB message is not Edition 2. */
+    case 3: /* The data field request number was not positive. */
+    case 4: /* End string "7777" found, but not where expected. */
+    case 6: /* message did not contain requested # of fields */
+    case 7: /* End string "7777" not found at end of message. */
+    case 8: /* Unrecognized Section encountered. */
+      jer[0 + *ndjer] = 2;
+      *kjer = 1;
+      break;
+    case 15: /* Error unpacking Section 1. */
+      jer[1 + *ndjer] = 2;
+      *kjer = 2;
+      break;
+    case 16: /* Error unpacking Section 2. */
+      jer[2 + *ndjer] = 2;
+      *kjer = 3;
+      break;
+    case 10: /* Error unpacking Section 3. */
+      jer[3 + *ndjer] = 2;
+      *kjer = 4;
+      break;
+    case 11: /* Error unpacking Section 4. */
+      jer[4 + *ndjer] = 2;
+      *kjer = 5;
+      break;
+    case 9:  /* Data Template 5.NN not implemented. */
+    case 12: /* Error unpacking Section 5. */
+      jer[5 + *ndjer] = 2;
+      *kjer = 6;
+      break;
+    case 13: /* Error unpacking Section 6. */
+      jer[6 + *ndjer] = 2;
+      *kjer = 7;
+      break;
+    case 14: /* Error unpacking Section 7. */
+      jer[7 + *ndjer] = 2;
+      *kjer = 8;
+      break;
     default:
-        scanIndex = -1;
-        nxIndex = -1;
-        nyIndex = -1;
+      jer[8 + *ndjer] = 2;
+      jer[8] = 9999; /* Unknown error message. */
+      *kjer = 9;
+      break;
     }
+    g2_free(gfld);
+    return;
+  }
+  /* Check if data was not unpacked. */
+  if (unpack && !gfld->unpacked) {
+    jer[0 + *ndjer] = 2;
+    *kjer = 1;
+    g2_free(gfld);
+    return;
+  }
 
-    is4[4] = 4;
-    is4[5] = gfld->num_coord;
-    is4[7] = gfld->ipdtnum;
-    pdsIndex = getpdsindex(gfld->ipdtnum);
+  /* Start going through the gfld structure and converting it to the needed
+   * data output formats. */
+  myAssert(*ns0 >= 16);
+  MEMCPY_BIG(&(is0[0]), c_ipack, sizeof(sInt4));
+  is0[6] = gfld->discipline;
+  is0[7] = gfld->version;
+  MEMCPY_BIG(&(is0[8]), c_ipack + 8, sizeof(sInt4));
+  /* The following assert fails only if the GRIB message is more that 4
+   * giga-bytes large, which I think would break the fortran library. */
+  myAssert(is0[8] == 0);
+  MEMCPY_BIG(&(is0[8]), c_ipack + 12, sizeof(sInt4));
+
+  myAssert(*ns1 >= 21);
+  myAssert(gfld->idsectlen >= 13);
+  MEMCPY_BIG(&(is1[0]), c_ipack + 16, sizeof(sInt4));
+  is1[4] = c_ipack[20];
+  is1[5] = gfld->idsect[0];
+  is1[7] = gfld->idsect[1];
+  is1[9] = gfld->idsect[2];
+  is1[10] = gfld->idsect[3];
+  is1[11] = gfld->idsect[4];
+  is1[12] = gfld->idsect[5];  /* Year */
+  is1[14] = gfld->idsect[6];  /* Month */
+  is1[15] = gfld->idsect[7];  /* Day */
+  is1[16] = gfld->idsect[8];  /* Hour */
+  is1[17] = gfld->idsect[9];  /* Min */
+  is1[18] = gfld->idsect[10]; /* Sec */
+  is1[19] = gfld->idsect[11];
+  is1[20] = gfld->idsect[12];
+
+  /* Fill out section lengths (separate procedure because of possibility of
+   * having multiple grids.  Should combine fillOutSectLen g2_info, and
+   * g2_getfld into one procedure to optimize it. */
+  fillOutSectLen(c_ipack + 16 + is1[0], 4 * *nd5 - 15 - is1[0], subgNum, is2,
+                 is3, is4, is5, is6, is7);
+
+  /* Check if there is section 2 data. */
+  if (gfld->locallen > 0) {
+    /* The + 1 is so we don't overwrite the section length */
+    memset((void *)(is2 + 1), 0, (*ns2 - 1) * sizeof(sInt4));
+    is2[4] = 2;
+    is2[5] = gfld->local[0];
+    /* check if MDL Local use simple packed data */
+    if (is2[5] == 1) {
+      mdl_LocalUnpack(gfld->local, gfld->locallen, idat, nidat, rdat, nrdat);
+    } else {
+      /* local use section was not MDL packed, return it in is2. */
+      for (i = 0; i < gfld->locallen; i++) {
+        is2[i + 5] = gfld->local[i];
+      }
+    }
+  } else {
+    /* API specified that is2[0] = 0; idat[0] = 0, and rdat[0] = 0 */
+    is2[0] = 0;
+    idat[0] = 0;
+    rdat[0] = 0;
+  }
+
+  is3[4] = 3;
+  is3[5] = gfld->griddef;
+  is3[6] = gfld->ngrdpts;
+  if (*nd2x3 < gfld->ngrdpts) {
+    jer[8 + *ndjer] = 2;
+    jer[8] = 2001; /* nd2x3 is not large enough */
+    *kjer = 9;
+    g2_free(gfld);
+    return;
+  }
+  is3[10] = gfld->numoct_opt;
+  is3[11] = gfld->interp_opt;
+  is3[12] = gfld->igdtnum;
+  gridIndex = getgridindex(gfld->igdtnum);
+  if (gridIndex == -1) {
+    jer[8 + *ndjer] = 2;
+    jer[8] = 2003; /* undefined sect 3 template */
+    *kjer = 9;
+    g2_free(gfld);
+    return;
+  }
+  if (gfld->igdtlen > templatesgrid[gridIndex].mapgridlen) {
+    jer[8 + *ndjer] = 2;
+    jer[8] = 2003; /* undefined sect 3 template: FIXME: wrong code probably */
+    *kjer = 9;
+    g2_free(gfld);
+    return;
+  }
+  curIndex = 14;
+  for (i = 0; i < gfld->igdtlen; i++) {
+    if (curIndex < 0 || curIndex >= *ns3) {
+      jer[8 + *ndjer] = 2;
+      jer[8] = 2003; /* undefined sect 3 template: FIXME: wrong code probably */
+      *kjer = 9;
+      g2_free(gfld);
+      return;
+    }
+    is3[curIndex] = gfld->igdtmpl[i];
+    curIndex += abs(templatesgrid[gridIndex].mapgrid[i]);
+  }
+  /* API attempts to return grid in scan mode 0100????.  Find the necessary
+   * indexes into the is3 array for the attempt. */
+  switch (gfld->igdtnum) {
+  case 0:
+  case 1:
+  case 2:
+  case 3:
+  case 40:
+  case 41:
+  case 42:
+  case 43:
+    scanIndex = 72 - 1;
+    nxIndex = 31 - 1;
+    nyIndex = 35 - 1;
+    break;
+  case 10:
+  case 12: // Transverse Mercator
+    scanIndex = 60 - 1;
+    nxIndex = 31 - 1;
+    nyIndex = 35 - 1;
+    break;
+  case 20:
+  case 30:
+  case 31:
+    scanIndex = 65 - 1;
+    nxIndex = 31 - 1;
+    nyIndex = 35 - 1;
+    break;
+  case 90:
+    scanIndex = 64 - 1;
+    nxIndex = 31 - 1;
+    nyIndex = 35 - 1;
+    break;
+  case 110:
+    scanIndex = 57 - 1;
+    nxIndex = 31 - 1;
+    nyIndex = 35 - 1;
+    break;
+  case 50:
+  case 51:
+  case 52:
+  case 53:
+  case 100:
+  case 120:
+  case 1000:
+  case 1200:
+  default:
+    scanIndex = -1;
+    nxIndex = -1;
+    nyIndex = -1;
+  }
+
+  is4[4] = 4;
+  is4[5] = gfld->num_coord;
+  is4[7] = gfld->ipdtnum;
+  pdsIndex = getpdsindex(gfld->ipdtnum);
 #if 0
     if (pdsIndex == -1) {
         jer[8 + *ndjer] = 2;
@@ -1100,149 +1086,143 @@ void unpk_g2ncep(CPL_UNUSED sInt4 *kfildo, float *ain, sInt4 *iain, sInt4 *nd2x3
         return;
     }
 #endif
-    if( pdsIndex >= 0 )
-    {
-        curIndex = 9;
-        for (i = 0; i < gfld->ipdtlen; i++) {
-            const struct pdstemplate *templatespds = get_templatespds();
-            if( curIndex >= *ns4 )
-            {
-                /* Should we error out instead ? */
-                break;
-            }
-            is4[curIndex] = gfld->ipdtmpl[i];
-            if( i == MAXPDSMAPLEN )
-            {
-                jer[8 + *ndjer] = 2;
-                jer[8] = 2004;    /* undefined sect 4 template */
-                *kjer = 9;
-                g2_free (gfld);
-                return;
-            }
-            curIndex += abs(templatespds[pdsIndex].mappds[i]);
-        }
-    }
-
-    is5[4] = 5;
-    is5[5] = gfld->ndpts;
-    is5[9] = gfld->idrtnum;
-    drsIndex = getdrsindex(gfld->idrtnum);
-    if (drsIndex == -1) {
+  if (pdsIndex >= 0) {
+    curIndex = 9;
+    for (i = 0; i < gfld->ipdtlen; i++) {
+      const struct pdstemplate *templatespds = get_templatespds();
+      if (curIndex >= *ns4) {
+        /* Should we error out instead ? */
+        break;
+      }
+      is4[curIndex] = gfld->ipdtmpl[i];
+      if (i == MAXPDSMAPLEN) {
         jer[8 + *ndjer] = 2;
-        jer[8] = 2005;    /* undefined sect 5 template */
+        jer[8] = 2004; /* undefined sect 4 template */
         *kjer = 9;
         g2_free(gfld);
         return;
+      }
+      curIndex += abs(templatespds[pdsIndex].mappds[i]);
     }
-    curIndex = 11;
-    for (i = 0; i < gfld->idrtlen; i++) {
-        const struct drstemplate *templatesdrs = get_templatesdrs();
-        is5[curIndex] = gfld->idrtmpl[i];
-        curIndex += abs(templatesdrs[drsIndex].mapdrs[i]);
-    }
-    /* Mimic MDL's handling of reference value (IS5(12)) */
-    memcpy(&f_temp, &(is5[11]), sizeof (float));
-    is5[11] = FloatToSInt4Clamp(f_temp);
-    if ((is5[9] == 2) || (is5[9] == 3)) {
-        if (is5[20] == 0) {
-            memcpy(&(f_temp), &(is5[23]), sizeof (float));
-            *xmissp = f_temp;
-            is5[23] = FloatToSInt4Clamp(f_temp);
-            memcpy(&(f_temp), &(is5[27]), sizeof (float));
-            *xmisss = f_temp;
-            is5[27] = FloatToSInt4Clamp(f_temp);
-        } else {
-            *xmissp = is5[23];
-            *xmisss = is5[27];
-        }
-    }
+  }
 
-    is6[4] = 6;
-    is6[5] = gfld->ibmap;
-    is7[4] = 7;
-
-    if (subgNum + 1 == (unsigned int)numfields) {
-        *iendpk = 1;
+  is5[4] = 5;
+  is5[5] = gfld->ndpts;
+  is5[9] = gfld->idrtnum;
+  drsIndex = getdrsindex(gfld->idrtnum);
+  if (drsIndex == -1) {
+    jer[8 + *ndjer] = 2;
+    jer[8] = 2005; /* undefined sect 5 template */
+    *kjer = 9;
+    g2_free(gfld);
+    return;
+  }
+  curIndex = 11;
+  for (i = 0; i < gfld->idrtlen; i++) {
+    const struct drstemplate *templatesdrs = get_templatesdrs();
+    is5[curIndex] = gfld->idrtmpl[i];
+    curIndex += abs(templatesdrs[drsIndex].mapdrs[i]);
+  }
+  /* Mimic MDL's handling of reference value (IS5(12)) */
+  memcpy(&f_temp, &(is5[11]), sizeof(float));
+  is5[11] = FloatToSInt4Clamp(f_temp);
+  if ((is5[9] == 2) || (is5[9] == 3)) {
+    if (is5[20] == 0) {
+      memcpy(&(f_temp), &(is5[23]), sizeof(float));
+      *xmissp = f_temp;
+      is5[23] = FloatToSInt4Clamp(f_temp);
+      memcpy(&(f_temp), &(is5[27]), sizeof(float));
+      *xmisss = f_temp;
+      is5[27] = FloatToSInt4Clamp(f_temp);
     } else {
-        *iendpk = 0;
+      *xmissp = is5[23];
+      *xmisss = is5[27];
+    }
+  }
+
+  is6[4] = 6;
+  is6[5] = gfld->ibmap;
+  is7[4] = 7;
+
+  if (subgNum + 1 == (unsigned int)numfields) {
+    *iendpk = 1;
+  } else {
+    *iendpk = 0;
+  }
+
+  if ((gfld->ibmap == 0) || (gfld->ibmap == 254)) {
+    *ibitmap = 1;
+  } else {
+    *ibitmap = 0;
+  }
+
+  /* Check type of original field, before transferring the memory. */
+  myAssert(*ns5 > 20);
+
+  if (ain == NULL && iain == NULL) {
+    /* Simulate effect of TransferInt / TransferFloat on the scan flag */
+    if (scanIndex >= 0 && (is3[scanIndex] & 0xf0) != GRIB2BIT_2) {
+      is3[scanIndex] = GRIB2BIT_2 + (is3[scanIndex] & 0x0f);
     }
 
-    if ((gfld->ibmap == 0) || (gfld->ibmap == 254)) {
-        *ibitmap = 1;
+    g2_free(gfld);
+    return;
+  }
+
+  /* Check if NCEP had problems expanding the data.  If so we currently
+   * abort. May need to revisit this behavior. */
+  if (!gfld->expanded) {
+    jer[0 + *ndjer] = 2;
+    *kjer = 1;
+    g2_free(gfld);
+    return;
+  }
+  f_ignoreScan = 0;
+  /* Check if integer type... is5[20] == 1 implies integer (code table 5.1),
+   * but only for certain templates. (0,1,2,3,40,41,40000,40010). (not 4,50,51)
+   */
+  if ((is5[20] == 1) && ((is5[9] != 4) && (is5[9] != 50) && (is5[9] != 51))) {
+    /* integer data, use iain */
+    if ((scanIndex < 0) || (nxIndex < 0) || (nyIndex < 0)) {
+      ierr =
+          TransferInt(gfld->fld, gfld->ngrdpts, *ibitmap, gfld->bmap, 1,
+                      &(dummyScan), 0, 0, *iclean, *xmissp, iain, *nd2x3, ib);
     } else {
-        *ibitmap = 0;
+      ierr = TransferInt(gfld->fld, gfld->ngrdpts, *ibitmap, gfld->bmap,
+                         f_ignoreScan, &(is3[scanIndex]), is3[nxIndex],
+                         is3[nyIndex], *iclean, *xmissp, iain, *nd2x3, ib);
     }
-
-    /* Check type of original field, before transferring the memory. */
-    myAssert(*ns5 > 20);
-
-    if( ain == NULL && iain == NULL )
-    {
-        /* Simulate effect of TransferInt / TransferFloat on the scan flag */
-        if( scanIndex >= 0 && (is3[scanIndex] & 0xf0) != GRIB2BIT_2 )
-        {
-            is3[scanIndex] = GRIB2BIT_2 + (is3[scanIndex] & 0x0f);
-        }
-
-        g2_free(gfld);
-        return;
-    }
-
-    /* Check if NCEP had problems expanding the data.  If so we currently
-     * abort. May need to revisit this behavior. */
-    if (!gfld->expanded) {
-        jer[0 + *ndjer] = 2;
-        *kjer = 1;
-        g2_free(gfld);
-        return;
-    }
-    f_ignoreScan = 0;
-    /* Check if integer type... is5[20] == 1 implies integer (code table 5.1),
-     * but only for certain templates. (0,1,2,3,40,41,40000,40010). (not 4,50,51)
-     */
-    if ((is5[20] == 1) && ((is5[9] != 4) && (is5[9] != 50) && (is5[9] != 51))) {
-        /* integer data, use iain */
-        if ((scanIndex < 0) || (nxIndex < 0) || (nyIndex < 0)) {
-            ierr = TransferInt(gfld->fld, gfld->ngrdpts, *ibitmap, gfld->bmap,
-                               1, &(dummyScan), 0, 0, *iclean, *xmissp,
-                               iain, *nd2x3, ib);
-        } else {
-            ierr = TransferInt(gfld->fld, gfld->ngrdpts, *ibitmap, gfld->bmap,
-                               f_ignoreScan, &(is3[scanIndex]), is3[nxIndex],
-                               is3[nyIndex], *iclean, *xmissp, iain, *nd2x3, ib);
-        }
+  } else {
+    /* float data, use ain */
+    if ((scanIndex < 0) || (nxIndex < 0) || (nyIndex < 0)) {
+      ierr =
+          TransferFloat(gfld->fld, gfld->ngrdpts, *ibitmap, gfld->bmap, 1,
+                        &(dummyScan), 0, 0, *iclean, *xmissp, ain, *nd2x3, ib);
     } else {
-        /* float data, use ain */
-        if ((scanIndex < 0) || (nxIndex < 0) || (nyIndex < 0)) {
-            ierr = TransferFloat(gfld->fld, gfld->ngrdpts, *ibitmap,
-                                 gfld->bmap, 1, &(dummyScan), 0, 0, *iclean,
-                                 *xmissp, ain, *nd2x3, ib);
-        } else {
-            ierr = TransferFloat(gfld->fld, gfld->ngrdpts, *ibitmap,
-                                 gfld->bmap, f_ignoreScan, &(is3[scanIndex]),
-                                 is3[nxIndex], is3[nyIndex], *iclean, *xmissp,
-                                 ain, *nd2x3, ib);
-        }
+      ierr = TransferFloat(gfld->fld, gfld->ngrdpts, *ibitmap, gfld->bmap,
+                           f_ignoreScan, &(is3[scanIndex]), is3[nxIndex],
+                           is3[nyIndex], *iclean, *xmissp, ain, *nd2x3, ib);
     }
-    if (ierr != 0) {
-        switch (ierr) {
-        case 1:       /* nd2x3 is too small */
-            jer[0 + *ndjer] = 2;
-            *kjer = 1;
-            break;
-        case 2:       /* nx * ny != ngrdpts */
-            jer[5 + *ndjer] = 2;
-            *kjer = 6;
-            break;
-        default:
-            jer[8 + *ndjer] = 2;
-            jer[8] = 9999; /* Unknown error message. */
-            *kjer = 9;
-        }
-        g2_free(gfld);
-        return;
+  }
+  if (ierr != 0) {
+    switch (ierr) {
+    case 1: /* nd2x3 is too small */
+      jer[0 + *ndjer] = 2;
+      *kjer = 1;
+      break;
+    case 2: /* nx * ny != ngrdpts */
+      jer[5 + *ndjer] = 2;
+      *kjer = 6;
+      break;
+    default:
+      jer[8 + *ndjer] = 2;
+      jer[8] = 9999; /* Unknown error message. */
+      *kjer = 9;
     }
     g2_free(gfld);
+    return;
+  }
+  g2_free(gfld);
 }
 
 /*****************************************************************************
@@ -1521,40 +1501,38 @@ static int FindTemplateIDs(sInt4 *ipack, sInt4 nd5, int subgNum,
 #ifdef unused_by_GDAL
 void unpk_grib2(sInt4 *kfildo, float *ain, sInt4 *iain, sInt4 *nd2x3,
                 sInt4 *idat, sInt4 *nidat, float *rdat, sInt4 *nrdat,
-                sInt4 *is0, sInt4 *ns0, sInt4 *is1, sInt4 *ns1,
-                sInt4 *is2, sInt4 *ns2, sInt4 *is3, sInt4 *ns3,
-                sInt4 *is4, sInt4 *ns4, sInt4 *is5, sInt4 *ns5,
-                sInt4 *is6, sInt4 *ns6, sInt4 *is7, sInt4 *ns7,
-                sInt4 *ib, sInt4 *ibitmap, sInt4 *ipack, sInt4 *nd5,
-                float *xmissp, float *xmisss, sInt4 *inew,
-                sInt4 *iclean, sInt4 *l3264b, sInt4 *iendpk, sInt4 *jer,
-                sInt4 *ndjer, sInt4 *kjer)
-{
-    unsigned char *c_ipack; /* The compressed data as char instead of sInt4 so
-                            * it is easier to work with. */
+                sInt4 *is0, sInt4 *ns0, sInt4 *is1, sInt4 *ns1, sInt4 *is2,
+                sInt4 *ns2, sInt4 *is3, sInt4 *ns3, sInt4 *is4, sInt4 *ns4,
+                sInt4 *is5, sInt4 *ns5, sInt4 *is6, sInt4 *ns6, sInt4 *is7,
+                sInt4 *ns7, sInt4 *ib, sInt4 *ibitmap, sInt4 *ipack, sInt4 *nd5,
+                float *xmissp, float *xmisss, sInt4 *inew, sInt4 *iclean,
+                sInt4 *l3264b, sInt4 *iendpk, sInt4 *jer, sInt4 *ndjer,
+                sInt4 *kjer) {
+  unsigned char *c_ipack; /* The compressed data as char instead of sInt4 so
+                           * it is easier to work with. */
 #if 0
     char f_useMDL = 0;   /* Instructed 3/8/2005 10:30 to not use MDL. */
 #endif
 
-    /* Since NCEP's code works with byte level stuff, we need to un-do the
-     * byte swap of the (int *) data, then cast it to an (unsigned char *) */
+  /* Since NCEP's code works with byte level stuff, we need to un-do the
+   * byte swap of the (int *) data, then cast it to an (unsigned char *) */
 #ifndef WORDS_BIGENDIAN
-    /* Can't make this dependent on inew, since they could have a sequence of
-     * get first message... do stuff, get second message, which unfortunately
-     * means they would have to get the first message again, causing 2 swaps,
-     * and breaking their second request for the first message (as well as
-     * their second message). */
-    memswp(ipack, sizeof(sInt4), *nd5);
+  /* Can't make this dependent on inew, since they could have a sequence of
+   * get first message... do stuff, get second message, which unfortunately
+   * means they would have to get the first message again, causing 2 swaps,
+   * and breaking their second request for the first message (as well as
+   * their second message). */
+  memswp(ipack, sizeof(sInt4), *nd5);
 #endif
-    c_ipack = (unsigned char *)ipack;
-    unpk_g2ncep(kfildo, ain, iain, nd2x3, idat, nidat, rdat, nrdat, is0,
-                ns0, is1, ns1, is2, ns2, is3, ns3, is4, ns4, is5, ns5,
-                is6, ns6, is7, ns7, ib, ibitmap, c_ipack, nd5, xmissp,
-                xmisss, inew, iclean, l3264b, iendpk, jer, ndjer, kjer);
+  c_ipack = (unsigned char *)ipack;
+  unpk_g2ncep(kfildo, ain, iain, nd2x3, idat, nidat, rdat, nrdat, is0, ns0, is1,
+              ns1, is2, ns2, is3, ns3, is4, ns4, is5, ns5, is6, ns6, is7, ns7,
+              ib, ibitmap, c_ipack, nd5, xmissp, xmisss, inew, iclean, l3264b,
+              iendpk, jer, ndjer, kjer);
 
 #ifndef WORDS_BIGENDIAN
-    /* Swap back because we could be called again for the subgrid data. */
-    memswp(ipack, sizeof(sInt4), *nd5);
+  /* Swap back because we could be called again for the subgrid data. */
+  memswp(ipack, sizeof(sInt4), *nd5);
 #endif
 }
 #endif
@@ -1579,42 +1557,38 @@ void unpk_grib2(sInt4 *kfildo, float *ain, sInt4 *iain, sInt4 *nd2x3,
 
 #ifdef unused_by_GDAL
 int C_pkGrib2(unsigned char *cgrib, sInt4 *sec0, sInt4 *sec1,
-              unsigned char *csec2, sInt4 lcsec2,
-              sInt4 *igds, sInt4 *igdstmpl, sInt4 *ideflist,
-              sInt4 idefnum, sInt4 ipdsnum, sInt4 *ipdstmpl,
-              float *coordlist, sInt4 numcoord, sInt4 idrsnum,
-              sInt4 *idrstmpl, float *fld, sInt4 ngrdpts,
-              sInt4 ibmap, sInt4 *bmap)
-{
-    int ierr;            /* error value from grib2 library. */
+              unsigned char *csec2, sInt4 lcsec2, sInt4 *igds, sInt4 *igdstmpl,
+              sInt4 *ideflist, sInt4 idefnum, sInt4 ipdsnum, sInt4 *ipdstmpl,
+              float *coordlist, sInt4 numcoord, sInt4 idrsnum, sInt4 *idrstmpl,
+              float *fld, sInt4 ngrdpts, sInt4 ibmap, sInt4 *bmap) {
+  int ierr; /* error value from grib2 library. */
 
-    if ((ierr = g2_create(cgrib, sec0, sec1)) == -1) {
-        /* Tried to use for version other than GRIB Ed 2 */
-        return -1;
-    }
+  if ((ierr = g2_create(cgrib, sec0, sec1)) == -1) {
+    /* Tried to use for version other than GRIB Ed 2 */
+    return -1;
+  }
 
-    if ((ierr = g2_addlocal(cgrib, csec2, lcsec2)) < 0) {
-        /* Some how got a bad section 2.  Should be impossible unless an assert
-         * was broken. */
-        return -2;
-    }
+  if ((ierr = g2_addlocal(cgrib, csec2, lcsec2)) < 0) {
+    /* Some how got a bad section 2.  Should be impossible unless an assert
+     * was broken. */
+    return -2;
+  }
 
-    if ((ierr = g2_addgrid(cgrib, igds, igdstmpl, ideflist, idefnum)) < 0) {
-        /* Some how got a bad section 3.  Only way would be should be with an
-         * unsupported template number unless an assert was broken. */
-        return -3;
-    }
+  if ((ierr = g2_addgrid(cgrib, igds, igdstmpl, ideflist, idefnum)) < 0) {
+    /* Some how got a bad section 3.  Only way would be should be with an
+     * unsupported template number unless an assert was broken. */
+    return -3;
+  }
 
-    if ((ierr = g2_addfield(cgrib, ipdsnum, ipdstmpl, coordlist, numcoord,
-                            idrsnum, idrstmpl, fld, ngrdpts, ibmap,
-                            bmap)) < 0) {
-        return -4;
-    }
+  if ((ierr = g2_addfield(cgrib, ipdsnum, ipdstmpl, coordlist, numcoord,
+                          idrsnum, idrstmpl, fld, ngrdpts, ibmap, bmap)) < 0) {
+    return -4;
+  }
 
-    if ((ierr = g2_gribend(cgrib)) < 0) {
-        return -5;
-    }
+  if ((ierr = g2_gribend(cgrib)) < 0) {
+    return -5;
+  }
 
-    return ierr;
+  return ierr;
 }
 #endif /* unused_by_GDAL */

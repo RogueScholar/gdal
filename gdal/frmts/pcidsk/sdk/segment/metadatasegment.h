@@ -39,36 +39,33 @@
 #include <map>
 #include <string>
 
-namespace PCIDSK
-{
+namespace PCIDSK {
 /************************************************************************/
 /*                           MetadataSegment                            */
 /************************************************************************/
 
-class MetadataSegment final: virtual public CPCIDSKSegment
-{
+class MetadataSegment final : virtual public CPCIDSKSegment {
 
 public:
-    MetadataSegment( PCIDSKFile *file, int segment,
-                     const char *segment_pointer );
-    virtual     ~MetadataSegment();
+  MetadataSegment(PCIDSKFile *file, int segment, const char *segment_pointer);
+  virtual ~MetadataSegment();
 
-    void         FetchGroupMetadata( const char *group, int id,
-                                     std::map<std::string, std::string> &md_set );
-    void         SetGroupMetadataValue( const char *group, int id,
-                                        const std::string& key, const std::string& value );
+  void FetchGroupMetadata(const char *group, int id,
+                          std::map<std::string, std::string> &md_set);
+  void SetGroupMetadataValue(const char *group, int id, const std::string &key,
+                             const std::string &value);
 
-    void         Synchronize() override;
+  void Synchronize() override;
 
 private:
-    bool         loaded;
+  bool loaded;
 
-    void         Load();
-    void         Save();
+  void Load();
+  void Save();
 
-    PCIDSKBuffer seg_data;
+  PCIDSKBuffer seg_data;
 
-    std::map<std::string,std::string> update_list;
+  std::map<std::string, std::string> update_list;
 };
 } // end namespace PCIDSK
 

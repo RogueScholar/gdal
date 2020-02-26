@@ -27,16 +27,15 @@
 #ifndef INCLUDE_CHANNEL_CTILEDCHANNEL_H
 #define INCLUDE_CHANNEL_CTILEDCHANNEL_H
 
+#include "channel/cpcidskchannel.h"
+#include "pcidsk_buffer.h"
 #include "pcidsk_config.h"
 #include "pcidsk_types.h"
-#include "pcidsk_buffer.h"
-#include "channel/cpcidskchannel.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace PCIDSK
-{
+namespace PCIDSK {
 class SysVirtualFile;
 /************************************************************************/
 /*                            CTiledChannel                             */
@@ -45,65 +44,55 @@ class SysVirtualFile;
 /*      segments.  Imagery may be compressed.                           */
 /************************************************************************/
 
-class CTiledChannel final: public CPCIDSKChannel
-{
+class CTiledChannel final : public CPCIDSKChannel {
 
 public:
-    CTiledChannel( PCIDSKBuffer &image_header,
-                   uint64 ih_offset,
-                   PCIDSKBuffer &file_header,
-                   int channelnum,
-                   CPCIDSKFile *file,
-                   eChanType pixel_type );
-    virtual ~CTiledChannel();
+  CTiledChannel(PCIDSKBuffer &image_header, uint64 ih_offset,
+                PCIDSKBuffer &file_header, int channelnum, CPCIDSKFile *file,
+                eChanType pixel_type);
+  virtual ~CTiledChannel();
 
-    virtual int GetBlockWidth() const override;
-    virtual int GetBlockHeight() const override;
-    virtual int GetWidth() const override;
-    virtual int GetHeight() const override;
-    virtual eChanType GetType() const override;
+  virtual int GetBlockWidth() const override;
+  virtual int GetBlockHeight() const override;
+  virtual int GetWidth() const override;
+  virtual int GetHeight() const override;
+  virtual eChanType GetType() const override;
 
-    virtual int ReadBlock( int block_index, void *buffer,
-                           int xoff=-1, int yoff=-1,
-                           int xsize=-1, int ysize=-1 ) override;
-    virtual int WriteBlock( int block_index, void *buffer ) override;
+  virtual int ReadBlock(int block_index, void *buffer, int xoff = -1,
+                        int yoff = -1, int xsize = -1, int ysize = -1) override;
+  virtual int WriteBlock(int block_index, void *buffer) override;
 
-    virtual void Synchronize() override;
-
-
+  virtual void Synchronize() override;
 
 private:
-    int                      image;
-    mutable int              tile_count;
-    mutable int              tiles_per_row;
-    mutable int              tiles_per_col;
-    mutable SysVirtualFile  *vfile;
-    mutable std::string      compression;
+  int image;
+  mutable int tile_count;
+  mutable int tiles_per_row;
+  mutable int tiles_per_col;
+  mutable SysVirtualFile *vfile;
+  mutable std::string compression;
 
-    void                     EstablishAccess() const;
-    void                     RLEDecompressBlock( PCIDSKBuffer &oCompressed,
-            PCIDSKBuffer &oDecompressed );
-    void                     RLECompressBlock( PCIDSKBuffer &oUncompressed,
-            PCIDSKBuffer &oCompressed );
-    void                     JPEGDecompressBlock( PCIDSKBuffer &oCompressed,
-            PCIDSKBuffer &oDecompressed );
-    void                     JPEGCompressBlock( PCIDSKBuffer &oDecompressed,
-            PCIDSKBuffer &oCompressed );
+  void EstablishAccess() const;
+  void RLEDecompressBlock(PCIDSKBuffer &oCompressed,
+                          PCIDSKBuffer &oDecompressed);
+  void RLECompressBlock(PCIDSKBuffer &oUncompressed, PCIDSKBuffer &oCompressed);
+  void JPEGDecompressBlock(PCIDSKBuffer &oCompressed,
+                           PCIDSKBuffer &oDecompressed);
+  void JPEGCompressBlock(PCIDSKBuffer &oDecompressed,
+                         PCIDSKBuffer &oCompressed);
 
-    bool                     IsTileEmpty(void* buffer) const;
+  bool IsTileEmpty(void *buffer) const;
 
-    // managed paged list of tile offsets and sizes.
-    void                     GetTileInfo( int tile_index,
-                                          uint64 &offset, int &size );
-    void                     SetTileInfo( int tile_index,
-                                          uint64 offset, int size );
-    void                     LoadTileInfoBlock( int tile_info_block );
-    void                     SaveTileInfoBlock( int tile_info_block );
+  // managed paged list of tile offsets and sizes.
+  void GetTileInfo(int tile_index, uint64 &offset, int &size);
+  void SetTileInfo(int tile_index, uint64 offset, int size);
+  void LoadTileInfoBlock(int tile_info_block);
+  void SaveTileInfoBlock(int tile_info_block);
 
-    static const int                           tile_block_size = 4096;
-    mutable std::vector< std::vector<uint64> > tile_offsets;
-    mutable std::vector< std::vector<int> >    tile_sizes;
-    mutable std::vector<bool>                  tile_info_dirty;
+  static const int tile_block_size = 4096;
+  mutable std::vector<std::vector<uint64>> tile_offsets;
+  mutable std::vector<std::vector<int>> tile_sizes;
+  mutable std::vector<bool> tile_info_dirty;
 };
 } // end namespace PCIDSK
 
