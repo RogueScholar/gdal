@@ -60,8 +60,10 @@ def test_grib_multidim_grib2_3d_same_ref_time_different_forecast_time():
     assert ar.GetAttribute('discipline_name').Read() == 'Meteorological'
     assert ar.GetAttribute('center_code').Read() == 8
     assert ar.GetAttribute('center_name').Read() == 'US-NWSTG'
-    assert ar.GetAttribute('signification_of_ref_time').Read() == 'Start of Forecast'
-    assert ar.GetAttribute('reference_time_iso8601').Read() == '2008-02-21T17:00:00Z'
+    assert ar.GetAttribute(
+        'signification_of_ref_time').Read() == 'Start of Forecast'
+    assert ar.GetAttribute(
+        'reference_time_iso8601').Read() == '2008-02-21T17:00:00Z'
     assert ar.GetAttribute('production_status').Read() == 'Operational'
     assert ar.GetAttribute('type').Read() == 'Forecast'
     assert ar.GetAttribute('product_definition_template_number').Read() == 8
@@ -71,13 +73,16 @@ def test_grib_multidim_grib2_3d_same_ref_time_different_forecast_time():
     assert len(dims) == 3
     assert dims[0].GetFullName() == '/TIME'
     assert dims[0].GetSize() == 2
-    assert struct.unpack('d' * 2, dims[0].GetIndexingVariable().Read()) == pytest.approx((1203681600.0, 1203768000.0))
+    assert struct.unpack('d' * 2, dims[0].GetIndexingVariable().Read()
+                         ) == pytest.approx((1203681600.0, 1203768000.0))
     assert dims[1].GetFullName() == '/Y'
     assert dims[1].GetSize() == 129
-    assert struct.unpack('d' * 129, dims[1].GetIndexingVariable().Read())[0:2] == pytest.approx((1784311.461394906, 1786811.461394906))
+    assert struct.unpack('d' * 129, dims[1].GetIndexingVariable().Read())[
+        0:2] == pytest.approx((1784311.461394906, 1786811.461394906))
     assert dims[2].GetFullName() == '/X'
     assert dims[2].GetSize() == 177
-    assert struct.unpack('d' * 177, dims[2].GetIndexingVariable().Read())[0:2] == pytest.approx((-7125887.299303299, -7123387.299303299))
+    assert struct.unpack('d' * 177, dims[2].GetIndexingVariable().Read())[
+        0:2] == pytest.approx((-7125887.299303299, -7123387.299303299))
     assert ar.GetSpatialRef()
     assert ar.GetUnit() == 'C'
     assert ar.GetNoDataValueAsDouble() == 9999
@@ -88,11 +93,13 @@ def test_grib_multidim_grib2_3d_same_ref_time_different_forecast_time():
     assert data[0] == 9999
     assert data[20 * 177 + 20] == 24.950006103515648
 
-    data = ar.Read(buffer_datatype = gdal.ExtendedDataType.Create(gdal.GDT_Float32))
+    data = ar.Read(
+        buffer_datatype=gdal.ExtendedDataType.Create(gdal.GDT_Float32))
     assert len(data) == 2 * 129 * 177 * 4
     data = struct.unpack('f' * 2 * 129 * 177, data)
     assert data[0] == 9999
-    assert data[20 * 177 + 20] == struct.unpack('f', struct.pack('f', 24.950006103515648))[0]
+    assert data[20 * 177 +
+                20] == struct.unpack('f', struct.pack('f', 24.950006103515648))[0]
 
 ###############################################################################
 
@@ -105,7 +112,8 @@ def test_grib_multidim_grib1_2d():
     assert rg
     assert not rg.GetGroupNames()
     assert not rg.OpenGroup('non_existing')
-    assert rg.GetMDArrayNames() == ['Y', 'X', 'CRAIN_0-SFC', 'USCT_0-SFC', 'VSCT_0-SFC', 'TSEC_0-SFC']
+    assert rg.GetMDArrayNames() == [
+        'Y', 'X', 'CRAIN_0-SFC', 'USCT_0-SFC', 'VSCT_0-SFC', 'TSEC_0-SFC']
     dims = rg.GetDimensions()
     assert len(dims) == 2
     ar = rg.OpenMDArray('CRAIN_0-SFC')
@@ -123,7 +131,8 @@ def test_grib_multidim_grib1_2d():
     assert data[0] == 0
     assert data[20] == 9999
 
-    data = ar.Read(buffer_datatype = gdal.ExtendedDataType.Create(gdal.GDT_Float32))
+    data = ar.Read(
+        buffer_datatype=gdal.ExtendedDataType.Create(gdal.GDT_Float32))
     assert len(data) == 74 * 66 * 4
     data = struct.unpack('f' * 74 * 66, data)
     assert data[0] == 0

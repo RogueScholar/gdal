@@ -26,7 +26,8 @@ if version_info >= (2, 7, 0):
 
                     import sys
                     import traceback
-                    traceback_string = ''.join(traceback.format_exception(*sys.exc_info()))
+                    traceback_string = ''.join(
+                        traceback.format_exception(*sys.exc_info()))
                     raise ImportError(traceback_string + '\n' + msg)
             return importlib.import_module('_gdal', pkg)
     _gdal = swig_import_helper()
@@ -37,7 +38,8 @@ elif version_info >= (2, 6, 0):
         import imp
         fp = None
         try:
-            fp, pathname, description = imp.find_module('_gdal', [dirname(__file__)])
+            fp, pathname, description = imp.find_module(
+                '_gdal', [dirname(__file__)])
         except ImportError:
             import _gdal
             return _gdal
@@ -54,7 +56,8 @@ elif version_info >= (2, 6, 0):
 
                         import sys
                         import traceback
-                        traceback_string = ''.join(traceback.format_exception(*sys.exc_info()))
+                        traceback_string = ''.join(
+                            traceback.format_exception(*sys.exc_info()))
                         raise ImportError(traceback_string + '\n' + msg)
                 raise
             finally:

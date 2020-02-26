@@ -320,7 +320,8 @@ def test_ogr_basic_7():
         for i in range(7):
             feat_almost_clone = feat.Clone()
             feat_almost_clone.SetField(num_field, 2010 + (i == 0), 1 + (i == 1),
-                                       8 + (i == 2), 22 + (i == 3), 48 + (i == 4),
+                                       8 + (i == 2), 22 +
+                                       (i == 3), 48 + (i == 4),
                                        15 + (i == 5), 4 + (i == 6))
             if feat.Equal(feat_almost_clone):
                 feat.DumpReadable()
@@ -348,7 +349,7 @@ def test_ogr_basic_7():
         feat_almost_clone.DumpReadable()
         pytest.fail()
 
-    
+
 ###############################################################################
 # Issue several RegisterAll() to check that OGR drivers are good citizens
 
@@ -383,12 +384,12 @@ def test_ogr_basic_9():
                         [ogr.wkbMultiPolygon25D, "3D Multi Polygon"],
                         [ogr.wkbGeometryCollection25D, "3D Geometry Collection"],
                         [123456, "Unrecognized: 123456"]
-                       ]
+                        ]
 
     for geom_type_tuple in geom_type_tuples:
         assert ogr.GeometryTypeToName(geom_type_tuple[0]) == geom_type_tuple[1]
 
-    
+
 ###############################################################################
 # Run test_ogrsf -all_drivers
 
@@ -399,7 +400,8 @@ def test_ogr_basic_10():
     if test_cli_utilities.get_test_ogrsf_path() is None:
         pytest.skip()
 
-    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() + ' -all_drivers')
+    ret = gdaltest.runexternal(
+        test_cli_utilities.get_test_ogrsf_path() + ' -all_drivers')
 
     assert ret.find('INFO') != -1 and ret.find('ERROR') == -1
 
@@ -415,13 +417,14 @@ def test_ogr_basic_11():
     used_exceptions_before = ogr.GetUseExceptions()
     for _ in range(2):
         ogr.UseExceptions()
-        geom = ogr.CreateGeometryFromWkt('POLYGON ((-65 0, -30 -30, -30 0, -65 -30, -65 0))')
+        geom = ogr.CreateGeometryFromWkt(
+            'POLYGON ((-65 0, -30 -30, -30 0, -65 -30, -65 0))')
         with gdaltest.error_handler():
             geom.IsValid()
     if used_exceptions_before == 0:
         ogr.DontUseExceptions()
 
-    
+
 ###############################################################################
 # Test OFSTBoolean, OFSTInt16 and OFSTFloat32
 
@@ -578,7 +581,7 @@ def test_ogr_basic_13():
         f.SetField('date', val)
         assert f.GetField('date') == expected_ret, val
 
-    
+
 ###############################################################################
 # Test ogr.Open(.) in an empty directory
 
@@ -608,7 +611,8 @@ def test_ogr_basic_15():
     try:
         lyr.CreateFeature(ogr.Feature(lyr.GetLayerDefn()))
     except RuntimeError as e:
-        ok = str(e).find('CreateFeature : unsupported operation on a read-only datasource') >= 0
+        ok = str(e).find(
+            'CreateFeature : unsupported operation on a read-only datasource') >= 0
         assert ok, ('Got: %s' + str(e))
         return
     finally:
@@ -659,7 +663,6 @@ def test_ogr_basic_invalid_unicode():
     except:
         pass
 
-    
 
 def test_ogr_basic_dataset_slice():
 

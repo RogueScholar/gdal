@@ -45,7 +45,8 @@ import ogrtest
 import pytest
 import webserver
 
-### utils
+# utils
+
 
 def verify_flatgeobuf_copy(name, fids, names):
 
@@ -161,7 +162,8 @@ def copy_shape_to_flatgeobuf(name, wkbType, compress=None, options=[]):
 
     return True
 
-### tests
+# tests
+
 
 def test_ogr_flatgeobuf_1():
 
@@ -170,6 +172,7 @@ def test_ogr_flatgeobuf_1():
     if gdaltest.flatgeobuf_drv is not None:
         return
     pytest.fail()
+
 
 def test_ogr_flatgeobuf_2():
     fgb_ds = ogr.Open('data/testfgb/poly.fgb')
@@ -182,13 +185,15 @@ def test_ogr_flatgeobuf_2():
     assert fgb_lyr.TestCapability(ogr.OLCFastFeatureCount)
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(478315.531250, 4762880.500000, 481645.312500, 4765610.500000)
+    c = fgb_lyr.SetSpatialFilterRect(
+        478315.531250, 4762880.500000, 481645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(878315.531250, 4762880.500000, 881645.312500, 4765610.500000)
+    c = fgb_lyr.SetSpatialFilterRect(
+        878315.531250, 4762880.500000, 881645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 0
-    c = fgb_lyr.SetSpatialFilterRect(479586.0,4764618.6,479808.2,4764797.8)
+    c = fgb_lyr.SetSpatialFilterRect(479586.0, 4764618.6, 479808.2, 4764797.8)
     c = fgb_lyr.GetFeatureCount()
     if ogrtest.have_geos():
         assert c == 4
@@ -213,6 +218,7 @@ def test_ogr_flatgeobuf_2():
         assert num == 4
     else:
         assert num == 5
+
 
 def test_ogr_flatgeobuf_2_1():
     fgb_ds = ogr.Open('data/testfgb/poly_no_index.fgb')
@@ -225,13 +231,15 @@ def test_ogr_flatgeobuf_2_1():
     assert fgb_lyr.TestCapability(ogr.OLCFastFeatureCount) is False
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(478315.531250, 4762880.500000, 481645.312500, 4765610.500000)
+    c = fgb_lyr.SetSpatialFilterRect(
+        478315.531250, 4762880.500000, 481645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
-    c = fgb_lyr.SetSpatialFilterRect(878315.531250, 4762880.500000, 881645.312500, 4765610.500000)
+    c = fgb_lyr.SetSpatialFilterRect(
+        878315.531250, 4762880.500000, 881645.312500, 4765610.500000)
     c = fgb_lyr.GetFeatureCount()
     assert c == 0
-    c = fgb_lyr.SetSpatialFilterRect(479586.0,4764618.6,479808.2,4764797.8)
+    c = fgb_lyr.SetSpatialFilterRect(479586.0, 4764618.6, 479808.2, 4764797.8)
     c = fgb_lyr.GetFeatureCount()
     if ogrtest.have_geos():
         assert c == 4
@@ -256,6 +264,7 @@ def test_ogr_flatgeobuf_2_1():
         assert num == 4
     else:
         assert num == 5
+
 
 def wktRoundtrip(expected):
     ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/test.fgb')
@@ -278,22 +287,28 @@ def wktRoundtrip(expected):
 
     assert actual == expected
 
+
 def test_ogr_flatgeobuf_3():
     if gdaltest.flatgeobuf_drv is None:
         pytest.skip()
-    wkts = ogrtest.get_wkt_data_series(with_z=True, with_m=True, with_gc=True, with_circular=True, with_surface=True)
+    wkts = ogrtest.get_wkt_data_series(
+        with_z=True, with_m=True, with_gc=True, with_circular=True, with_surface=True)
     for wkt in wkts:
         wktRoundtrip(wkt)
 
 # Run test_ogrsf
+
+
 def test_ogr_flatgeobuf_8():
     import test_cli_utilities
     if test_cli_utilities.get_test_ogrsf_path() is None:
         pytest.skip()
 
-    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() + ' -ro data/testfgb/poly.fgb')
+    ret = gdaltest.runexternal(
+        test_cli_utilities.get_test_ogrsf_path() + ' -ro data/testfgb/poly.fgb')
 
     assert ret.find('INFO') != -1 and ret.find('ERROR') == -1
+
 
 def test_ogr_flatgeobuf_9():
     if gdaltest.flatgeobuf_drv is None:
@@ -320,7 +335,8 @@ def test_ogr_flatgeobuf_9():
     for i in range(len(gdaltest.tests)):
         test = gdaltest.tests[i]
 
-        rc = copy_shape_to_flatgeobuf(test[0], test[3], None, ['SPATIAL_INDEX=NO'])
+        rc = copy_shape_to_flatgeobuf(
+            test[0], test[3], None, ['SPATIAL_INDEX=NO'])
         assert rc, ('Failed making copy of ' + test[0] + '.shp')
 
         rc = verify_flatgeobuf_copy(test[0], test[1], test[2])
@@ -334,14 +350,16 @@ def test_ogr_flatgeobuf_directory():
     if gdaltest.flatgeobuf_drv is None:
         pytest.skip()
 
-    ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/multi_layer')
-    with gdaltest.error_handler(): # name will be laundered
-        ds.CreateLayer('foo<', geom_type = ogr.wkbPoint)
-    ds.CreateLayer('bar', geom_type = ogr.wkbPoint)
+    ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource(
+        '/vsimem/multi_layer')
+    with gdaltest.error_handler():  # name will be laundered
+        ds.CreateLayer('foo<', geom_type=ogr.wkbPoint)
+    ds.CreateLayer('bar', geom_type=ogr.wkbPoint)
     ds = None
 
     ds = gdal.OpenEx('/vsimem/multi_layer')
-    assert set(ds.GetFileList()) == set(['/vsimem/multi_layer/bar.fgb', '/vsimem/multi_layer/foo_.fgb'])
+    assert set(ds.GetFileList()) == set(
+        ['/vsimem/multi_layer/bar.fgb', '/vsimem/multi_layer/foo_.fgb'])
     assert ds.GetLayer('foo<')
     assert ds.GetLayer('bar')
     ds = None
@@ -354,7 +372,7 @@ def test_ogr_flatgeobuf_srs_epsg():
     ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/test.fgb')
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(32631)
-    ds.CreateLayer('test', srs = srs, geom_type = ogr.wkbPoint)
+    ds.CreateLayer('test', srs=srs, geom_type=ogr.wkbPoint)
     ds = None
 
     ds = ogr.Open('/vsimem/test.fgb')
@@ -374,7 +392,7 @@ def test_ogr_flatgeobuf_srs_other_authority():
     srs = osr.SpatialReference()
     srs.SetFromUserInput("ESRI:104009")
     srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
-    ds.CreateLayer('test', srs = srs, geom_type = ogr.wkbPoint)
+    ds.CreateLayer('test', srs=srs, geom_type=ogr.wkbPoint)
     ds = None
 
     ds = ogr.Open('/vsimem/test.fgb')
@@ -393,7 +411,7 @@ def test_ogr_flatgeobuf_srs_no_authority():
     ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/test.fgb')
     srs = osr.SpatialReference()
     srs.SetFromUserInput("+proj=longlat +ellps=clrk66")
-    ds.CreateLayer('test', srs = srs, geom_type = ogr.wkbPoint)
+    ds.CreateLayer('test', srs=srs, geom_type=ogr.wkbPoint)
     ds = None
 
     ds = ogr.Open('/vsimem/test.fgb')
@@ -406,6 +424,7 @@ def test_ogr_flatgeobuf_srs_no_authority():
     ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/test.fgb')
     assert not gdal.VSIStatL('/vsimem/test.fgb')
 
+
 def test_ogr_flatgeobuf_datatypes():
     ds = ogr.Open('data/testfgb/testdatatypes.fgb')
     lyr = ds.GetLayer(0)
@@ -416,9 +435,11 @@ def test_ogr_flatgeobuf_datatypes():
     assert f['string'] == 'my string'
     assert f['datetime'] == '2019/10/15 12:34:56.789+00'
 
+
 def test_ogr_flatgeobuf_mixed():
     srcDS = gdal.OpenEx('data/testfgb/testmixed.geojson')
-    destDS = gdal.VectorTranslate('/vsimem/test.fgb', srcDS=srcDS, format = 'FlatGeobuf', layerCreationOptions = ['SPATIAL_INDEX=NO'])
+    destDS = gdal.VectorTranslate('/vsimem/test.fgb', srcDS=srcDS,
+                                  format='FlatGeobuf', layerCreationOptions=['SPATIAL_INDEX=NO'])
     srcDS = None
     destDS = None
     srcDS = ogr.Open('data/testfgb/testmixed.geojson')
@@ -430,8 +451,10 @@ def test_ogr_flatgeobuf_mixed():
     ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/test.fgb')
     assert not gdal.VSIStatL('/vsimem/test.fgb')
 
+
 ###############################################################################
 do_log = False
+
 
 class WFSHTTPHandler(BaseHTTPRequestHandler):
 
@@ -490,6 +513,7 @@ class WFSHTTPHandler(BaseHTTPRequestHandler):
 def ogr_wfs_init():
     gdaltest.wfs_drv = ogr.GetDriverByName('WFS')
 
+
 def test_ogr_wfs_fake_wfs_server():
     if gdaltest.wfs_drv is None:
         pytest.skip()
@@ -499,7 +523,8 @@ def test_ogr_wfs_fake_wfs_server():
         pytest.skip()
 
     gdal.SetConfigOption('OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN', 'NO')
-    ds = ogr.Open("WFS:http://127.0.0.1:%d/fakewfs?OUTPUTFORMAT=application/flatgeobuf" % port)
+    ds = ogr.Open(
+        "WFS:http://127.0.0.1:%d/fakewfs?OUTPUTFORMAT=application/flatgeobuf" % port)
     gdal.SetConfigOption('OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN', None)
     if ds is None:
         webserver.server_stop(process, port)
