@@ -51,31 +51,31 @@ import webserver
 def verify_flatgeobuf_copy(name, fids, names):
 
     if gdaltest.features is None:
-        print('Missing features collection')
+        print("Missing features collection")
         return False
 
-    fname = os.path.join('tmp', name + '.fgb')
+    fname = os.path.join("tmp", name + ".fgb")
     ds = ogr.Open(fname)
     if ds is None:
-        print('Can not open \'' + fname + '\'')
+        print("Can not open '" + fname + "'")
         return False
 
     lyr = ds.GetLayer(0)
     if lyr is None:
-        print('Missing layer')
+        print("Missing layer")
         return False
 
     ######################################################
     # Test attributes
-    ret = ogrtest.check_features_against_list(lyr, 'FID', fids)
+    ret = ogrtest.check_features_against_list(lyr, "FID", fids)
     if ret != 1:
-        print('Wrong values in \'FID\' field')
+        print("Wrong values in 'FID' field")
         return False
 
     lyr.ResetReading()
-    ret = ogrtest.check_features_against_list(lyr, 'NAME', names)
+    ret = ogrtest.check_features_against_list(lyr, "NAME", names)
     if ret != 1:
-        print('Wrong values in \'NAME\' field')
+        print("Wrong values in 'NAME' field")
         return False
 
     ######################################################
@@ -87,12 +87,16 @@ def verify_flatgeobuf_copy(name, fids, names):
         feat = lyr.GetNextFeature()
 
         if feat is None:
-            print('Failed trying to read feature')
+            print("Failed trying to read feature")
             return False
 
-        if ogrtest.check_feature_geometry(feat, orig_feat.GetGeometryRef(),
-                                          max_error=0.001) != 0:
-            print('Geometry test failed')
+        if (
+            ogrtest.check_feature_geometry(
+                feat, orig_feat.GetGeometryRef(), max_error=0.001
+            )
+            != 0
+        ):
+            print("Geometry test failed")
             gdaltest.features = None
             return False
 
@@ -108,16 +112,16 @@ def copy_shape_to_flatgeobuf(name, wkbType, compress=None, options=[]):
         return False
 
     if compress is not None:
-        if compress[0:5] == '/vsig':
-            dst_name = os.path.join('/vsigzip/', 'tmp', name + '.fgb' + '.gz')
-        elif compress[0:4] == '/vsiz':
-            dst_name = os.path.join('/vsizip/', 'tmp', name + '.fgb' + '.zip')
-        elif compress == '/vsistdout/':
+        if compress[0:5] == "/vsig":
+            dst_name = os.path.join("/vsigzip/", "tmp", name + ".fgb" + ".gz")
+        elif compress[0:4] == "/vsiz":
+            dst_name = os.path.join("/vsizip/", "tmp", name + ".fgb" + ".zip")
+        elif compress == "/vsistdout/":
             dst_name = compress
         else:
             return False
     else:
-        dst_name = os.path.join('tmp', name + '.fgb')
+        dst_name = os.path.join("tmp", name + ".fgb")
 
     ds = gdaltest.flatgeobuf_drv.CreateDataSource(dst_name)
     if ds is None:
@@ -131,16 +135,14 @@ def copy_shape_to_flatgeobuf(name, wkbType, compress=None, options=[]):
 
     ######################################################
     # Setup schema (all test shapefiles use common schmea)
-    ogrtest.quick_create_layer_def(lyr,
-                                   [('FID', ogr.OFTReal),
-                                    ('NAME', ogr.OFTString)])
+    ogrtest.quick_create_layer_def(lyr, [("FID", ogr.OFTReal), ("NAME", ogr.OFTString)])
 
     ######################################################
     # Copy in shp
 
     dst_feat = ogr.Feature(feature_def=lyr.GetLayerDefn())
 
-    src_name = os.path.join('data', name + '.shp')
+    src_name = os.path.join("data", name + ".shp")
     shp_ds = ogr.Open(src_name)
     shp_lyr = shp_ds.GetLayer(0)
 
@@ -162,12 +164,13 @@ def copy_shape_to_flatgeobuf(name, wkbType, compress=None, options=[]):
 
     return True
 
+
 # tests
 
 
 def test_ogr_flatgeobuf_1():
 
-    gdaltest.flatgeobuf_drv = ogr.GetDriverByName('FlatGeobuf')
+    gdaltest.flatgeobuf_drv = ogr.GetDriverByName("FlatGeobuf")
 
     if gdaltest.flatgeobuf_drv is not None:
         return
@@ -175,7 +178,7 @@ def test_ogr_flatgeobuf_1():
 
 
 def test_ogr_flatgeobuf_2():
-    fgb_ds = ogr.Open('data/testfgb/poly.fgb')
+    fgb_ds = ogr.Open("data/testfgb/poly.fgb")
     fgb_lyr = fgb_ds.GetLayer(0)
 
     assert fgb_lyr.TestCapability(ogr.OLCFastGetExtent)
@@ -186,11 +189,13 @@ def test_ogr_flatgeobuf_2():
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
     c = fgb_lyr.SetSpatialFilterRect(
-        478315.531250, 4762880.500000, 481645.312500, 4765610.500000)
+        478315.531250, 4762880.500000, 481645.312500, 4765610.500000
+    )
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
     c = fgb_lyr.SetSpatialFilterRect(
-        878315.531250, 4762880.500000, 881645.312500, 4765610.500000)
+        878315.531250, 4762880.500000, 881645.312500, 4765610.500000
+    )
     c = fgb_lyr.GetFeatureCount()
     assert c == 0
     c = fgb_lyr.SetSpatialFilterRect(479586.0, 4764618.6, 479808.2, 4764797.8)
@@ -221,7 +226,7 @@ def test_ogr_flatgeobuf_2():
 
 
 def test_ogr_flatgeobuf_2_1():
-    fgb_ds = ogr.Open('data/testfgb/poly_no_index.fgb')
+    fgb_ds = ogr.Open("data/testfgb/poly_no_index.fgb")
     fgb_lyr = fgb_ds.GetLayer(0)
 
     assert fgb_lyr.TestCapability(ogr.OLCFastGetExtent) is False
@@ -232,11 +237,13 @@ def test_ogr_flatgeobuf_2_1():
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
     c = fgb_lyr.SetSpatialFilterRect(
-        478315.531250, 4762880.500000, 481645.312500, 4765610.500000)
+        478315.531250, 4762880.500000, 481645.312500, 4765610.500000
+    )
     c = fgb_lyr.GetFeatureCount()
     assert c == 10
     c = fgb_lyr.SetSpatialFilterRect(
-        878315.531250, 4762880.500000, 881645.312500, 4765610.500000)
+        878315.531250, 4762880.500000, 881645.312500, 4765610.500000
+    )
     c = fgb_lyr.GetFeatureCount()
     assert c == 0
     c = fgb_lyr.SetSpatialFilterRect(479586.0, 4764618.6, 479808.2, 4764797.8)
@@ -267,23 +274,23 @@ def test_ogr_flatgeobuf_2_1():
 
 
 def wktRoundtrip(expected):
-    ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/test.fgb')
+    ds = ogr.GetDriverByName("FlatGeobuf").CreateDataSource("/vsimem/test.fgb")
     g = ogr.CreateGeometryFromWkt(expected)
-    lyr = ds.CreateLayer('test', None, g.GetGeometryType(), [])
+    lyr = ds.CreateLayer("test", None, g.GetGeometryType(), [])
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(g)
     lyr.CreateFeature(f)
     ds = None
 
-    ds = ogr.Open('/vsimem/test.fgb')
+    ds = ogr.Open("/vsimem/test.fgb")
     lyr = ds.GetLayer(0)
     f = lyr.GetNextFeature()
     g = f.GetGeometryRef()
     actual = g.ExportToIsoWkt()
     ds = None
 
-    ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/test.fgb')
-    assert not gdal.VSIStatL('/vsimem/test.fgb')
+    ogr.GetDriverByName("FlatGeobuf").DeleteDataSource("/vsimem/test.fgb")
+    assert not gdal.VSIStatL("/vsimem/test.fgb")
 
     assert actual == expected
 
@@ -292,22 +299,26 @@ def test_ogr_flatgeobuf_3():
     if gdaltest.flatgeobuf_drv is None:
         pytest.skip()
     wkts = ogrtest.get_wkt_data_series(
-        with_z=True, with_m=True, with_gc=True, with_circular=True, with_surface=True)
+        with_z=True, with_m=True, with_gc=True, with_circular=True, with_surface=True
+    )
     for wkt in wkts:
         wktRoundtrip(wkt)
+
 
 # Run test_ogrsf
 
 
 def test_ogr_flatgeobuf_8():
     import test_cli_utilities
+
     if test_cli_utilities.get_test_ogrsf_path() is None:
         pytest.skip()
 
     ret = gdaltest.runexternal(
-        test_cli_utilities.get_test_ogrsf_path() + ' -ro data/testfgb/poly.fgb')
+        test_cli_utilities.get_test_ogrsf_path() + " -ro data/testfgb/poly.fgb"
+    )
 
-    assert ret.find('INFO') != -1 and ret.find('ERROR') == -1
+    assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
 
 def test_ogr_flatgeobuf_9():
@@ -315,32 +326,31 @@ def test_ogr_flatgeobuf_9():
         pytest.skip()
 
     gdaltest.tests = [
-        ['gjpoint', [1], ['Point 1'], ogr.wkbPoint],
-        ['gjline', [1], ['Line 1'], ogr.wkbLineString],
-        ['gjpoly', [1], ['Polygon 1'], ogr.wkbPolygon],
-        ['gjmultipoint', [1], ['MultiPoint 1'], ogr.wkbMultiPoint],
-        ['gjmultiline', [2], ['MultiLine 1'], ogr.wkbMultiLineString],
-        ['gjmultipoly', [2], ['MultiPoly 1'], ogr.wkbMultiPolygon]
+        ["gjpoint", [1], ["Point 1"], ogr.wkbPoint],
+        ["gjline", [1], ["Line 1"], ogr.wkbLineString],
+        ["gjpoly", [1], ["Polygon 1"], ogr.wkbPolygon],
+        ["gjmultipoint", [1], ["MultiPoint 1"], ogr.wkbMultiPoint],
+        ["gjmultiline", [2], ["MultiLine 1"], ogr.wkbMultiLineString],
+        ["gjmultipoly", [2], ["MultiPoly 1"], ogr.wkbMultiPolygon],
     ]
 
     for i in range(len(gdaltest.tests)):
         test = gdaltest.tests[i]
 
         rc = copy_shape_to_flatgeobuf(test[0], test[3])
-        assert rc, ('Failed making copy of ' + test[0] + '.shp')
+        assert rc, "Failed making copy of " + test[0] + ".shp"
 
         rc = verify_flatgeobuf_copy(test[0], test[1], test[2])
-        assert rc, ('Verification of copy of ' + test[0] + '.shp failed')
+        assert rc, "Verification of copy of " + test[0] + ".shp failed"
 
     for i in range(len(gdaltest.tests)):
         test = gdaltest.tests[i]
 
-        rc = copy_shape_to_flatgeobuf(
-            test[0], test[3], None, ['SPATIAL_INDEX=NO'])
-        assert rc, ('Failed making copy of ' + test[0] + '.shp')
+        rc = copy_shape_to_flatgeobuf(test[0], test[3], None, ["SPATIAL_INDEX=NO"])
+        assert rc, "Failed making copy of " + test[0] + ".shp"
 
         rc = verify_flatgeobuf_copy(test[0], test[1], test[2])
-        assert rc, ('Verification of copy of ' + test[0] + '.shp failed')
+        assert rc, "Verification of copy of " + test[0] + ".shp failed"
 
 
 # Test support for multiple layers in a directory
@@ -350,106 +360,110 @@ def test_ogr_flatgeobuf_directory():
     if gdaltest.flatgeobuf_drv is None:
         pytest.skip()
 
-    ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource(
-        '/vsimem/multi_layer')
+    ds = ogr.GetDriverByName("FlatGeobuf").CreateDataSource("/vsimem/multi_layer")
     with gdaltest.error_handler():  # name will be laundered
-        ds.CreateLayer('foo<', geom_type=ogr.wkbPoint)
-    ds.CreateLayer('bar', geom_type=ogr.wkbPoint)
+        ds.CreateLayer("foo<", geom_type=ogr.wkbPoint)
+    ds.CreateLayer("bar", geom_type=ogr.wkbPoint)
     ds = None
 
-    ds = gdal.OpenEx('/vsimem/multi_layer')
+    ds = gdal.OpenEx("/vsimem/multi_layer")
     assert set(ds.GetFileList()) == set(
-        ['/vsimem/multi_layer/bar.fgb', '/vsimem/multi_layer/foo_.fgb'])
-    assert ds.GetLayer('foo<')
-    assert ds.GetLayer('bar')
+        ["/vsimem/multi_layer/bar.fgb", "/vsimem/multi_layer/foo_.fgb"]
+    )
+    assert ds.GetLayer("foo<")
+    assert ds.GetLayer("bar")
     ds = None
 
-    ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/multi_layer')
-    assert not gdal.VSIStatL('/vsimem/multi_layer')
+    ogr.GetDriverByName("FlatGeobuf").DeleteDataSource("/vsimem/multi_layer")
+    assert not gdal.VSIStatL("/vsimem/multi_layer")
 
 
 def test_ogr_flatgeobuf_srs_epsg():
-    ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/test.fgb')
+    ds = ogr.GetDriverByName("FlatGeobuf").CreateDataSource("/vsimem/test.fgb")
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(32631)
-    ds.CreateLayer('test', srs=srs, geom_type=ogr.wkbPoint)
+    ds.CreateLayer("test", srs=srs, geom_type=ogr.wkbPoint)
     ds = None
 
-    ds = ogr.Open('/vsimem/test.fgb')
+    ds = ogr.Open("/vsimem/test.fgb")
     lyr = ds.GetLayer(0)
     srs_got = lyr.GetSpatialRef()
     assert srs_got.IsSame(srs)
-    assert srs_got.GetAuthorityName(None) == 'EPSG'
-    assert srs_got.GetAuthorityCode(None) == '32631'
+    assert srs_got.GetAuthorityName(None) == "EPSG"
+    assert srs_got.GetAuthorityCode(None) == "32631"
     ds = None
 
-    ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/test.fgb')
-    assert not gdal.VSIStatL('/vsimem/test.fgb')
+    ogr.GetDriverByName("FlatGeobuf").DeleteDataSource("/vsimem/test.fgb")
+    assert not gdal.VSIStatL("/vsimem/test.fgb")
 
 
 def test_ogr_flatgeobuf_srs_other_authority():
-    ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/test.fgb')
+    ds = ogr.GetDriverByName("FlatGeobuf").CreateDataSource("/vsimem/test.fgb")
     srs = osr.SpatialReference()
     srs.SetFromUserInput("ESRI:104009")
     srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
-    ds.CreateLayer('test', srs=srs, geom_type=ogr.wkbPoint)
+    ds.CreateLayer("test", srs=srs, geom_type=ogr.wkbPoint)
     ds = None
 
-    ds = ogr.Open('/vsimem/test.fgb')
+    ds = ogr.Open("/vsimem/test.fgb")
     lyr = ds.GetLayer(0)
     srs_got = lyr.GetSpatialRef()
     assert srs_got.IsSame(srs)
-    assert srs_got.GetAuthorityName(None) == 'ESRI'
-    assert srs_got.GetAuthorityCode(None) == '104009'
+    assert srs_got.GetAuthorityName(None) == "ESRI"
+    assert srs_got.GetAuthorityCode(None) == "104009"
     ds = None
 
-    ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/test.fgb')
-    assert not gdal.VSIStatL('/vsimem/test.fgb')
+    ogr.GetDriverByName("FlatGeobuf").DeleteDataSource("/vsimem/test.fgb")
+    assert not gdal.VSIStatL("/vsimem/test.fgb")
 
 
 def test_ogr_flatgeobuf_srs_no_authority():
-    ds = ogr.GetDriverByName('FlatGeobuf').CreateDataSource('/vsimem/test.fgb')
+    ds = ogr.GetDriverByName("FlatGeobuf").CreateDataSource("/vsimem/test.fgb")
     srs = osr.SpatialReference()
     srs.SetFromUserInput("+proj=longlat +ellps=clrk66")
-    ds.CreateLayer('test', srs=srs, geom_type=ogr.wkbPoint)
+    ds.CreateLayer("test", srs=srs, geom_type=ogr.wkbPoint)
     ds = None
 
-    ds = ogr.Open('/vsimem/test.fgb')
+    ds = ogr.Open("/vsimem/test.fgb")
     lyr = ds.GetLayer(0)
     srs_got = lyr.GetSpatialRef()
     assert srs_got.IsSame(srs)
     assert srs_got.GetAuthorityName(None) is None
     ds = None
 
-    ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/test.fgb')
-    assert not gdal.VSIStatL('/vsimem/test.fgb')
+    ogr.GetDriverByName("FlatGeobuf").DeleteDataSource("/vsimem/test.fgb")
+    assert not gdal.VSIStatL("/vsimem/test.fgb")
 
 
 def test_ogr_flatgeobuf_datatypes():
-    ds = ogr.Open('data/testfgb/testdatatypes.fgb')
+    ds = ogr.Open("data/testfgb/testdatatypes.fgb")
     lyr = ds.GetLayer(0)
     f = lyr.GetNextFeature()
-    assert f['int'] == 1
-    assert f['int64'] == 1234567890123
-    assert f['double'] == 1.25
-    assert f['string'] == 'my string'
-    assert f['datetime'] == '2019/10/15 12:34:56.789+00'
+    assert f["int"] == 1
+    assert f["int64"] == 1234567890123
+    assert f["double"] == 1.25
+    assert f["string"] == "my string"
+    assert f["datetime"] == "2019/10/15 12:34:56.789+00"
 
 
 def test_ogr_flatgeobuf_mixed():
-    srcDS = gdal.OpenEx('data/testfgb/testmixed.geojson')
-    destDS = gdal.VectorTranslate('/vsimem/test.fgb', srcDS=srcDS,
-                                  format='FlatGeobuf', layerCreationOptions=['SPATIAL_INDEX=NO'])
+    srcDS = gdal.OpenEx("data/testfgb/testmixed.geojson")
+    destDS = gdal.VectorTranslate(
+        "/vsimem/test.fgb",
+        srcDS=srcDS,
+        format="FlatGeobuf",
+        layerCreationOptions=["SPATIAL_INDEX=NO"],
+    )
     srcDS = None
     destDS = None
-    srcDS = ogr.Open('data/testfgb/testmixed.geojson')
-    destDS = ogr.Open('/vsimem/test.fgb')
+    srcDS = ogr.Open("data/testfgb/testmixed.geojson")
+    destDS = ogr.Open("/vsimem/test.fgb")
     srcLyr = srcDS.GetLayer(0)
     destLyr = destDS.GetLayer(0)
     ogrtest.compare_layers(srcLyr, destLyr)
 
-    ogr.GetDriverByName('FlatGeobuf').DeleteDataSource('/vsimem/test.fgb')
-    assert not gdal.VSIStatL('/vsimem/test.fgb')
+    ogr.GetDriverByName("FlatGeobuf").DeleteDataSource("/vsimem/test.fgb")
+    assert not gdal.VSIStatL("/vsimem/test.fgb")
 
 
 ###############################################################################
@@ -457,46 +471,54 @@ do_log = False
 
 
 class WFSHTTPHandler(BaseHTTPRequestHandler):
-
-    def log_request(self, code='-', size='-'):
+    def log_request(self, code="-", size="-"):
         pass
 
     def do_GET(self):
 
         try:
             if do_log:
-                f = open('/tmp/log.txt', 'a')
-                f.write('GET %s\n' % self.path)
+                f = open("/tmp/log.txt", "a")
+                f.write("GET %s\n" % self.path)
                 f.close()
 
-            if self.path.find('/fakewfs') != -1:
+            if self.path.find("/fakewfs") != -1:
 
-                if self.path == '/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities' or \
-                        self.path == '/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities&ACCEPTVERSIONS=1.1.0,1.0.0':
+                if (
+                    self.path == "/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities"
+                    or self.path
+                    == "/fakewfs?SERVICE=WFS&REQUEST=GetCapabilities&ACCEPTVERSIONS=1.1.0,1.0.0"
+                ):
                     self.send_response(200)
-                    self.send_header('Content-type', 'application/xml')
+                    self.send_header("Content-type", "application/xml")
                     self.end_headers()
-                    f = open('data/testfgb/wfs/get_capabilities.xml', 'rb')
+                    f = open("data/testfgb/wfs/get_capabilities.xml", "rb")
                     content = f.read()
                     f.close()
                     self.wfile.write(content)
                     return
 
-                if self.path == '/fakewfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=topp:tasmania_water_bodies':
+                if (
+                    self.path
+                    == "/fakewfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=topp:tasmania_water_bodies"
+                ):
                     self.send_response(200)
-                    self.send_header('Content-type', 'application/xml')
+                    self.send_header("Content-type", "application/xml")
                     self.end_headers()
-                    f = open('data/testfgb/wfs/describe_feature_type.xml', 'rb')
+                    f = open("data/testfgb/wfs/describe_feature_type.xml", "rb")
                     content = f.read()
                     f.close()
                     self.wfile.write(content)
                     return
 
-                if self.path == '/fakewfs?OUTPUTFORMAT=application/flatgeobuf&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=topp:tasmania_water_bodies':
+                if (
+                    self.path
+                    == "/fakewfs?OUTPUTFORMAT=application/flatgeobuf&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=topp:tasmania_water_bodies"
+                ):
                     self.send_response(200)
-                    self.send_header('Content-type', 'application/flatgeobuf')
+                    self.send_header("Content-type", "application/flatgeobuf")
                     self.end_headers()
-                    f = open('data/testfgb/wfs/get_feature.fgb', 'rb')
+                    f = open("data/testfgb/wfs/get_feature.fgb", "rb")
                     content = f.read()
                     f.close()
                     self.wfile.write(content)
@@ -506,12 +528,12 @@ class WFSHTTPHandler(BaseHTTPRequestHandler):
         except IOError:
             pass
 
-        self.send_error(404, 'File Not Found: %s' % self.path)
+        self.send_error(404, "File Not Found: %s" % self.path)
 
 
-@pytest.fixture(autouse=True, scope='module')
+@pytest.fixture(autouse=True, scope="module")
 def ogr_wfs_init():
-    gdaltest.wfs_drv = ogr.GetDriverByName('WFS')
+    gdaltest.wfs_drv = ogr.GetDriverByName("WFS")
 
 
 def test_ogr_wfs_fake_wfs_server():
@@ -522,30 +544,37 @@ def test_ogr_wfs_fake_wfs_server():
     if port == 0:
         pytest.skip()
 
-    gdal.SetConfigOption('OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN', 'NO')
+    gdal.SetConfigOption("OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN", "NO")
     ds = ogr.Open(
-        "WFS:http://127.0.0.1:%d/fakewfs?OUTPUTFORMAT=application/flatgeobuf" % port)
-    gdal.SetConfigOption('OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN', None)
+        "WFS:http://127.0.0.1:%d/fakewfs?OUTPUTFORMAT=application/flatgeobuf" % port
+    )
+    gdal.SetConfigOption("OGR_WFS_LOAD_MULTIPLE_LAYER_DEFN", None)
     if ds is None:
         webserver.server_stop(process, port)
-        pytest.fail('did not managed to open WFS datastore')
+        pytest.fail("did not managed to open WFS datastore")
 
-    lyr = ds.GetLayerByName('topp:tasmania_water_bodies')
+    lyr = ds.GetLayerByName("topp:tasmania_water_bodies")
     if lyr == None:
         webserver.server_stop(process, port)
-        pytest.fail('did not get expected layer')
+        pytest.fail("did not get expected layer")
     name = lyr.GetName()
-    if name != 'topp:tasmania_water_bodies':
+    if name != "topp:tasmania_water_bodies":
         print(name)
         webserver.server_stop(process, port)
-        pytest.fail('did not get expected layer name (got %s)' % name)
+        pytest.fail("did not get expected layer name (got %s)" % name)
 
     feat = lyr.GetNextFeature()
-    if feat.GetField('CONTINENT') != 'Australia' or \
-       ogrtest.check_feature_geometry(feat, 'MULTIPOLYGON (((146.232727 -42.157501,146.238007 -42.16111,146.24411 -42.169724,146.257202 -42.193329,146.272217 -42.209442,146.274689 -42.214165,146.27832 -42.21833,146.282471 -42.228882,146.282745 -42.241943,146.291351 -42.255836,146.290253 -42.261948,146.288025 -42.267502,146.282471 -42.269997,146.274994 -42.271111,146.266663 -42.270279,146.251373 -42.262505,146.246918 -42.258057,146.241333 -42.256111,146.23468 -42.257782,146.221344 -42.269165,146.210785 -42.274445,146.20163 -42.27417,146.196075 -42.271385,146.186646 -42.258057,146.188568 -42.252785,146.193298 -42.249443,146.200806 -42.248055,146.209137 -42.249168,146.217468 -42.248611,146.222473 -42.245277,146.22525 -42.240555,146.224121 -42.22805,146.224396 -42.221382,146.228302 -42.217216,146.231354 -42.212502,146.231628 -42.205559,146.219421 -42.186943,146.21637 -42.17028,146.216644 -42.16333,146.219696 -42.158607,146.225525 -42.156105,146.232727 -42.157501)))',
-                                      max_error=0.00001) != 0:
+    if (
+        feat.GetField("CONTINENT") != "Australia"
+        or ogrtest.check_feature_geometry(
+            feat,
+            "MULTIPOLYGON (((146.232727 -42.157501,146.238007 -42.16111,146.24411 -42.169724,146.257202 -42.193329,146.272217 -42.209442,146.274689 -42.214165,146.27832 -42.21833,146.282471 -42.228882,146.282745 -42.241943,146.291351 -42.255836,146.290253 -42.261948,146.288025 -42.267502,146.282471 -42.269997,146.274994 -42.271111,146.266663 -42.270279,146.251373 -42.262505,146.246918 -42.258057,146.241333 -42.256111,146.23468 -42.257782,146.221344 -42.269165,146.210785 -42.274445,146.20163 -42.27417,146.196075 -42.271385,146.186646 -42.258057,146.188568 -42.252785,146.193298 -42.249443,146.200806 -42.248055,146.209137 -42.249168,146.217468 -42.248611,146.222473 -42.245277,146.22525 -42.240555,146.224121 -42.22805,146.224396 -42.221382,146.228302 -42.217216,146.231354 -42.212502,146.231628 -42.205559,146.219421 -42.186943,146.21637 -42.17028,146.216644 -42.16333,146.219696 -42.158607,146.225525 -42.156105,146.232727 -42.157501)))",
+            max_error=0.00001,
+        )
+        != 0
+    ):
         feat.DumpReadable()
         webserver.server_stop(process, port)
-        pytest.fail('did not get expected feature')
+        pytest.fail("did not get expected feature")
 
     webserver.server_stop(process, port)
