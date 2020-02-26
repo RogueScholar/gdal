@@ -142,7 +142,7 @@ static void Usage(const char* pszAdditionalMsg, int bShort)
            "   -unbl gfid: unblock feature before the main operation\n"
            "   -unblall: unblock all blocked features before the main operation\n"
            "   gnm_name: the network to work with (path and name)\n"
-           );
+          );
 
     if (pszAdditionalMsg)
         fprintf(stderr, "\nFAILURE: %s\n", pszAdditionalMsg);
@@ -196,14 +196,14 @@ MAIN_START(nArgc, papszArgv)
 
     EarlySetConfigOptions(nArgc, papszArgv);
 
-/* -------------------------------------------------------------------- */
-/*      Register format(s).                                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Register format(s).                                             */
+    /* -------------------------------------------------------------------- */
     GDALAllRegister();
 
-/* -------------------------------------------------------------------- */
-/*      Processing command line arguments.                              */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Processing command line arguments.                              */
+    /* -------------------------------------------------------------------- */
     nArgc = GDALGeneralCmdLineProcessor( nArgc, &papszArgv, GDAL_OF_GNM );
 
     if( nArgc < 1 )
@@ -216,7 +216,7 @@ MAIN_START(nArgc, papszArgv)
         if( EQUAL(papszArgv[1], "--utility_version") )
         {
             printf("%s was compiled against GDAL %s and is running against GDAL %s\n",
-                    papszArgv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
+                   papszArgv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
             CSLDestroy( papszArgv );
             return 0;
         }
@@ -394,8 +394,8 @@ MAIN_START(nArgc, papszArgv)
         // open
 
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(
-            GDALOpenEx( pszDataSource, GDAL_OF_READONLY |
-                                    GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                               GDALOpenEx( pszDataSource, GDAL_OF_READONLY |
+                                                       GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         GDALDriver         *poDriver = nullptr;
         if( poDS != nullptr )
@@ -415,12 +415,12 @@ MAIN_START(nArgc, papszArgv)
         }
 
         printf( "INFO: Open of `%s'\n      using driver `%s' successful.\n",
-                    pszDataSource, poDriver->GetDescription() );
+                pszDataSource, poDriver->GetDescription() );
 
         // Report projection.
         int nMajor = poDS->GetVersion() / 100;
         printf( "Network version: %d.%d.\n", nMajor,
-                                            poDS->GetVersion() - nMajor * 100 );
+                poDS->GetVersion() - nMajor * 100 );
         const char* pszName = poDS->GetName();
         if(nullptr != pszName)
             printf( "Network name: %s.\n", pszName );
@@ -480,7 +480,7 @@ MAIN_START(nArgc, papszArgv)
 
         // report rules
         GNMGenericNetwork* poGenericNetwork =
-                                         dynamic_cast<GNMGenericNetwork*>(poDS);
+            dynamic_cast<GNMGenericNetwork*>(poDS);
 
         if(nullptr != poGenericNetwork)
         {
@@ -542,21 +542,21 @@ MAIN_START(nArgc, papszArgv)
             Usage("not a GNM driver");
 
         poDS = cpl::down_cast<GNMNetwork*>(poDriver->Create( pszPath, 0, 0, 0, GDT_Unknown,
-                                              papszDSCO ));
+                                           papszDSCO ));
 
         if (nullptr == poDS)
         {
             fprintf(stderr, "\nFAILURE: Failed to create network in a new dataset at "
                     "%s and with driver %s\n", CPLFormFilename(pszPath,
-                    pszNetworkName, nullptr) ,pszFormat);
+                            pszNetworkName, nullptr),pszFormat);
             nRet = 1;
         }
         else
         {
             if (bQuiet == FALSE)
                 printf("\nNetwork created successfully in a "
-                   "new dataset at %s\n", CPLFormFilename(pszPath,
-                    pszNetworkName, nullptr));
+                       "new dataset at %s\n", CPLFormFilename(pszPath,
+                               pszNetworkName, nullptr));
         }
     }
     else if(stOper == op_import)
@@ -569,7 +569,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_READONLY | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_READONLY | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         if(nullptr == poDS)
         {
@@ -578,11 +578,11 @@ MAIN_START(nArgc, papszArgv)
         }
 
         GDALDataset *poSrcDS = static_cast<GDALDataset*>(GDALOpenEx(pszInputDataset,
-                          GDAL_OF_VECTOR | GDAL_OF_READONLY, nullptr, nullptr, nullptr ));
+                               GDAL_OF_VECTOR | GDAL_OF_READONLY, nullptr, nullptr, nullptr ));
         if(nullptr == poSrcDS)
         {
             fprintf(stderr, "\nFAILURE: Can not open dataset at %s\n",
-                            pszInputDataset);
+                    pszInputDataset);
 
             nRet = 1;
             goto exit;
@@ -598,10 +598,10 @@ MAIN_START(nArgc, papszArgv)
         {
             if (pszInputLayer != nullptr)
                 fprintf(stderr, "\nFAILURE: Can not open layer %s in %s\n",
-                    pszInputLayer,pszInputDataset);
+                        pszInputLayer,pszInputDataset);
             else
                 fprintf(stderr, "\nFAILURE: Can not open layer in %s\n",
-                pszInputDataset);
+                        pszInputDataset);
 
             GDALClose(poSrcDS);
 
@@ -614,10 +614,10 @@ MAIN_START(nArgc, papszArgv)
         {
             if (pszInputLayer != nullptr)
                 fprintf(stderr, "\nFAILURE: Can not copy layer %s from %s\n",
-                    pszInputLayer,pszInputDataset);
+                        pszInputLayer,pszInputDataset);
             else
                 fprintf(stderr, "\nFAILURE: Can not copy layer from %s\n",
-                pszInputDataset);
+                        pszInputDataset);
             GDALClose(poSrcDS);
 
             nRet = 1;
@@ -628,10 +628,10 @@ MAIN_START(nArgc, papszArgv)
         {
             if (pszInputLayer != nullptr)
                 printf("\nLayer %s successfully copied from %s and added to the network at %s\n",
-                pszInputLayer, pszInputDataset, pszDataSource);
+                       pszInputLayer, pszInputDataset, pszDataSource);
             else
                 printf("\nLayer successfully copied from %s and added to the network at %s\n",
-                pszInputDataset, pszDataSource);
+                       pszInputDataset, pszDataSource);
         }
 
         GDALClose(poSrcDS);
@@ -643,7 +643,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         if(nullptr == poDS)
         {
@@ -653,7 +653,7 @@ MAIN_START(nArgc, papszArgv)
         }
 
         GNMGenericNetwork* poGenericNetwork =
-                                         dynamic_cast<GNMGenericNetwork*>(poDS);
+            dynamic_cast<GNMGenericNetwork*>(poDS);
 
         if(nullptr == poGenericNetwork)
         {
@@ -663,7 +663,7 @@ MAIN_START(nArgc, papszArgv)
         }
 
         if(poGenericNetwork->ConnectFeatures(nSrcFID, nTgtFID, nConFID,
-                            dfDirCost, dfInvCost, eDir) != CE_None )
+                                             dfDirCost, dfInvCost, eDir) != CE_None )
         {
             fprintf( stderr, "Failed to connect features\n" );
             nRet = 1;
@@ -682,7 +682,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         if(nullptr == poDS)
         {
@@ -692,7 +692,7 @@ MAIN_START(nArgc, papszArgv)
         }
 
         GNMGenericNetwork* poGenericNetwork =
-                                         dynamic_cast<GNMGenericNetwork*>(poDS);
+            dynamic_cast<GNMGenericNetwork*>(poDS);
 
         if(nullptr == poGenericNetwork)
         {
@@ -721,7 +721,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         if(nullptr == poDS)
         {
@@ -731,7 +731,7 @@ MAIN_START(nArgc, papszArgv)
         }
 
         GNMGenericNetwork* poGenericNetwork =
-                                         dynamic_cast<GNMGenericNetwork*>(poDS);
+            dynamic_cast<GNMGenericNetwork*>(poDS);
 
         if(nullptr == poGenericNetwork)
         {
@@ -759,7 +759,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         if(nullptr == poDS)
         {
@@ -769,7 +769,7 @@ MAIN_START(nArgc, papszArgv)
         }
 
         GNMGenericNetwork* poGenericNetwork =
-                                         dynamic_cast<GNMGenericNetwork*>(poDS);
+            dynamic_cast<GNMGenericNetwork*>(poDS);
 
         if(nullptr == poGenericNetwork)
         {
@@ -797,7 +797,7 @@ MAIN_START(nArgc, papszArgv)
         }
 
         if(poGenericNetwork->ConnectPointsByLines(papszLayers, dfTolerance,
-                                        dfDirCost, dfInvCost, eDir) != CE_None )
+                dfDirCost, dfInvCost, eDir) != CE_None )
         {
             fprintf( stderr, "Failed to autoconnect features\n" );
             nRet = 1;
@@ -816,7 +816,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         if(nullptr == poDS)
         {
@@ -837,22 +837,22 @@ MAIN_START(nArgc, papszArgv)
             printf("Delete successfully\n");
         }
 
-       /** if hDriver == NULL this code delete everything in folder,
-        *  not only GNM files
+        /** if hDriver == NULL this code delete everything in folder,
+         *  not only GNM files
 
-        GDALDriverH hDriver = NULL;
-        if( pszFormat != NULL )
-        {
-            hDriver = GDALGetDriverByName( pszFormat );
-            if( hDriver == NULL )
-            {
-                fprintf( stderr, "Unable to find driver named '%s'.\n",
-                         pszFormat );
-                exit( 1 );
-            }
-        }
-        GDALDeleteDataset( hDriver, pszDataSource );
-        */
+         GDALDriverH hDriver = NULL;
+         if( pszFormat != NULL )
+         {
+             hDriver = GDALGetDriverByName( pszFormat );
+             if( hDriver == NULL )
+             {
+                 fprintf( stderr, "Unable to find driver named '%s'.\n",
+                          pszFormat );
+                 exit( 1 );
+             }
+         }
+         GDALDeleteDataset( hDriver, pszDataSource );
+         */
     }
     else if(stOper == op_change_st)
     {
@@ -861,7 +861,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
 
         if(nullptr == poDS)
         {
@@ -871,7 +871,7 @@ MAIN_START(nArgc, papszArgv)
         }
 
         GNMGenericNetwork* poGenericNetwork =
-                                         dynamic_cast<GNMGenericNetwork*>(poDS);
+            dynamic_cast<GNMGenericNetwork*>(poDS);
 
         if(nullptr == poGenericNetwork)
         {
@@ -898,7 +898,7 @@ MAIN_START(nArgc, papszArgv)
                         != CE_None)
                 {
                     fprintf( stderr, "\nChange block state of id "
-                                     GNMGFIDFormat " failed\n", anFIDsToBlock[i]);
+                             GNMGFIDFormat " failed\n", anFIDsToBlock[i]);
                     nRet = 1;
                     goto exit;
                 }
@@ -910,7 +910,7 @@ MAIN_START(nArgc, papszArgv)
                         != CE_None)
                 {
                     fprintf( stderr, "\nChange block state of id "
-                                     GNMGFIDFormat " failed\n", anFIDsToBlock[i]);
+                             GNMGFIDFormat " failed\n", anFIDsToBlock[i]);
                     nRet = 1;
                     goto exit;
                 }

@@ -48,8 +48,8 @@ constexpr double TO_RADIANS = 0.017453292519943295769;
 //
 static int TO_ZONE( double x )
 {
-  return
-      static_cast<int>((x + 0.05235987755982989) / 0.1047197551196597 + 0.5);
+    return
+        static_cast<int>((x + 0.05235987755982989) / 0.1047197551196597 + 0.5);
 }
 
 /************************************************************************/
@@ -205,9 +205,9 @@ OGRErr OSRImportFromPanorama( OGRSpatialReferenceH hSRS,
     VALIDATE_POINTER1( hSRS, "OSRImportFromPanorama", OGRERR_FAILURE );
 
     return reinterpret_cast<OGRSpatialReference *>(hSRS)->
-        importFromPanorama( iProjSys,
-                            iDatum, iEllips,
-                            padfPrjParams );
+           importFromPanorama( iProjSys,
+                               iDatum, iEllips,
+                               padfPrjParams );
 }
 
 /************************************************************************/
@@ -290,15 +290,15 @@ OGRErr OSRImportFromPanorama( OGRSpatialReferenceH hSRS,
  */
 
 OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
-                                                long iEllips,
-                                                double *padfPrjParams )
+        long iEllips,
+        double *padfPrjParams )
 
 {
     Clear();
 
-/* -------------------------------------------------------------------- */
-/*      Use safe defaults if projection parameters are not supplied.    */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Use safe defaults if projection parameters are not supplied.    */
+    /* -------------------------------------------------------------------- */
     bool bProjAllocated = false;
 
     if( padfPrjParams == nullptr )
@@ -311,162 +311,162 @@ OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
         bProjAllocated = true;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Operate on the basis of the projection code.                    */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Operate on the basis of the projection code.                    */
+    /* -------------------------------------------------------------------- */
     switch( iProjSys )
     {
-        case PAN_PROJ_NONE:
-            break;
+    case PAN_PROJ_NONE:
+        break;
 
-        case PAN_PROJ_UTM:
-            {
-                const int nZone =
-                    padfPrjParams[7] == 0.0
-                    ? TO_ZONE(padfPrjParams[3])
-                    : static_cast<int>(padfPrjParams[7]);
+    case PAN_PROJ_UTM:
+    {
+        const int nZone =
+            padfPrjParams[7] == 0.0
+            ? TO_ZONE(padfPrjParams[3])
+            : static_cast<int>(padfPrjParams[7]);
 
-                // XXX: no way to determine south hemisphere. Always assume
-                // northern hemisphere.
-                SetUTM( nZone, TRUE );
-            }
-            break;
+        // XXX: no way to determine south hemisphere. Always assume
+        // northern hemisphere.
+        SetUTM( nZone, TRUE );
+    }
+    break;
 
-        case PAN_PROJ_WAG1:
-            SetWagner( 1, 0.0,
-                       padfPrjParams[5], padfPrjParams[6] );
-            break;
-
-        case PAN_PROJ_MERCAT:
-            SetMercator( TO_DEGREES * padfPrjParams[0],
-                         TO_DEGREES * padfPrjParams[3],
-                         padfPrjParams[4],
-                         padfPrjParams[5], padfPrjParams[6] );
-            break;
-
-        case PAN_PROJ_PS:
-            SetPS( TO_DEGREES * padfPrjParams[2],
-                   TO_DEGREES * padfPrjParams[3],
-                   padfPrjParams[4],
+    case PAN_PROJ_WAG1:
+        SetWagner( 1, 0.0,
                    padfPrjParams[5], padfPrjParams[6] );
-            break;
+        break;
 
-        case PAN_PROJ_POLYC:
-            SetPolyconic( TO_DEGREES * padfPrjParams[2],
+    case PAN_PROJ_MERCAT:
+        SetMercator( TO_DEGREES * padfPrjParams[0],
+                     TO_DEGREES * padfPrjParams[3],
+                     padfPrjParams[4],
+                     padfPrjParams[5], padfPrjParams[6] );
+        break;
+
+    case PAN_PROJ_PS:
+        SetPS( TO_DEGREES * padfPrjParams[2],
+               TO_DEGREES * padfPrjParams[3],
+               padfPrjParams[4],
+               padfPrjParams[5], padfPrjParams[6] );
+        break;
+
+    case PAN_PROJ_POLYC:
+        SetPolyconic( TO_DEGREES * padfPrjParams[2],
+                      TO_DEGREES * padfPrjParams[3],
+                      padfPrjParams[5], padfPrjParams[6] );
+        break;
+
+    case PAN_PROJ_EC:
+        SetEC( TO_DEGREES * padfPrjParams[0],
+               TO_DEGREES * padfPrjParams[1],
+               TO_DEGREES * padfPrjParams[2],
+               TO_DEGREES * padfPrjParams[3],
+               padfPrjParams[5], padfPrjParams[6] );
+        break;
+
+    case PAN_PROJ_LCC:
+        SetLCC( TO_DEGREES * padfPrjParams[0],
+                TO_DEGREES * padfPrjParams[1],
+                TO_DEGREES * padfPrjParams[2],
+                TO_DEGREES * padfPrjParams[3],
+                padfPrjParams[5], padfPrjParams[6] );
+        break;
+
+    case PAN_PROJ_TM:
+    {
+        // XXX: we need zone number to compute false easting
+        // parameter, because usually it is not contained in the
+        // "Panorama" projection definition.
+        // FIXME: what to do with negative values?
+        int nZone = 0;
+        double dfCenterLong = 0.0;
+
+        if( padfPrjParams[7] == 0.0 )
+        {
+            nZone = TO_ZONE(padfPrjParams[3]);
+            dfCenterLong = TO_DEGREES * padfPrjParams[3];
+        }
+        else
+        {
+            nZone = static_cast<int>(padfPrjParams[7]);
+            dfCenterLong = 6.0 * nZone - 3.0;
+        }
+
+        padfPrjParams[5] = nZone * 1000000.0 + 500000.0;
+        padfPrjParams[4] = 1.0;
+        SetTM( TO_DEGREES * padfPrjParams[2],
+               dfCenterLong,
+               padfPrjParams[4],
+               padfPrjParams[5], padfPrjParams[6] );
+    }
+    break;
+
+    case PAN_PROJ_STEREO:
+        SetStereographic( TO_DEGREES * padfPrjParams[2],
                           TO_DEGREES * padfPrjParams[3],
+                          padfPrjParams[4],
                           padfPrjParams[5], padfPrjParams[6] );
-            break;
+        break;
 
-        case PAN_PROJ_EC:
-            SetEC( TO_DEGREES * padfPrjParams[0],
-                   TO_DEGREES * padfPrjParams[1],
-                   TO_DEGREES * padfPrjParams[2],
-                   TO_DEGREES * padfPrjParams[3],
-                   padfPrjParams[5], padfPrjParams[6] );
-            break;
+    case PAN_PROJ_AE:
+        SetAE( TO_DEGREES * padfPrjParams[0],
+               TO_DEGREES * padfPrjParams[3],
+               padfPrjParams[5], padfPrjParams[6] );
+        break;
 
-        case PAN_PROJ_LCC:
-            SetLCC( TO_DEGREES * padfPrjParams[0],
-                    TO_DEGREES * padfPrjParams[1],
-                    TO_DEGREES * padfPrjParams[2],
-                    TO_DEGREES * padfPrjParams[3],
-                    padfPrjParams[5], padfPrjParams[6] );
-            break;
-
-        case PAN_PROJ_TM:
-            {
-                // XXX: we need zone number to compute false easting
-                // parameter, because usually it is not contained in the
-                // "Panorama" projection definition.
-                // FIXME: what to do with negative values?
-                int nZone = 0;
-                double dfCenterLong = 0.0;
-
-                if( padfPrjParams[7] == 0.0 )
-                {
-                    nZone = TO_ZONE(padfPrjParams[3]);
-                    dfCenterLong = TO_DEGREES * padfPrjParams[3];
-                }
-                else
-                {
-                    nZone = static_cast<int>(padfPrjParams[7]);
-                    dfCenterLong = 6.0 * nZone - 3.0;
-                }
-
-                padfPrjParams[5] = nZone * 1000000.0 + 500000.0;
-                padfPrjParams[4] = 1.0;
-                SetTM( TO_DEGREES * padfPrjParams[2],
-                       dfCenterLong,
-                       padfPrjParams[4],
-                       padfPrjParams[5], padfPrjParams[6] );
-            }
-            break;
-
-        case PAN_PROJ_STEREO:
-            SetStereographic( TO_DEGREES * padfPrjParams[2],
-                              TO_DEGREES * padfPrjParams[3],
-                              padfPrjParams[4],
-                              padfPrjParams[5], padfPrjParams[6] );
-            break;
-
-        case PAN_PROJ_AE:
-            SetAE( TO_DEGREES * padfPrjParams[0],
-                   TO_DEGREES * padfPrjParams[3],
-                   padfPrjParams[5], padfPrjParams[6] );
-            break;
-
-        case PAN_PROJ_GNOMON:
-            SetGnomonic( TO_DEGREES * padfPrjParams[2],
-                         TO_DEGREES * padfPrjParams[3],
-                         padfPrjParams[5], padfPrjParams[6] );
-            break;
-
-        case PAN_PROJ_MOLL:
-            SetMollweide( TO_DEGREES * padfPrjParams[3],
-                          padfPrjParams[5], padfPrjParams[6] );
-            break;
-
-        case PAN_PROJ_LAEA:
-            SetLAEA( TO_DEGREES * padfPrjParams[0],
+    case PAN_PROJ_GNOMON:
+        SetGnomonic( TO_DEGREES * padfPrjParams[2],
                      TO_DEGREES * padfPrjParams[3],
                      padfPrjParams[5], padfPrjParams[6] );
-            break;
+        break;
 
-        case PAN_PROJ_EQC:
-            SetEquirectangular( TO_DEGREES * padfPrjParams[0],
-                                TO_DEGREES * padfPrjParams[3],
-                                padfPrjParams[5], padfPrjParams[6] );
-            break;
+    case PAN_PROJ_MOLL:
+        SetMollweide( TO_DEGREES * padfPrjParams[3],
+                      padfPrjParams[5], padfPrjParams[6] );
+        break;
 
-        case PAN_PROJ_CEA:
-            SetCEA( TO_DEGREES * padfPrjParams[0],
-                    TO_DEGREES * padfPrjParams[3],
-                    padfPrjParams[5], padfPrjParams[6] );
-            break;
+    case PAN_PROJ_LAEA:
+        SetLAEA( TO_DEGREES * padfPrjParams[0],
+                 TO_DEGREES * padfPrjParams[3],
+                 padfPrjParams[5], padfPrjParams[6] );
+        break;
 
-        case PAN_PROJ_IMWP:
-            SetIWMPolyconic( TO_DEGREES * padfPrjParams[0],
-                             TO_DEGREES * padfPrjParams[1],
-                             TO_DEGREES * padfPrjParams[3],
-                             padfPrjParams[5], padfPrjParams[6] );
-            break;
+    case PAN_PROJ_EQC:
+        SetEquirectangular( TO_DEGREES * padfPrjParams[0],
+                            TO_DEGREES * padfPrjParams[3],
+                            padfPrjParams[5], padfPrjParams[6] );
+        break;
 
-        case PAN_PROJ_MILLER:
-            SetMC(TO_DEGREES * padfPrjParams[5],
-                TO_DEGREES * padfPrjParams[4],
-                padfPrjParams[6], padfPrjParams[7]);
-            break;
+    case PAN_PROJ_CEA:
+        SetCEA( TO_DEGREES * padfPrjParams[0],
+                TO_DEGREES * padfPrjParams[3],
+                padfPrjParams[5], padfPrjParams[6] );
+        break;
 
-        default:
-            CPLDebug( "OSR_Panorama", "Unsupported projection: %ld", iProjSys );
-            SetLocalCS( CPLString().Printf("\"Panorama\" projection number %ld",
-                                   iProjSys) );
-            break;
+    case PAN_PROJ_IMWP:
+        SetIWMPolyconic( TO_DEGREES * padfPrjParams[0],
+                         TO_DEGREES * padfPrjParams[1],
+                         TO_DEGREES * padfPrjParams[3],
+                         padfPrjParams[5], padfPrjParams[6] );
+        break;
+
+    case PAN_PROJ_MILLER:
+        SetMC(TO_DEGREES * padfPrjParams[5],
+              TO_DEGREES * padfPrjParams[4],
+              padfPrjParams[6], padfPrjParams[7]);
+        break;
+
+    default:
+        CPLDebug( "OSR_Panorama", "Unsupported projection: %ld", iProjSys );
+        SetLocalCS( CPLString().Printf("\"Panorama\" projection number %ld",
+                                       iProjSys) );
+        break;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Try to translate the datum/spheroid.                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Try to translate the datum/spheroid.                            */
+    /* -------------------------------------------------------------------- */
 
     if( !IsLocal() )
     {
@@ -501,13 +501,13 @@ OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
                                      &dfInvFlattening ) == OGRERR_NONE )
             {
                 SetGeogCS(
-                   CPLString().Printf(
-                       "Unknown datum based upon the %s ellipsoid",
-                       pszName ),
-                   CPLString().Printf(
-                       "Not specified (based on %s spheroid)", pszName ),
-                   pszName, dfSemiMajor, dfInvFlattening,
-                   nullptr, 0.0, nullptr, 0.0 );
+                    CPLString().Printf(
+                        "Unknown datum based upon the %s ellipsoid",
+                        pszName ),
+                    CPLString().Printf(
+                        "Not specified (based on %s spheroid)", pszName ),
+                    pszName, dfSemiMajor, dfInvFlattening,
+                    nullptr, 0.0, nullptr, 0.0 );
                 SetAuthority( "SPHEROID", "EPSG", aoEllips[iEllips] );
             }
             else
@@ -530,9 +530,9 @@ OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Grid units translation                                          */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Grid units translation                                          */
+    /* -------------------------------------------------------------------- */
     if( IsLocal() || IsProjected() )
         SetLinearUnits( SRS_UL_METER, 1.0 );
 
@@ -563,7 +563,7 @@ OGRErr OGRSpatialReference::importFromPanorama( long iProjSys, long iDatum,
  *  24: NGVD29 height (ftUS) (EPSG:5702)
  *  25: Baltic 1977 height (EPSG:5705)
  *  27: MSL height (EPSG:5714)
- * \endcode   
+ * \endcode
  */
 OGRErr OGRSpatialReference::importVertCSFromPanorama(int iVCS)
 {
@@ -576,7 +576,7 @@ OGRErr OGRSpatialReference::importVertCSFromPanorama(int iVCS)
 
     if(nEPSG == 0 )
     {
-        CPLError(CE_Warning, CPLE_NotSupported, 
+        CPLError(CE_Warning, CPLE_NotSupported,
                  "Vertical coordinate system (Panorama index %d) not supported", iVCS);
         return OGRERR_UNSUPPORTED_SRS;
     }
@@ -586,7 +586,7 @@ OGRErr OGRSpatialReference::importVertCSFromPanorama(int iVCS)
     OGRErr eImportFromEPSGErr = sr.importFromEPSG(nEPSG);
     if(eImportFromEPSGErr != OGRERR_NONE)
     {
-        CPLError(CE_Warning, CPLE_None, 
+        CPLError(CE_Warning, CPLE_None,
                  "Vertical coordinate system (Panorama index %d, EPSG %d) "
                  "import from EPSG error", iVCS, nEPSG);
         return OGRERR_UNSUPPORTED_SRS;
@@ -594,19 +594,19 @@ OGRErr OGRSpatialReference::importVertCSFromPanorama(int iVCS)
 
     if(sr.IsVertical() != 1)
     {
-        CPLError(CE_Warning, CPLE_None, 
+        CPLError(CE_Warning, CPLE_None,
                  "Coordinate system (Panorama index %d, EPSG %d) "
                  "is not Vertical", iVCS, nEPSG);
         return OGRERR_UNSUPPORTED_SRS;
     }
 
-    OGRErr eSetVertCSErr = SetVertCS(sr.GetAttrValue("VERT_CS"), 
+    OGRErr eSetVertCSErr = SetVertCS(sr.GetAttrValue("VERT_CS"),
                                      sr.GetAttrValue("VERT_DATUM"));
     if(eSetVertCSErr != OGRERR_NONE)
     {
-        CPLError(CE_Warning, CPLE_None, 
-                "Vertical coordinate system (Panorama index %d, EPSG %d) "
-                "set error", iVCS, nEPSG);
+        CPLError(CE_Warning, CPLE_None,
+                 "Vertical coordinate system (Panorama index %d, EPSG %d) "
+                 "set error", iVCS, nEPSG);
         return eSetVertCSErr;
     }
     return OGRERR_NONE;
@@ -633,10 +633,10 @@ OGRErr OSRExportToPanorama( OGRSpatialReferenceH hSRS,
     VALIDATE_POINTER1( padfPrjParams, "OSRExportToPanorama", OGRERR_FAILURE );
 
     return reinterpret_cast<OGRSpatialReference *>(hSRS)->
-        exportToPanorama( piProjSys,
-                          piDatum, piEllips,
-                          piZone,
-                          padfPrjParams );
+           exportToPanorama( piProjSys,
+                             piDatum, piEllips,
+                             piZone,
+                             padfPrjParams );
 }
 
 /************************************************************************/
@@ -668,26 +668,26 @@ OGRErr OSRExportToPanorama( OGRSpatialReferenceH hSRS,
  */
 
 OGRErr OGRSpatialReference::exportToPanorama( long *piProjSys, long *piDatum,
-                                              long *piEllips, long *piZone,
-                                              double *padfPrjParams ) const
+        long *piEllips, long *piZone,
+        double *padfPrjParams ) const
 
 {
     CPLAssert( padfPrjParams );
 
     const char *pszProjection = GetAttrValue("PROJECTION");
 
-/* -------------------------------------------------------------------- */
-/*      Fill all projection parameters with zero.                       */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Fill all projection parameters with zero.                       */
+    /* -------------------------------------------------------------------- */
     *piDatum = 0L;
     *piEllips = 0L;
     *piZone = 0L;
     for( int i = 0; i < 7; i++ )
         padfPrjParams[i] = 0.0;
 
-/* ==================================================================== */
-/*      Handle the projection definition.                               */
-/* ==================================================================== */
+    /* ==================================================================== */
+    /*      Handle the projection definition.                               */
+    /* ==================================================================== */
     if( IsLocal() )
     {
         *piProjSys = PAN_PROJ_NONE;
@@ -883,9 +883,9 @@ OGRErr OGRSpatialReference::exportToPanorama( long *piProjSys, long *piDatum,
         *piProjSys = PAN_PROJ_NONE;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Translate the datum.                                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Translate the datum.                                            */
+    /* -------------------------------------------------------------------- */
     const char *pszDatum = GetAttrValue( "DATUM" );
 
     if( pszDatum == nullptr )
@@ -926,8 +926,8 @@ OGRErr OGRSpatialReference::exportToPanorama( long *piProjSys, long *piDatum,
 
                 if( OSRGetEllipsoidInfo( aoEllips[i], nullptr,
                                          &dfSM, &dfIF ) == OGRERR_NONE
-                    && std::abs(dfSemiMajor - dfSM) < 1e-10 * dfSemiMajor
-                    && std::abs(dfInvFlattening - dfIF) < 1e-10 * dfInvFlattening )
+                        && std::abs(dfSemiMajor - dfSM) < 1e-10 * dfSemiMajor
+                        && std::abs(dfInvFlattening - dfIF) < 1e-10 * dfInvFlattening )
                 {
                     *piEllips = i;
                     break;

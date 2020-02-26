@@ -74,7 +74,7 @@ static void Usage(const char* pszAdditionalMsg, int bShort = TRUE)
            "   -lco  NAME=VALUE: Layer creation option (format specific)\n"
            "   -alo  NAME=VALUE: Algorithm option (format specific)\n"
            "   gnm_name: the network to work with (path and name)\n"
-           );
+          );
 
     if (pszAdditionalMsg)
         fprintf(stderr, "\nFAILURE: %s\n", pszAdditionalMsg);
@@ -92,9 +92,9 @@ static void Usage(int bShort = TRUE)
 /************************************************************************/
 
 static OGRLayer* GetLayerAndOverwriteIfNecessary(GDALDataset *poDstDS,
-                                                 const char* pszNewLayerName,
-                                                 int bOverwrite,
-                                                 int* pbErrorOccurred)
+        const char* pszNewLayerName,
+        int bOverwrite,
+        int* pbErrorOccurred)
 {
     if( pbErrorOccurred )
         *pbErrorOccurred = FALSE;
@@ -124,11 +124,11 @@ static OGRLayer* GetLayerAndOverwriteIfNecessary(GDALDataset *poDstDS,
             poDstLayer = nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      If the user requested overwrite, and we have the layer in       */
-/*      question we need to delete it now so it will get recreated      */
-/*      (overwritten).                                                  */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      If the user requested overwrite, and we have the layer in       */
+    /*      question we need to delete it now so it will get recreated      */
+    /*      (overwritten).                                                  */
+    /* -------------------------------------------------------------------- */
     if( poDstLayer != nullptr && bOverwrite )
     {
         if( poDstDS->DeleteLayer( iLayer ) != OGRERR_NONE )
@@ -148,12 +148,12 @@ static OGRLayer* GetLayerAndOverwriteIfNecessary(GDALDataset *poDstDS,
 /*                     CreateAndFillOutputDataset                       */
 /************************************************************************/
 static OGRErr CreateAndFillOutputDataset(OGRLayer* poSrcLayer,
-                                         const char* pszDestDataSource,
-                                         const char* pszFormat,
-                                         const char* pszLayer,
-                                         char** papszDSCO,
-                                         char** papszLCO,
-                                         int bQuiet)
+        const char* pszDestDataSource,
+        const char* pszFormat,
+        const char* pszLayer,
+        char** papszDSCO,
+        char** papszLCO,
+        int bQuiet)
 {
     GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
     if( poDriver == nullptr )
@@ -163,20 +163,20 @@ static OGRErr CreateAndFillOutputDataset(OGRLayer* poSrcLayer,
     }
 
     if( !CPLTestBool(
-            CSLFetchNameValueDef(poDriver->GetMetadata(), GDAL_DCAP_CREATE,
-                                 "FALSE") ) )
+                CSLFetchNameValueDef(poDriver->GetMetadata(), GDAL_DCAP_CREATE,
+                                     "FALSE") ) )
     {
         fprintf( stderr,  "%s driver does not support data source creation.\n",
-                pszFormat );
+                 pszFormat );
         return OGRERR_FAILURE;
     }
 
     GDALDataset* poODS = poDriver->Create( pszDestDataSource, 0, 0, 0,
-                                         GDT_Unknown, papszDSCO );
+                                           GDT_Unknown, papszDSCO );
     if( poODS == nullptr )
     {
         fprintf( stderr,  "%s driver failed to create %s\n",
-                pszFormat, pszDestDataSource );
+                 pszFormat, pszDestDataSource );
         return OGRERR_FAILURE;
     }
 
@@ -203,7 +203,7 @@ static OGRErr CreateAndFillOutputDataset(OGRLayer* poSrcLayer,
     if (bQuiet == FALSE)
     {
         printf("\nPath successfully copied and added to the network at %s\n",
-            pszDestDataSource);
+               pszDestDataSource);
     }
 
     GDALClose(poODS);
@@ -220,9 +220,9 @@ static void ReportOnLayer( OGRLayer * poLayer, int bVerbose )
 {
     OGRFeatureDefn      *poDefn = poLayer->GetLayerDefn();
 
-/* -------------------------------------------------------------------- */
-/*      Report various overall information.                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Report various overall information.                             */
+    /* -------------------------------------------------------------------- */
     printf( "\n" );
 
     printf( "Layer name: %s\n", poLayer->GetName() );
@@ -233,12 +233,12 @@ static void ReportOnLayer( OGRLayer * poLayer, int bVerbose )
             poLayer->GetLayerDefn()->GetGeomFieldCount();
         if( nGeomFieldCount > 1 )
         {
-            for(int iGeom = 0;iGeom < nGeomFieldCount; iGeom ++ )
+            for(int iGeom = 0; iGeom < nGeomFieldCount; iGeom ++ )
             {
                 OGRGeomFieldDefn* poGFldDefn =
                     poLayer->GetLayerDefn()->GetGeomFieldDefn(iGeom);
                 printf( "Geometry (%s): %s\n", poGFldDefn->GetNameRef(),
-                    OGRGeometryTypeToName( poGFldDefn->GetType() ) );
+                        OGRGeometryTypeToName( poGFldDefn->GetType() ) );
             }
         }
         else
@@ -252,29 +252,29 @@ static void ReportOnLayer( OGRLayer * poLayer, int bVerbose )
         OGREnvelope oExt;
         if( nGeomFieldCount > 1 )
         {
-            for(int iGeom = 0;iGeom < nGeomFieldCount; iGeom ++ )
+            for(int iGeom = 0; iGeom < nGeomFieldCount; iGeom ++ )
             {
                 if (poLayer->GetExtent(iGeom, &oExt, TRUE) == OGRERR_NONE)
                 {
                     OGRGeomFieldDefn* poGFldDefn =
                         poLayer->GetLayerDefn()->GetGeomFieldDefn(iGeom);
                     CPLprintf("Extent (%s): (%f, %f) - (%f, %f)\n",
-                           poGFldDefn->GetNameRef(),
-                           oExt.MinX, oExt.MinY, oExt.MaxX, oExt.MaxY);
+                              poGFldDefn->GetNameRef(),
+                              oExt.MinX, oExt.MinY, oExt.MaxX, oExt.MaxY);
                 }
             }
         }
         else if ( poLayer->GetExtent(&oExt, TRUE) == OGRERR_NONE)
         {
             CPLprintf("Extent: (%f, %f) - (%f, %f)\n",
-                   oExt.MinX, oExt.MinY, oExt.MaxX, oExt.MaxY);
+                      oExt.MinX, oExt.MinY, oExt.MaxX, oExt.MaxY);
         }
 
         char    *pszWKT;
 
         if( nGeomFieldCount > 1 )
         {
-            for(int iGeom = 0;iGeom < nGeomFieldCount; iGeom ++ )
+            for(int iGeom = 0; iGeom < nGeomFieldCount; iGeom ++ )
             {
                 OGRGeomFieldDefn* poGFldDefn =
                     poLayer->GetLayerDefn()->GetGeomFieldDefn(iGeom);
@@ -308,12 +308,12 @@ static void ReportOnLayer( OGRLayer * poLayer, int bVerbose )
             printf( "FID Column = %s\n",
                     poLayer->GetFIDColumn() );
 
-        for(int iGeom = 0;iGeom < nGeomFieldCount; iGeom ++ )
+        for(int iGeom = 0; iGeom < nGeomFieldCount; iGeom ++ )
         {
             OGRGeomFieldDefn* poGFldDefn =
                 poLayer->GetLayerDefn()->GetGeomFieldDefn(iGeom);
             if( nGeomFieldCount == 1 &&
-                EQUAL(poGFldDefn->GetNameRef(), "")  && poGFldDefn->IsNullable() )
+                    EQUAL(poGFldDefn->GetNameRef(), "")  && poGFldDefn->IsNullable() )
                 break;
             printf( "Geometry Column ");
             if( nGeomFieldCount > 1 )
@@ -327,10 +327,10 @@ static void ReportOnLayer( OGRLayer * poLayer, int bVerbose )
         {
             OGRFieldDefn    *poField = poDefn->GetFieldDefn( iAttr );
             const char* pszType = (poField->GetSubType() != OFSTNone) ?
-                CPLSPrintf("%s(%s)",
-                           poField->GetFieldTypeName( poField->GetType() ),
-                           poField->GetFieldSubTypeName(poField->GetSubType())) :
-                poField->GetFieldTypeName( poField->GetType() );
+                                  CPLSPrintf("%s(%s)",
+                                             poField->GetFieldTypeName( poField->GetType() ),
+                                             poField->GetFieldSubTypeName(poField->GetSubType())) :
+                                  poField->GetFieldTypeName( poField->GetType() );
             printf( "%s: %s (%d.%d)",
                     poField->GetNameRef(),
                     pszType,
@@ -344,9 +344,9 @@ static void ReportOnLayer( OGRLayer * poLayer, int bVerbose )
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Read, and dump features.                                        */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Read, and dump features.                                        */
+    /* -------------------------------------------------------------------- */
     OGRFeature  *poFeature = nullptr;
     while( (poFeature = poLayer->GetNextFeature()) != nullptr )
     {
@@ -392,14 +392,14 @@ MAIN_START(nArgc, papszArgv)
 
     EarlySetConfigOptions(nArgc, papszArgv);
 
-/* -------------------------------------------------------------------- */
-/*      Register format(s).                                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Register format(s).                                             */
+    /* -------------------------------------------------------------------- */
     GDALAllRegister();
 
-/* -------------------------------------------------------------------- */
-/*      Processing command line arguments.                              */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Processing command line arguments.                              */
+    /* -------------------------------------------------------------------- */
     nArgc = GDALGeneralCmdLineProcessor( nArgc, &papszArgv, GDAL_OF_GNM );
 
     if( nArgc < 1 )
@@ -412,7 +412,7 @@ MAIN_START(nArgc, papszArgv)
         if( EQUAL(papszArgv[1], "--utility_version") )
         {
             printf("%s was compiled against GDAL %s and is running against GDAL %s\n",
-                    papszArgv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
+                   papszArgv[0], GDAL_RELEASE_NAME, GDALVersionInfo("RELEASE_NAME"));
             CSLDestroy( papszArgv );
             return 0;
         }
@@ -507,7 +507,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
         if(nullptr == poDS)
         {
             fprintf( stderr, "\nFailed to open network at %s\n", pszDataSource);
@@ -542,7 +542,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
         if(nullptr == poDS)
         {
             fprintf( stderr, "\nFailed to open network at %s\n", pszDataSource);
@@ -582,7 +582,7 @@ MAIN_START(nArgc, papszArgv)
 
         // open
         poDS = cpl::down_cast<GNMNetwork*>(static_cast<GDALDataset*>(GDALOpenEx( pszDataSource,
-                             GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
+                                           GDAL_OF_UPDATE | GDAL_OF_GNM, nullptr, nullptr, nullptr )));
         if(nullptr == poDS)
         {
             fprintf( stderr, "\nFailed to open network at %s\n", pszDataSource);
@@ -614,7 +614,7 @@ MAIN_START(nArgc, papszArgv)
         Usage();
     }
 
- exit:
+exit:
     CSLDestroy(papszDSCO);
     CSLDestroy(papszLCO);
     CSLDestroy(papszALO);

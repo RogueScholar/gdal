@@ -100,7 +100,7 @@ OGRFlatGeobufLayer::OGRFlatGeobufLayer(
             CPLString osCode;
             osCode.Printf("%s:%d", org->c_str(), code);
             if( m_poSRS->SetFromUserInput(osCode.c_str()) != OGRERR_NONE &&
-                wkt != nullptr )
+                    wkt != nullptr )
             {
                 m_poSRS->importFromWkt(wkt->c_str());
             }
@@ -175,14 +175,22 @@ OGRwkbGeometryType OGRFlatGeobufLayer::getOGRwkbGeometryType()
 ColumnType OGRFlatGeobufLayer::toColumnType(OGRFieldType type, OGRFieldSubType /* subType */)
 {
     switch (type) {
-        case OGRFieldType::OFTInteger: return ColumnType::Int;
-        case OGRFieldType::OFTInteger64: return ColumnType::Long;
-        case OGRFieldType::OFTReal: return ColumnType::Double;
-        case OGRFieldType::OFTString: return ColumnType::String;
-        case OGRFieldType::OFTDate: return ColumnType::DateTime;
-        case OGRFieldType::OFTTime: return ColumnType::DateTime;
-        case OGRFieldType::OFTDateTime: return ColumnType::DateTime;
-        default: CPLError(CE_Failure, CPLE_AppDefined, "toColumnType: Unknown OGRFieldType %d", type);
+    case OGRFieldType::OFTInteger:
+        return ColumnType::Int;
+    case OGRFieldType::OFTInteger64:
+        return ColumnType::Long;
+    case OGRFieldType::OFTReal:
+        return ColumnType::Double;
+    case OGRFieldType::OFTString:
+        return ColumnType::String;
+    case OGRFieldType::OFTDate:
+        return ColumnType::DateTime;
+    case OGRFieldType::OFTTime:
+        return ColumnType::DateTime;
+    case OGRFieldType::OFTDateTime:
+        return ColumnType::DateTime;
+    default:
+        CPLError(CE_Failure, CPLE_AppDefined, "toColumnType: Unknown OGRFieldType %d", type);
     }
     return ColumnType::String;
 }
@@ -190,12 +198,18 @@ ColumnType OGRFlatGeobufLayer::toColumnType(OGRFieldType type, OGRFieldSubType /
 OGRFieldType OGRFlatGeobufLayer::toOGRFieldType(ColumnType type)
 {
     switch (type) {
-        case ColumnType::Int: return OGRFieldType::OFTInteger;
-        case ColumnType::Long: return OGRFieldType::OFTInteger64;
-        case ColumnType::Double: return OGRFieldType::OFTReal;
-        case ColumnType::String: return OGRFieldType::OFTString;
-        case ColumnType::DateTime: return OGRFieldType::OFTDateTime;
-        default: CPLError(CE_Failure, CPLE_AppDefined, "toOGRFieldType: Unknown ColumnType %d", (int) type);
+    case ColumnType::Int:
+        return OGRFieldType::OFTInteger;
+    case ColumnType::Long:
+        return OGRFieldType::OFTInteger64;
+    case ColumnType::Double:
+        return OGRFieldType::OFTReal;
+    case ColumnType::String:
+        return OGRFieldType::OFTString;
+    case ColumnType::DateTime:
+        return OGRFieldType::OFTDateTime;
+    default:
+        CPLError(CE_Failure, CPLE_AppDefined, "toOGRFieldType: Unknown ColumnType %d", (int) type);
     }
     return OGRFieldType::OFTString;
 }
@@ -285,7 +299,7 @@ void OGRFlatGeobufLayer::writeHeader(VSILFILE *poFp, uint64_t featuresCount, std
     }
 
     const auto header = CreateHeaderDirect(
-        fbb, m_osLayerName.c_str(), extentVector, m_geometryType, m_hasZ, m_hasM, m_hasT, m_hasTM, &columns, featuresCount, m_indexNodeSize, crs);
+                            fbb, m_osLayerName.c_str(), extentVector, m_geometryType, m_hasZ, m_hasM, m_hasT, m_hasTM, &columns, featuresCount, m_indexNodeSize, crs);
     fbb.FinishSizePrefixed(header);
     c = VSIFWriteL(fbb.GetBufferPointer(), 1, fbb.GetSize(), poFp);
     CPLDebug("FlatGeobuf", "Wrote header (%lu bytes)", static_cast<long unsigned int>(c));
@@ -300,8 +314,8 @@ void OGRFlatGeobufLayer::Create() {
     m_poFp = VSIFOpenL(m_osFilename.c_str(), "wb");
     if (m_poFp == nullptr) {
         CPLError(CE_Failure, CPLE_OpenFailed,
-                    "Failed to create %s:\n%s",
-                    m_osFilename.c_str(), VSIStrerror(errno));
+                 "Failed to create %s:\n%s",
+                 m_osFilename.c_str(), VSIStrerror(errno));
         return;
     }
 
@@ -343,7 +357,9 @@ void OGRFlatGeobufLayer::Create() {
     try {
         PackedRTree tree(m_featureItems, extent);
         CPLDebug("FlatGeobuf", "PackedRTree extent %f, %f, %f, %f", extentVector[0], extentVector[1], extentVector[2], extentVector[3]);
-        tree.streamWrite([this, &c] (uint8_t *data, size_t size) { c += VSIFWriteL(data, 1, size, m_poFp); });
+        tree.streamWrite([this, &c] (uint8_t *data, size_t size) {
+            c += VSIFWriteL(data, 1, size, m_poFp);
+        });
     } catch (const std::exception& e) {
         CPLError(CE_Failure, CPLE_AppDefined, "Create: %s", e.what());
         return;
@@ -414,9 +430,9 @@ OGRErr OGRFlatGeobufLayer::readFeatureOffset(uint64_t index, uint64_t &featureOf
         return CPLErrorIO("seeking feature offset");
     if (VSIFReadL(&featureOffset, sizeof(uint64_t), 1, m_poFp) != 1)
         return CPLErrorIO("reading feature offset");
-    #if !CPL_IS_LSB
-        CPL_LSBPTR64(&featureOffset);
-    #endif
+#if !CPL_IS_LSB
+    CPL_LSBPTR64(&featureOffset);
+#endif
     return OGRERR_NONE;
 }
 
@@ -536,7 +552,7 @@ OGRFeature *OGRFlatGeobufLayer::GetNextFeature()
         m_featuresPos++;
 
         if ((m_poFilterGeom == nullptr || m_ignoreSpatialFilter || FilterGeometry(poFeature->GetGeometryRef())) &&
-            (m_poAttrQuery == nullptr || m_ignoreAttributeFilter || m_poAttrQuery->Evaluate(poFeature.get())))
+                (m_poAttrQuery == nullptr || m_ignoreAttributeFilter || m_poAttrQuery->Evaluate(poFeature.get())))
             return poFeature.release();
     }
 }
@@ -677,81 +693,81 @@ OGRErr OGRFlatGeobufLayer::parseFeature(OGRFeature *poFeature) {
             }
 
             switch (type) {
-                case ColumnType::Int:
-                    if (offset + sizeof(int32_t) > size)
-                        return CPLErrorInvalidSize("int32 value");
-                    if (!isIgnored)
-                    {
-                        memcpy(&ogrField->Integer, data + offset, sizeof(int32_t));
-                        CPL_LSBPTR32(&ogrField->Integer);
-                    }
-                    offset += sizeof(int32_t);
-                    break;
-                case ColumnType::Long:
-                    if (offset + sizeof(int64_t) > size)
-                        return CPLErrorInvalidSize("int64 value");
-                    if (!isIgnored)
-                    {
-                        memcpy(&ogrField->Integer64, data + offset, sizeof(int64_t));
-                        CPL_LSBPTR64(&ogrField->Integer64);
-                    }
-                    offset += sizeof(int64_t);
-                    break;
-                case ColumnType::Double:
-                    if (offset + sizeof(double) > size)
-                        return CPLErrorInvalidSize("double value");
-                    if (!isIgnored)
-                    {
-                        memcpy(&ogrField->Real, data + offset, sizeof(double));
-                        CPL_LSBPTR64(&ogrField->Real);
-                    }
-                    offset += sizeof(double);
-                    break;
-                case ColumnType::DateTime: {
-                    if (offset + sizeof(uint32_t) > size)
-                        return CPLErrorInvalidSize("datetime length ");
-                    uint32_t len;
-                    memcpy(&len, data + offset, sizeof(int32_t));
-                    CPL_LSBPTR32(&len);
-                    offset += sizeof(uint32_t);
-                    if (len > size - offset || len > 32)
-                        return CPLErrorInvalidSize("datetime value");
-                    if (!isIgnored)
-                    {
-                        char str[32+1];
-                        memcpy(str, data + offset, len);
-                        str[len] = '\0';
-                        if( !OGRParseDate(str, ogrField, 0) )
-                        {
-                            OGR_RawField_SetUnset(ogrField);
-                        }
-                    }
-                    offset += len;
-                    break;
+            case ColumnType::Int:
+                if (offset + sizeof(int32_t) > size)
+                    return CPLErrorInvalidSize("int32 value");
+                if (!isIgnored)
+                {
+                    memcpy(&ogrField->Integer, data + offset, sizeof(int32_t));
+                    CPL_LSBPTR32(&ogrField->Integer);
                 }
-                case ColumnType::String: {
-                    if (offset + sizeof(uint32_t) > size)
-                        return CPLErrorInvalidSize("string length");
-                    uint32_t len;
-                    memcpy(&len, data + offset, sizeof(int32_t));
-                    CPL_LSBPTR32(&len);
-                    offset += sizeof(uint32_t);
-                    if (len > size - offset)
-                        return CPLErrorInvalidSize("string value");
-                    if (!isIgnored )
-                    {
-                        char *str = static_cast<char*>(VSI_MALLOC_VERBOSE(len + 1));
-                        if (str == nullptr)
-                            return CPLErrorMemoryAllocation("string value");
-                        memcpy(str, data + offset, len);
-                        str[len] = '\0';
-                        ogrField->String = str;
-                    }
-                    offset += len;
-                    break;
+                offset += sizeof(int32_t);
+                break;
+            case ColumnType::Long:
+                if (offset + sizeof(int64_t) > size)
+                    return CPLErrorInvalidSize("int64 value");
+                if (!isIgnored)
+                {
+                    memcpy(&ogrField->Integer64, data + offset, sizeof(int64_t));
+                    CPL_LSBPTR64(&ogrField->Integer64);
                 }
-                default:
-                    CPLError(CE_Failure, CPLE_AppDefined, "GetNextFeature: Unknown column->type: %d", (int) type);
+                offset += sizeof(int64_t);
+                break;
+            case ColumnType::Double:
+                if (offset + sizeof(double) > size)
+                    return CPLErrorInvalidSize("double value");
+                if (!isIgnored)
+                {
+                    memcpy(&ogrField->Real, data + offset, sizeof(double));
+                    CPL_LSBPTR64(&ogrField->Real);
+                }
+                offset += sizeof(double);
+                break;
+            case ColumnType::DateTime: {
+                if (offset + sizeof(uint32_t) > size)
+                    return CPLErrorInvalidSize("datetime length ");
+                uint32_t len;
+                memcpy(&len, data + offset, sizeof(int32_t));
+                CPL_LSBPTR32(&len);
+                offset += sizeof(uint32_t);
+                if (len > size - offset || len > 32)
+                    return CPLErrorInvalidSize("datetime value");
+                if (!isIgnored)
+                {
+                    char str[32+1];
+                    memcpy(str, data + offset, len);
+                    str[len] = '\0';
+                    if( !OGRParseDate(str, ogrField, 0) )
+                    {
+                        OGR_RawField_SetUnset(ogrField);
+                    }
+                }
+                offset += len;
+                break;
+            }
+            case ColumnType::String: {
+                if (offset + sizeof(uint32_t) > size)
+                    return CPLErrorInvalidSize("string length");
+                uint32_t len;
+                memcpy(&len, data + offset, sizeof(int32_t));
+                CPL_LSBPTR32(&len);
+                offset += sizeof(uint32_t);
+                if (len > size - offset)
+                    return CPLErrorInvalidSize("string value");
+                if (!isIgnored )
+                {
+                    char *str = static_cast<char*>(VSI_MALLOC_VERBOSE(len + 1));
+                    if (str == nullptr)
+                        return CPLErrorMemoryAllocation("string value");
+                    memcpy(str, data + offset, len);
+                    str[len] = '\0';
+                    ogrField->String = str;
+                }
+                offset += len;
+                break;
+            }
+            default:
+                CPLError(CE_Failure, CPLE_AppDefined, "GetNextFeature: Unknown column->type: %d", (int) type);
             }
         }
     }
@@ -808,51 +824,51 @@ OGRErr OGRFlatGeobufLayer::ICreateFeature(OGRFeature *poNewFeature)
         const auto fieldType = fieldDef->GetType();
         const auto field = poNewFeature->GetRawFieldRef(i);
         switch (fieldType) {
-            case OGRFieldType::OFTInteger: {
-                int nVal = field->Integer;
-                CPL_LSBPTR32(&nVal);
-                std::copy(reinterpret_cast<const uint8_t *>(&nVal), reinterpret_cast<const uint8_t *>(&nVal + 1), std::back_inserter(properties));
-                break;
-            }
-            case OGRFieldType::OFTInteger64: {
-                GIntBig nVal = field->Integer64;
-                CPL_LSBPTR64(&nVal);
-                std::copy(reinterpret_cast<const uint8_t *>(&nVal), reinterpret_cast<const uint8_t *>(&nVal + 1), std::back_inserter(properties));
-                break;
-            }
-            case OGRFieldType::OFTReal: {
-                double dfVal = field->Real;
-                CPL_LSBPTR64(&dfVal);
-                std::copy(reinterpret_cast<const uint8_t *>(&dfVal), reinterpret_cast<const uint8_t *>(&dfVal + 1), std::back_inserter(properties));
-                break;
-            }
-            case OGRFieldType::OFTDate:
-            case OGRFieldType::OFTTime:
-            case OGRFieldType::OFTDateTime: {
-                char *str = OGRGetXMLDateTime(field);
-                size_t len = strlen(str);
-                uint32_t l_le = static_cast<uint32_t>(len);
-                CPL_LSBPTR32(&l_le);
-                std::copy(reinterpret_cast<const uint8_t *>(&l_le), reinterpret_cast<const uint8_t *>(&l_le + 1), std::back_inserter(properties));
-                std::copy(str, str + len, std::back_inserter(properties));
-                CPLFree(str);
-                break;
-            }
-            case OGRFieldType::OFTString: {
-                size_t len = strlen(field->String);
-                if (len >= feature_max_buffer_size) {
-                    CPLError(CE_Failure, CPLE_AppDefined, "ICreateFeature: String too long");
-                    return OGRERR_FAILURE;
-                }
-                uint32_t l_le = static_cast<uint32_t>(len);
-                CPL_LSBPTR32(&l_le);
-                std::copy(reinterpret_cast<const uint8_t *>(&l_le), reinterpret_cast<const uint8_t *>(&l_le + 1), std::back_inserter(properties));
-                std::copy(field->String, field->String + len, std::back_inserter(properties));
-                break;
-            }
-            default:
-                CPLError(CE_Failure, CPLE_AppDefined, "ICreateFeature: Missing implementation for OGRFieldType %d", fieldType);
+        case OGRFieldType::OFTInteger: {
+            int nVal = field->Integer;
+            CPL_LSBPTR32(&nVal);
+            std::copy(reinterpret_cast<const uint8_t *>(&nVal), reinterpret_cast<const uint8_t *>(&nVal + 1), std::back_inserter(properties));
+            break;
+        }
+        case OGRFieldType::OFTInteger64: {
+            GIntBig nVal = field->Integer64;
+            CPL_LSBPTR64(&nVal);
+            std::copy(reinterpret_cast<const uint8_t *>(&nVal), reinterpret_cast<const uint8_t *>(&nVal + 1), std::back_inserter(properties));
+            break;
+        }
+        case OGRFieldType::OFTReal: {
+            double dfVal = field->Real;
+            CPL_LSBPTR64(&dfVal);
+            std::copy(reinterpret_cast<const uint8_t *>(&dfVal), reinterpret_cast<const uint8_t *>(&dfVal + 1), std::back_inserter(properties));
+            break;
+        }
+        case OGRFieldType::OFTDate:
+        case OGRFieldType::OFTTime:
+        case OGRFieldType::OFTDateTime: {
+            char *str = OGRGetXMLDateTime(field);
+            size_t len = strlen(str);
+            uint32_t l_le = static_cast<uint32_t>(len);
+            CPL_LSBPTR32(&l_le);
+            std::copy(reinterpret_cast<const uint8_t *>(&l_le), reinterpret_cast<const uint8_t *>(&l_le + 1), std::back_inserter(properties));
+            std::copy(str, str + len, std::back_inserter(properties));
+            CPLFree(str);
+            break;
+        }
+        case OGRFieldType::OFTString: {
+            size_t len = strlen(field->String);
+            if (len >= feature_max_buffer_size) {
+                CPLError(CE_Failure, CPLE_AppDefined, "ICreateFeature: String too long");
                 return OGRERR_FAILURE;
+            }
+            uint32_t l_le = static_cast<uint32_t>(len);
+            CPL_LSBPTR32(&l_le);
+            std::copy(reinterpret_cast<const uint8_t *>(&l_le), reinterpret_cast<const uint8_t *>(&l_le + 1), std::back_inserter(properties));
+            std::copy(field->String, field->String + len, std::back_inserter(properties));
+            break;
+        }
+        default:
+            CPLError(CE_Failure, CPLE_AppDefined, "ICreateFeature: Missing implementation for OGRFieldType %d", fieldType);
+            return OGRERR_FAILURE;
         }
     }
 

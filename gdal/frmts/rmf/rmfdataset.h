@@ -67,7 +67,7 @@ typedef struct
 {
 #define RMF_SIGNATURE_SIZE 4
     char        bySignature[RMF_SIGNATURE_SIZE];// "RSW" for raster
-                                                // map or "MTW" for DEM
+    // map or "MTW" for DEM
     GUInt32     iVersion;
     GUInt32     nSize;                          // File size in bytes
     GUInt32     nOvrOffset;                     // Offset to overview
@@ -220,7 +220,7 @@ private:
 
     CPLErr          WriteHeader();
     static size_t   LZWDecompress( const GByte*, GUInt32, GByte*, GUInt32, GUInt32, GUInt32 );
-    static size_t   LZWCompress(const GByte*, GUInt32, GByte*, GUInt32, GUInt32, GUInt32 , const RMFDataset*);
+    static size_t   LZWCompress(const GByte*, GUInt32, GByte*, GUInt32, GUInt32, GUInt32, const RMFDataset*);
 #ifdef HAVE_LIBJPEG
     static size_t   JPEGDecompress( const GByte*, GUInt32, GByte*, GUInt32, GUInt32, GUInt32 );
     static size_t   JPEGCompress( const GByte*, GUInt32, GByte*, GUInt32, GUInt32, GUInt32, const RMFDataset* );
@@ -258,7 +258,7 @@ private:
                  small returns 0 too).
     */
     size_t          (*Compress)(const GByte* pabyIn, GUInt32 nSizeIn,
-                                GByte* pabyOut, GUInt32 nSizeOut ,
+                                GByte* pabyOut, GUInt32 nSizeOut,
                                 GUInt32 nTileSx, GUInt32 nTileSy,
                                 const RMFDataset* poDS);
 
@@ -266,9 +266,9 @@ private:
     vsi_l_offset                nHeaderOffset;
     RMFDataset*                 poParentDS;
 
-  public:
-                RMFDataset();
-        virtual ~RMFDataset();
+public:
+    RMFDataset();
+    virtual ~RMFDataset();
 
     static int          Identify( GDALOpenInfo * poOpenInfo );
     static GDALDataset  *Open( GDALOpenInfo * );
@@ -333,7 +333,7 @@ class RMFRasterBand final: public GDALRasterBand
 {
     friend class RMFDataset;
 
-  private:
+private:
 
     GUInt32     nBytesPerPixel;
     GUInt32     nBlockSize;
@@ -342,10 +342,10 @@ class RMFRasterBand final: public GDALRasterBand
     GUInt32     nLastTileHeight;
     GUInt32     nDataSize;
 
-  public:
+public:
 
-                RMFRasterBand( RMFDataset *, int, GDALDataType );
-        virtual ~RMFRasterBand();
+    RMFRasterBand( RMFDataset *, int, GDALDataType );
+    virtual ~RMFRasterBand();
 
     virtual CPLErr          IReadBlock( int, int, void * ) override;
     virtual CPLErr          IWriteBlock( int, int, void * ) override;

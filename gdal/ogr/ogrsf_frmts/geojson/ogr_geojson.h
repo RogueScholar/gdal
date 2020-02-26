@@ -43,8 +43,8 @@
 class OGRGeoJSONDataSource;
 
 GDALDataset* OGRGeoJSONDriverOpenInternal( GDALOpenInfo* poOpenInfo,
-                                           GeoJSONSourceType nSrcType,
-                                           const char* pszJSonFlavor );
+        GeoJSONSourceType nSrcType,
+        const char* pszJSonFlavor );
 void OGRGeoJSONDriverStoreContent( const char* pszSource, char* pszText );
 char* OGRGeoJSONDriverStealStoredContent( const char* pszSource );
 
@@ -58,7 +58,7 @@ class OGRGeoJSONLayer final: public OGRMemLayer
 {
     friend class OGRGeoJSONDataSource;
 
-  public:
+public:
     static const char* const DefaultName;
     static const OGRwkbGeometryType DefaultGeometryType;
 
@@ -101,11 +101,17 @@ class OGRGeoJSONLayer final: public OGRMemLayer
     void SetFIDColumn( const char* pszFIDColumn );
     void AddFeature( OGRFeature* poFeature );
     void DetectGeometryType();
-    void IncFeatureCount() { nTotalFeatureCount_++; }
-    void UnsetReader() { poReader_ = nullptr; }
-    void InvalidateFeatureCount() { nTotalFeatureCount_ = -1; }
+    void IncFeatureCount() {
+        nTotalFeatureCount_++;
+    }
+    void UnsetReader() {
+        poReader_ = nullptr;
+    }
+    void InvalidateFeatureCount() {
+        nTotalFeatureCount_ = -1;
+    }
 
-  private:
+private:
     OGRGeoJSONDataSource* poDS_;
     OGRGeoJSONReader* poReader_;
     bool bHasAppendedFeatures_;
@@ -126,7 +132,7 @@ class OGRGeoJSONLayer final: public OGRMemLayer
 
 class OGRGeoJSONWriteLayer final: public OGRLayer
 {
-  public:
+public:
     OGRGeoJSONWriteLayer( const char* pszName,
                           OGRwkbGeometryType eGType,
                           char** papszOptions,
@@ -138,19 +144,27 @@ class OGRGeoJSONWriteLayer final: public OGRLayer
     //
     // OGRLayer Interface
     //
-    OGRFeatureDefn* GetLayerDefn() override { return poFeatureDefn_; }
-    OGRSpatialReference* GetSpatialRef() override { return nullptr; }
+    OGRFeatureDefn* GetLayerDefn() override {
+        return poFeatureDefn_;
+    }
+    OGRSpatialReference* GetSpatialRef() override {
+        return nullptr;
+    }
 
     void ResetReading() override { }
-    OGRFeature* GetNextFeature() override { return nullptr; }
+    OGRFeature* GetNextFeature() override {
+        return nullptr;
+    }
     OGRErr ICreateFeature( OGRFeature* poFeature ) override;
     OGRErr CreateField( OGRFieldDefn* poField, int bApproxOK ) override;
     int TestCapability( const char* pszCap ) override;
     OGRErr GetExtent(OGREnvelope *psExtent, int bForce) override;
     OGRErr GetExtent(int iGeomField, OGREnvelope *psExtent, int bForce) override
-        { return iGeomField == 0 ? OGRGeoJSONWriteLayer::GetExtent(psExtent, bForce) : OGRERR_FAILURE; }
+    {
+        return iGeomField == 0 ? OGRGeoJSONWriteLayer::GetExtent(psExtent, bForce) : OGRERR_FAILURE;
+    }
 
-  private:
+private:
     OGRGeoJSONDataSource* poDS_;
     OGRFeatureDefn* poFeatureDefn_;
     int nOutCounter_;
@@ -175,7 +189,7 @@ class OGRGeoJSONWriteLayer final: public OGRLayer
 
 class OGRGeoJSONDataSource final: public OGRDataSource
 {
-  public:
+public:
     OGRGeoJSONDataSource();
     virtual ~OGRGeoJSONDataSource();
 
@@ -200,7 +214,9 @@ class OGRGeoJSONDataSource final: public OGRDataSource
     // OGRGeoJSONDataSource Interface
     //
     int Create( const char* pszName, char** papszOptions );
-    VSILFILE* GetOutputFile() const { return fpOut_; }
+    VSILFILE* GetOutputFile() const {
+        return fpOut_;
+    }
 
     enum GeometryTranslation
     {
@@ -218,17 +234,27 @@ class OGRGeoJSONDataSource final: public OGRDataSource
 
     void SetAttributesTranslation( AttributesTranslation type );
 
-    int  GetFpOutputIsSeekable() const { return bFpOutputIsSeekable_; }
-    int  GetBBOXInsertLocation() const { return nBBOXInsertLocation_; }
-    int  HasOtherPages() const { return bOtherPages_; }
-    bool IsUpdatable() const { return bUpdatable_; }
-    const CPLString& GetJSonFlavor() const { return osJSonFlavor_; }
+    int  GetFpOutputIsSeekable() const {
+        return bFpOutputIsSeekable_;
+    }
+    int  GetBBOXInsertLocation() const {
+        return nBBOXInsertLocation_;
+    }
+    int  HasOtherPages() const {
+        return bOtherPages_;
+    }
+    bool IsUpdatable() const {
+        return bUpdatable_;
+    }
+    const CPLString& GetJSonFlavor() const {
+        return osJSonFlavor_;
+    }
 
     virtual void        FlushCache() override;
 
     static const size_t SPACE_FOR_BBOX = 130;
 
-  private:
+private:
     //
     // Private data members
     //

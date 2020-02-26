@@ -53,8 +53,9 @@ static PyObject *
 layer_featureCount(PyObject *m, PyObject* args, PyObject* kwargs);
 
 static const PyMethodDef gdal_python_driver_methods[] = {
-    {"layer_featureCount", layer_featureCount,
-                                        METH_VARARGS | METH_KEYWORDS, nullptr},
+    {   "layer_featureCount", layer_featureCount,
+        METH_VARARGS | METH_KEYWORDS, nullptr
+    },
     {nullptr, nullptr, 0, nullptr}
 };
 
@@ -120,21 +121,21 @@ static bool InitializePythonAndLoadGDALPythonDriverModule()
     {
         // Python 2
         Py_InitModule4("_gdal_python_driver", gdal_python_driver_methods,
-                        nullptr, nullptr, PYTHON_API_VERSION);
+                       nullptr, nullptr, PYTHON_API_VERSION);
     }
     else
     {
         // Python 3
         static PyModuleDef gdal_python_driver_moduledef = {
-                PyModuleDef_HEAD_INIT,
-                "_gdal_python_driver",
-                nullptr,
-                static_cast<Py_ssize_t>(-1), // sizeof(struct module_state),
-                gdal_python_driver_methods,
-                nullptr,
-                nullptr,
-                nullptr,
-                nullptr
+            PyModuleDef_HEAD_INIT,
+            "_gdal_python_driver",
+            nullptr,
+            static_cast<Py_ssize_t>(-1), // sizeof(struct module_state),
+            gdal_python_driver_methods,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr
         };
 
         PyObject* module = PyModule_Create2(&gdal_python_driver_moduledef,
@@ -149,57 +150,57 @@ static bool InitializePythonAndLoadGDALPythonDriverModule()
     }
 
     PyObject* poCompiledString = Py_CompileString(
-"import _gdal_python_driver\n"
-"import json\n"
-"import inspect\n"
-"import sys\n"
-"class BaseLayer(object):\n"
-"   RandomRead='RandomRead'\n"
-"   FastSpatialFilter='FastSpatialFilter'\n"
-"   FastFeatureCount='FastFeatureCount'\n"
-"   FastGetExtent='FastGetExtent'\n"
-"   StringsAsUTF8='StringsAsUTF8'\n"
-"\n"
-"   def __init__(self):\n"
-"       pass\n"
-"\n"
-"   def feature_count(self, force):\n"
-"       assert isinstance(self, BaseLayer), 'self not instance of BaseLayer'\n"
-"       return _gdal_python_driver.layer_featureCount(self, force)\n"
-"\n"
-"class BaseDataset(object):\n"
-"   def __init__(self):\n"
-"       pass\n"
-"\n"
-"class BaseDriver(object):\n"
-"   def __init__(self):\n"
-"       pass\n"
-"\n"
-"def _gdal_returnNone():\n"
-"  return None"
-"\n"
-"def _gdal_json_serialize(d):\n"
-"  return json.dumps(d)\n"
-"\n"
-"def _instantiate_plugin(plugin_module):\n"
-"   candidate = None\n"
-"   for key in dir(plugin_module):\n"
-"       elt = getattr(plugin_module, key)\n"
-"       if inspect.isclass(elt) and sys.modules[elt.__module__] == plugin_module and issubclass(elt, BaseDriver):\n"
-"           if candidate:\n"
-"               raise Exception(\"several classes in \" + plugin_module.__name__ + \" deriving from gdal_python_driver.BaseDriver\")\n"
-"           candidate = elt\n"
-"   if candidate:\n"
-"       return candidate()\n"
-"   raise Exception(\"cannot find class in \" + plugin_module.__name__ + \" deriving from gdal_python_driver.BaseDriver\")\n",
-"gdal_python_driver", Py_file_input);
+                                     "import _gdal_python_driver\n"
+                                     "import json\n"
+                                     "import inspect\n"
+                                     "import sys\n"
+                                     "class BaseLayer(object):\n"
+                                     "   RandomRead='RandomRead'\n"
+                                     "   FastSpatialFilter='FastSpatialFilter'\n"
+                                     "   FastFeatureCount='FastFeatureCount'\n"
+                                     "   FastGetExtent='FastGetExtent'\n"
+                                     "   StringsAsUTF8='StringsAsUTF8'\n"
+                                     "\n"
+                                     "   def __init__(self):\n"
+                                     "       pass\n"
+                                     "\n"
+                                     "   def feature_count(self, force):\n"
+                                     "       assert isinstance(self, BaseLayer), 'self not instance of BaseLayer'\n"
+                                     "       return _gdal_python_driver.layer_featureCount(self, force)\n"
+                                     "\n"
+                                     "class BaseDataset(object):\n"
+                                     "   def __init__(self):\n"
+                                     "       pass\n"
+                                     "\n"
+                                     "class BaseDriver(object):\n"
+                                     "   def __init__(self):\n"
+                                     "       pass\n"
+                                     "\n"
+                                     "def _gdal_returnNone():\n"
+                                     "  return None"
+                                     "\n"
+                                     "def _gdal_json_serialize(d):\n"
+                                     "  return json.dumps(d)\n"
+                                     "\n"
+                                     "def _instantiate_plugin(plugin_module):\n"
+                                     "   candidate = None\n"
+                                     "   for key in dir(plugin_module):\n"
+                                     "       elt = getattr(plugin_module, key)\n"
+                                     "       if inspect.isclass(elt) and sys.modules[elt.__module__] == plugin_module and issubclass(elt, BaseDriver):\n"
+                                     "           if candidate:\n"
+                                     "               raise Exception(\"several classes in \" + plugin_module.__name__ + \" deriving from gdal_python_driver.BaseDriver\")\n"
+                                     "           candidate = elt\n"
+                                     "   if candidate:\n"
+                                     "       return candidate()\n"
+                                     "   raise Exception(\"cannot find class in \" + plugin_module.__name__ + \" deriving from gdal_python_driver.BaseDriver\")\n",
+                                     "gdal_python_driver", Py_file_input);
     gpoGDALPythonDriverModule =
         PyImport_ExecCodeModule("gdal_python_driver", poCompiledString);
     Py_DecRef(poCompiledString);
 
     // Initialize Py_None
     PyObject* returnNone = PyObject_GetAttrString(gpoGDALPythonDriverModule,
-                                                "_gdal_returnNone" );
+                           "_gdal_returnNone" );
     Py_None = CallPython(returnNone);
     Py_DecRef(returnNone);
 
@@ -289,7 +290,7 @@ CPLString GetStringRes(PyObject* poObj, const char* pszFunctionName,
         else
         {
             CPLError(CE_Failure, CPLE_AppDefined,
-                    "%s", GetPyExceptionString().c_str());
+                     "%s", GetPyExceptionString().c_str());
         }
         return CPLString();
     }
@@ -320,54 +321,56 @@ CPLString GetStringRes(PyObject* poObj, const char* pszFunctionName,
 
 class PythonPluginLayer final: public OGRLayer
 {
-        PyObject* m_poLayer = nullptr;
-        OGRFeatureDefn* m_poFeatureDefn = nullptr;
-        CPLString m_osName{};
-        CPLString m_osFIDColumn{};
-        bool m_bHasFIDColumn = false;
-        std::map<CPLString, CPLStringList> m_oMapMD{};
-        PyObject* m_pyFeatureByIdMethod = nullptr;
-        bool m_bIteratorHonourSpatialFilter = false;
-        bool m_bIteratorHonourAttributeFilter = false;
-        bool m_bFeatureCountHonourSpatialFilter = false;
-        bool m_bFeatureCountHonourAttributeFilter = false;
-        PyObject* m_pyIterator = nullptr;
-        bool m_bStopIteration = false;
+    PyObject* m_poLayer = nullptr;
+    OGRFeatureDefn* m_poFeatureDefn = nullptr;
+    CPLString m_osName{};
+    CPLString m_osFIDColumn{};
+    bool m_bHasFIDColumn = false;
+    std::map<CPLString, CPLStringList> m_oMapMD{};
+    PyObject* m_pyFeatureByIdMethod = nullptr;
+    bool m_bIteratorHonourSpatialFilter = false;
+    bool m_bIteratorHonourAttributeFilter = false;
+    bool m_bFeatureCountHonourSpatialFilter = false;
+    bool m_bFeatureCountHonourAttributeFilter = false;
+    PyObject* m_pyIterator = nullptr;
+    bool m_bStopIteration = false;
 
-        void RefreshHonourFlags();
-        void StoreSpatialFilter();
+    void RefreshHonourFlags();
+    void StoreSpatialFilter();
 
-        void GetFields();
-        void GetGeomFields();
-        OGRFeature* TranslateToOGRFeature(PyObject* poObj);
+    void GetFields();
+    void GetGeomFields();
+    OGRFeature* TranslateToOGRFeature(PyObject* poObj);
 
-        PythonPluginLayer(const PythonPluginLayer&) = delete;
-        PythonPluginLayer& operator= (const PythonPluginLayer&) = delete;
+    PythonPluginLayer(const PythonPluginLayer&) = delete;
+    PythonPluginLayer& operator= (const PythonPluginLayer&) = delete;
 
-    public:
+public:
 
-        PythonPluginLayer(PyObject* poLayer);
-        ~PythonPluginLayer();
+    PythonPluginLayer(PyObject* poLayer);
+    ~PythonPluginLayer();
 
-        const char* GetName() override;
-        void ResetReading() override;
-        OGRFeature* GetNextFeature() override;
-        OGRFeature* GetFeature(GIntBig nFID) override;
-        int TestCapability(const char*) override;
-        OGRFeatureDefn* GetLayerDefn() override;
+    const char* GetName() override;
+    void ResetReading() override;
+    OGRFeature* GetNextFeature() override;
+    OGRFeature* GetFeature(GIntBig nFID) override;
+    int TestCapability(const char*) override;
+    OGRFeatureDefn* GetLayerDefn() override;
 
-        GIntBig GetFeatureCount(int bForce) override;
-        const char* GetFIDColumn() override;
-        OGRErr SetAttributeFilter(const char*) override;
+    GIntBig GetFeatureCount(int bForce) override;
+    const char* GetFIDColumn() override;
+    OGRErr SetAttributeFilter(const char*) override;
 
-        void        SetSpatialFilter( OGRGeometry * ) override;
-        void        SetSpatialFilter( int iGeomField, OGRGeometry * ) override;
+    void        SetSpatialFilter( OGRGeometry * ) override;
+    void        SetSpatialFilter( int iGeomField, OGRGeometry * ) override;
 
-        OGRErr      GetExtent( OGREnvelope *psExtent, int bForce ) override;
-        OGRErr      GetExtent(int iGeomField, OGREnvelope *psExtent, int bForce) override
-                { return OGRLayer::GetExtent(iGeomField, psExtent, bForce); }
+    OGRErr      GetExtent( OGREnvelope *psExtent, int bForce ) override;
+    OGRErr      GetExtent(int iGeomField, OGREnvelope *psExtent, int bForce) override
+    {
+        return OGRLayer::GetExtent(iGeomField, psExtent, bForce);
+    }
 
-        char** GetMetadata(const char* pszDomain = "") override;
+    char** GetMetadata(const char* pszDomain = "") override;
 };
 
 /************************************************************************/
@@ -499,8 +502,8 @@ void PythonPluginLayer::StoreSpatialFilter()
         char* pszWKT = nullptr;
         m_poFilterGeom->exportToWkt(&pszWKT);
         PyObject* str = PyString_AsString ?
-            PyString_FromStringAndSize(pszWKT, strlen(pszWKT)) :
-            PyUnicode_FromString(pszWKT);
+                        PyString_FromStringAndSize(pszWKT, strlen(pszWKT)) :
+                        PyUnicode_FromString(pszWKT);
         PyObject_SetAttrString(m_poLayer, "spatial_filter", str);
         Py_DecRef(str);
         CPLFree(pszWKT);
@@ -577,9 +580,9 @@ int PythonPluginLayer::TestCapability(const char* pszCap)
             return 0;
         PyObject* pyArgs = PyTuple_New(1);
         PyTuple_SetItem(pyArgs, 0,
-            PyString_AsString ?
-                PyString_FromStringAndSize(pszCap, strlen(pszCap)) :
-                PyUnicode_FromString(pszCap));
+                        PyString_AsString ?
+                        PyString_FromStringAndSize(pszCap, strlen(pszCap)) :
+                        PyUnicode_FromString(pszCap));
         PyObject* pRet = PyObject_Call(poObj, pyArgs, nullptr);
         Py_DecRef(pyArgs);
         Py_DecRef(poObj);
@@ -666,11 +669,11 @@ GIntBig PythonPluginLayer::GetFeatureCount(int bForce)
     GIL_Holder oHolder(false);
 
     if( PyObject_HasAttrString(m_poLayer, "feature_count" ) &&
-        (m_bFeatureCountHonourAttributeFilter || m_poAttrQuery == nullptr) &&
-        (m_bFeatureCountHonourSpatialFilter || m_poFilterGeom == nullptr) )
+            (m_bFeatureCountHonourAttributeFilter || m_poAttrQuery == nullptr) &&
+            (m_bFeatureCountHonourSpatialFilter || m_poFilterGeom == nullptr) )
     {
-        auto poMethod = PyObject_GetAttrString(m_poLayer, 
-                                              "feature_count" );
+        auto poMethod = PyObject_GetAttrString(m_poLayer,
+                                               "feature_count" );
         PyObject* poRet = CallPython(poMethod, bForce);
         if( ErrOccurredEmitCPLError() )
         {
@@ -780,12 +783,12 @@ OGRFeature* PythonPluginLayer::TranslateToOGRFeature(PyObject* poObj)
     if( poId && PyObject_IsInstance(poId, myLongType) )
     {
         poFeature->SetFID(
-                static_cast<GIntBig>(PyLong_AsLongLong(poId)) );
+            static_cast<GIntBig>(PyLong_AsLongLong(poId)) );
     }
     else if( poId && PyObject_IsInstance(poId, myIntType) )
     {
         poFeature->SetFID(
-                static_cast<GIntBig>(PyInt_AsLong(poId)) );
+            static_cast<GIntBig>(PyInt_AsLong(poId)) );
     }
 
     if( poStyleString && poStyleString != Py_None )
@@ -859,7 +862,7 @@ OGRFeature* PythonPluginLayer::TranslateToOGRFeature(PyObject* poObj)
             if( idx >= 0 )
             {
                 poFeature->SetField(idx,
-                        static_cast<GIntBig>(PyLong_AsLongLong(value)) );
+                                    static_cast<GIntBig>(PyLong_AsLongLong(value)) );
             }
         }
         else if( PyObject_IsInstance(value, myBoolType) ||
@@ -869,7 +872,7 @@ OGRFeature* PythonPluginLayer::TranslateToOGRFeature(PyObject* poObj)
             if( idx >= 0 )
             {
                 poFeature->SetField(idx,
-                        static_cast<GIntBig>(PyInt_AsLong(value)) );
+                                    static_cast<GIntBig>(PyInt_AsLong(value)) );
             }
         }
         else if( PyObject_IsInstance(value, myFloatType) )
@@ -884,12 +887,12 @@ OGRFeature* PythonPluginLayer::TranslateToOGRFeature(PyObject* poObj)
         {
             int idx = m_poFeatureDefn->GetFieldIndex(osKey);
             if( idx >= 0 &&
-                m_poFeatureDefn->GetFieldDefn(idx)->GetType() == OFTBinary )
+                    m_poFeatureDefn->GetFieldDefn(idx)->GetType() == OFTBinary )
             {
                 Py_ssize_t nSize = PyBytes_Size(value);
                 const char* pszBytes = PyBytes_AsString(value);
                 poFeature->SetField(idx, static_cast<int>(nSize), const_cast<GByte*>(
-                        reinterpret_cast<const GByte*>(pszBytes)));
+                                        reinterpret_cast<const GByte*>(pszBytes)));
                 continue;
             }
 
@@ -1000,9 +1003,9 @@ OGRFeature* PythonPluginLayer::GetNextFeature()
         }
 
         if( (m_bIteratorHonourSpatialFilter || m_poFilterGeom == nullptr
-            || FilterGeometry( poFeature->GetGeomFieldRef(m_iGeomFieldFilter) ) )
-            && (m_bIteratorHonourAttributeFilter || m_poAttrQuery == nullptr
-                || m_poAttrQuery->Evaluate( poFeature )) )
+                || FilterGeometry( poFeature->GetGeomFieldRef(m_iGeomFieldFilter) ) )
+                && (m_bIteratorHonourAttributeFilter || m_poAttrQuery == nullptr
+                    || m_poAttrQuery->Evaluate( poFeature )) )
         {
             return poFeature;
         }
@@ -1015,7 +1018,7 @@ OGRFeature* PythonPluginLayer::GetNextFeature()
 /*                         GetLayerDefn()                               */
 /************************************************************************/
 
-OGRFeatureDefn* PythonPluginLayer::GetLayerDefn() 
+OGRFeatureDefn* PythonPluginLayer::GetLayerDefn()
 {
     if( m_poFeatureDefn )
         return m_poFeatureDefn;
@@ -1065,7 +1068,7 @@ void PythonPluginLayer::GetFields()
         if (poItem == nullptr || PyErr_Occurred())
         {
             CPLError(CE_Failure, CPLE_AppDefined,
-                        "%s", GetPyExceptionString().c_str());
+                     "%s", GetPyExceptionString().c_str());
             Py_DecRef(poFields);
 
             return;
@@ -1111,7 +1114,7 @@ void PythonPluginLayer::GetFields()
                     if( nType < 0 || nType > OFTMaxType )
                     {
                         CPLError(CE_Failure, CPLE_AppDefined,
-                                    "Wrong type: %d", nType);
+                                 "Wrong type: %d", nType);
                     }
                     else
                     {
@@ -1172,7 +1175,7 @@ void PythonPluginLayer::GetFields()
                     else
                     {
                         CPLError(CE_Failure, CPLE_AppDefined,
-                                    "Wrong type: %s", osValue.c_str());
+                                 "Wrong type: %s", osValue.c_str());
                     }
                 }
                 Py_DecRef(myInt);
@@ -1181,7 +1184,7 @@ void PythonPluginLayer::GetFields()
             else
             {
                 CPLDebug("GDAL", "Unknown field property: %s",
-                            osKey.c_str());
+                         osKey.c_str());
             }
         }
 
@@ -1231,7 +1234,7 @@ void PythonPluginLayer::GetGeomFields()
         if (poItem == nullptr || PyErr_Occurred())
         {
             CPLError(CE_Failure, CPLE_AppDefined,
-                        "%s", GetPyExceptionString().c_str());
+                     "%s", GetPyExceptionString().c_str());
             Py_DecRef(poFields);
 
             return;
@@ -1293,7 +1296,7 @@ void PythonPluginLayer::GetGeomFields()
                     if( eType == wkbUnknown && !EQUAL(osValue, "Geometry") )
                     {
                         CPLError(CE_Failure, CPLE_AppDefined,
-                                    "Wrong type: %s", osValue.c_str());
+                                 "Wrong type: %s", osValue.c_str());
                     }
                 }
                 Py_DecRef(myInt);
@@ -1315,7 +1318,7 @@ void PythonPluginLayer::GetGeomFields()
             else
             {
                 CPLDebug("GDAL", "Unknown geometry field property: %s",
-                            osKey.c_str());
+                         osKey.c_str());
             }
         }
 
@@ -1349,7 +1352,7 @@ static char** GetMetadata(PyObject* obj, const char* pszDomain)
     {
         PyObject* pyArgs = PyTuple_New(1);
         PyTuple_SetItem(pyArgs, 0, pszDomain && pszDomain[0] ?
-            PyUnicode_FromString(pszDomain) : IncRefAndReturn(Py_None));
+                        PyUnicode_FromString(pszDomain) : IncRefAndReturn(Py_None));
         poMethodRes = PyObject_Call(poMetadata, pyArgs, nullptr);
         Py_DecRef(pyArgs);
         Py_DecRef(poMetadata);
@@ -1393,22 +1396,22 @@ char** PythonPluginLayer::GetMetadata(const char* pszDomain)
 
 class PythonPluginDataset final: public GDALDataset
 {
-        PyObject* m_poDataset = nullptr;
-        std::map<int, std::unique_ptr<OGRLayer>> m_oMapLayer{};
-        std::map<CPLString, CPLStringList> m_oMapMD{};
-        bool m_bHasLayersMember = false;
+    PyObject* m_poDataset = nullptr;
+    std::map<int, std::unique_ptr<OGRLayer>> m_oMapLayer{};
+    std::map<CPLString, CPLStringList> m_oMapMD{};
+    bool m_bHasLayersMember = false;
 
-        PythonPluginDataset(const PythonPluginDataset&) = delete;
-        PythonPluginDataset& operator= (const PythonPluginDataset&) = delete;
+    PythonPluginDataset(const PythonPluginDataset&) = delete;
+    PythonPluginDataset& operator= (const PythonPluginDataset&) = delete;
 
-    public:
+public:
 
-        PythonPluginDataset(GDALOpenInfo *poOpenInfo, PyObject* poDataset);
-        ~PythonPluginDataset();
+    PythonPluginDataset(GDALOpenInfo *poOpenInfo, PyObject* poDataset);
+    ~PythonPluginDataset();
 
-        int GetLayerCount() override;
-        OGRLayer* GetLayer(int) override;
-        char** GetMetadata(const char* pszDomain = "") override;
+    int GetLayerCount() override;
+    OGRLayer* GetLayer(int) override;
+    char** GetMetadata(const char* pszDomain = "") override;
 };
 
 /************************************************************************/
@@ -1416,7 +1419,7 @@ class PythonPluginDataset final: public GDALDataset
 /************************************************************************/
 
 PythonPluginDataset::PythonPluginDataset(GDALOpenInfo *poOpenInfo,
-                                         PyObject* poDataset) :
+        PyObject* poDataset) :
     m_poDataset(poDataset)
 {
     SetDescription( poOpenInfo->pszFilename );
@@ -1436,7 +1439,7 @@ PythonPluginDataset::PythonPluginDataset(GDALOpenInfo *poOpenInfo,
                 const auto poLayer = PySequence_GetItem(poLayers, i);
                 Py_IncRef(poLayer);
                 m_oMapLayer[i] = std::unique_ptr<PythonPluginLayer>(
-                    new PythonPluginLayer(poLayer));
+                                     new PythonPluginLayer(poLayer));
             }
         }
         Py_DecRef(poLayers);
@@ -1518,7 +1521,7 @@ OGRLayer* PythonPluginDataset::GetLayer(int idx)
         return nullptr;
     }
     m_oMapLayer[idx] = std::unique_ptr<PythonPluginLayer>(
-        new PythonPluginLayer(poMethodRes));
+                           new PythonPluginLayer(poMethodRes));
     return m_oMapLayer[idx].get();
 }
 
@@ -1541,25 +1544,25 @@ char** PythonPluginDataset::GetMetadata(const char* pszDomain)
 
 class PythonPluginDriver: public GDALDriver
 {
-        CPLMutex* m_hMutex = nullptr;
-        CPLString m_osFilename;
-        PyObject* m_poPlugin = nullptr;
+    CPLMutex* m_hMutex = nullptr;
+    CPLString m_osFilename;
+    PyObject* m_poPlugin = nullptr;
 
-        PythonPluginDriver(const PythonPluginDriver&) = delete;
-        PythonPluginDriver& operator= (const PythonPluginDriver&) = delete;
+    PythonPluginDriver(const PythonPluginDriver&) = delete;
+    PythonPluginDriver& operator= (const PythonPluginDriver&) = delete;
 
-        bool LoadPlugin();
+    bool LoadPlugin();
 
-        int Identify( GDALOpenInfo *);
-        static int IdentifyEx(GDALDriver*, GDALOpenInfo *);
+    int Identify( GDALOpenInfo *);
+    static int IdentifyEx(GDALDriver*, GDALOpenInfo *);
 
-        GDALDataset* Open( GDALOpenInfo *);
-        static GDALDataset* OpenEx(GDALDriver*, GDALOpenInfo *);
+    GDALDataset* Open( GDALOpenInfo *);
+    static GDALDataset* OpenEx(GDALDriver*, GDALOpenInfo *);
 
-    public:
-        PythonPluginDriver(const char* pszFilename,
-                           const char* pszPluginName, char** papszMD);
-        ~PythonPluginDriver();
+public:
+    PythonPluginDriver(const char* pszFilename,
+                       const char* pszPluginName, char** papszMD);
+    ~PythonPluginDriver();
 };
 
 /************************************************************************/
@@ -1589,8 +1592,8 @@ bool PythonPluginDriver::LoadPlugin()
     VSIFReadL(&osStr[0], 1, static_cast<size_t>(nSize), fp);
     VSIFCloseL(fp);
     PyObject* poCompiledString = Py_CompileString(
-        osStr,
-        m_osFilename, Py_file_input);
+                                     osStr,
+                                     m_osFilename, Py_file_input);
     if( poCompiledString == nullptr || PyErr_Occurred() )
     {
         CPLError(CE_Failure, CPLE_AppDefined,
@@ -1611,7 +1614,7 @@ bool PythonPluginDriver::LoadPlugin()
     }
 
     PyObject* poInstanciate = PyObject_GetAttrString(gpoGDALPythonDriverModule,
-                                                     "_instantiate_plugin" );
+                              "_instantiate_plugin" );
     CPLAssert(poInstanciate);
 
     PyObject* pyArgs = PyTuple_New(1);
@@ -1642,7 +1645,7 @@ static void BuildIdentifyOpenArgs(GDALOpenInfo *poOpenInfo,
     pyArgs = PyTuple_New(3);
     PyTuple_SetItem(pyArgs, 0, PyUnicode_FromString(poOpenInfo->pszFilename));
     PyTuple_SetItem(pyArgs, 1, PyBytes_FromStringAndSize(
-                            poOpenInfo->pabyHeader, poOpenInfo->nHeaderBytes));
+                        poOpenInfo->pabyHeader, poOpenInfo->nHeaderBytes));
     PyTuple_SetItem(pyArgs, 2, PyInt_FromLong(poOpenInfo->nOpenFlags));
     pyKwargs = PyDict_New();
     PyObject* pyOpenOptions = PyDict_New();
@@ -1923,16 +1926,16 @@ void GDALDriverManager::AutoLoadPythonDrivers()
     }
     char **papszSearchPaths = GetSearchPaths(pszPythonDriverPath);
 
-/* -------------------------------------------------------------------- */
-/*      Format the ABI version specific subdirectory to look in.        */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Format the ABI version specific subdirectory to look in.        */
+    /* -------------------------------------------------------------------- */
     CPLString osABIVersion;
 
     osABIVersion.Printf( "%d.%d", GDAL_VERSION_MAJOR, GDAL_VERSION_MINOR );
 
-/* -------------------------------------------------------------------- */
-/*      Scan each directory                                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Scan each directory                                             */
+    /* -------------------------------------------------------------------- */
     std::vector<CPLString> aosPythonFiles;
     const int nSearchPaths = CSLCount(papszSearchPaths);
     for( int iDir = 0; iDir < nSearchPaths; ++iDir )
@@ -1948,8 +1951,8 @@ void GDALDriverManager::AutoLoadPythonDrivers()
         for( int i = 0; papszFiles && papszFiles[i]; i++ )
         {
             if( (STARTS_WITH_CI(papszFiles[i], "gdal_") ||
-                STARTS_WITH_CI(papszFiles[i], "ogr_") ) &&
-                EQUAL(CPLGetExtension(papszFiles[i]), "py") )
+                    STARTS_WITH_CI(papszFiles[i], "ogr_") ) &&
+                    EQUAL(CPLGetExtension(papszFiles[i]), "py") )
             {
                 aosPythonFiles.push_back(
                     CPLFormFilename( osABISpecificDir, papszFiles[i], nullptr ) );

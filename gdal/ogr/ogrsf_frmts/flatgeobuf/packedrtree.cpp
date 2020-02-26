@@ -59,19 +59,28 @@ uint32_t hilbert(uint32_t x, uint32_t y)
     uint32_t C = ((c >> 1) ^ (b & (d >> 1))) ^ c;
     uint32_t D = ((a & (c >> 1)) ^ (d >> 1)) ^ d;
 
-    a = A; b = B; c = C; d = D;
+    a = A;
+    b = B;
+    c = C;
+    d = D;
     A = ((a & (a >> 2)) ^ (b & (b >> 2)));
     B = ((a & (b >> 2)) ^ (b & ((a ^ b) >> 2)));
     C ^= ((a & (c >> 2)) ^ (b & (d >> 2)));
     D ^= ((b & (c >> 2)) ^ ((a ^ b) & (d >> 2)));
 
-    a = A; b = B; c = C; d = D;
+    a = A;
+    b = B;
+    c = C;
+    d = D;
     A = ((a & (a >> 4)) ^ (b & (b >> 4)));
     B = ((a & (b >> 4)) ^ (b & ((a ^ b) >> 4)));
     C ^= ((a & (c >> 4)) ^ (b & (d >> 4)));
     D ^= ((b & (c >> 4)) ^ ((a ^ b) & (d >> 4)));
 
-    a = A; b = B; c = C; d = D;
+    a = A;
+    b = B;
+    c = C;
+    d = D;
     C ^= ((a & (c >> 8)) ^ (b & (d >> 8)));
     D ^= ((b & (c >> 8)) ^ ((a ^ b) & (d >> 8)));
 
@@ -326,7 +335,9 @@ std::vector<SearchResultItem> PackedRTree::streamSearch(
     return results;
 }
 
-uint64_t PackedRTree::size() const { return _numNodes * sizeof(NodeItem); }
+uint64_t PackedRTree::size() const {
+    return _numNodes * sizeof(NodeItem);
+}
 
 uint64_t PackedRTree::size(const uint64_t numItems, const uint16_t nodeSize)
 {
@@ -363,6 +374,8 @@ void PackedRTree::streamWrite(const std::function<void(uint8_t *, size_t)> &writ
     writeData(reinterpret_cast<uint8_t *>(_nodeItems), static_cast<size_t>(_numNodes * sizeof(NodeItem)));
 }
 
-NodeItem PackedRTree::getExtent() const { return _extent; }
+NodeItem PackedRTree::getExtent() const {
+    return _extent;
+}
 
 }

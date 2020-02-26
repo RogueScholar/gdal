@@ -14,8 +14,12 @@ struct NodeItem {
     double maxX;
     double maxY;
     uint64_t offset;
-    double width() const { return maxX - minX; }
-    double height() const { return maxY - minY; }
+    double width() const {
+        return maxX - minX;
+    }
+    double height() const {
+        return maxY - minY;
+    }
     static NodeItem sum(NodeItem a, const NodeItem& b) {
         a.expand(b);
         return a;

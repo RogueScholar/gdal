@@ -74,7 +74,7 @@ static PyObject* GDALCreateNumpyArray(PyObject* pCreateArray,
 {
     PyObject* poPyBuffer;
     const size_t nSize = static_cast<size_t>(nHeight) * nWidth *
-                                    GDALGetDataTypeSizeBytes(eType);
+                         GDALGetDataTypeSizeBytes(eType);
     if( PyBuffer_FromReadWriteMemory )
     {
         // Python 2
@@ -97,25 +97,43 @@ static PyObject* GDALCreateNumpyArray(PyObject* pCreateArray,
     const char* pszDataType = nullptr;
     switch( eType )
     {
-        case GDT_Byte: pszDataType = "uint8"; break;
-        case GDT_UInt16: pszDataType = "uint16"; break;
-        case GDT_Int16: pszDataType = "int16"; break;
-        case GDT_UInt32: pszDataType = "uint32"; break;
-        case GDT_Int32: pszDataType = "int32"; break;
-        case GDT_Float32: pszDataType = "float32"; break;
-        case GDT_Float64: pszDataType = "float64"; break;
-        case GDT_CInt16:
-        case GDT_CInt32:
-            CPLAssert(FALSE);
-            break;
-        case GDT_CFloat32: pszDataType = "complex64"; break;
-        case GDT_CFloat64: pszDataType = "complex128"; break;
-        default:
-            CPLAssert(FALSE);
-            break;
+    case GDT_Byte:
+        pszDataType = "uint8";
+        break;
+    case GDT_UInt16:
+        pszDataType = "uint16";
+        break;
+    case GDT_Int16:
+        pszDataType = "int16";
+        break;
+    case GDT_UInt32:
+        pszDataType = "uint32";
+        break;
+    case GDT_Int32:
+        pszDataType = "int32";
+        break;
+    case GDT_Float32:
+        pszDataType = "float32";
+        break;
+    case GDT_Float64:
+        pszDataType = "float64";
+        break;
+    case GDT_CInt16:
+    case GDT_CInt32:
+        CPLAssert(FALSE);
+        break;
+    case GDT_CFloat32:
+        pszDataType = "complex64";
+        break;
+    case GDT_CFloat64:
+        pszDataType = "complex128";
+        break;
+    default:
+        CPLAssert(FALSE);
+        break;
     }
     PyTuple_SetItem(pArgsCreateArray, 1,
-                PyString_FromStringAndSize(pszDataType, strlen(pszDataType)));
+                    PyString_FromStringAndSize(pszDataType, strlen(pszDataType)));
     PyTuple_SetItem(pArgsCreateArray, 2, PyInt_FromLong(nHeight));
     PyTuple_SetItem(pArgsCreateArray, 3, PyInt_FromLong(nWidth));
     PyObject* poNumpyArray = PyObject_Call(pCreateArray, pArgsCreateArray, nullptr);
@@ -133,40 +151,40 @@ static PyObject* GDALCreateNumpyArray(PyObject* pCreateArray,
 
 class VRTDerivedRasterBandPrivateData
 {
-        VRTDerivedRasterBandPrivateData(const VRTDerivedRasterBandPrivateData&) = delete;
-        VRTDerivedRasterBandPrivateData& operator= (const VRTDerivedRasterBandPrivateData&) = delete;
+    VRTDerivedRasterBandPrivateData(const VRTDerivedRasterBandPrivateData&) = delete;
+    VRTDerivedRasterBandPrivateData& operator= (const VRTDerivedRasterBandPrivateData&) = delete;
 
-    public:
-        CPLString m_osCode{};
-        CPLString m_osLanguage;
-        int       m_nBufferRadius;
-        PyObject* m_poGDALCreateNumpyArray;
-        PyObject* m_poUserFunction;
-        bool      m_bPythonInitializationDone;
-        bool      m_bPythonInitializationSuccess;
-        bool      m_bExclusiveLock;
-        bool      m_bFirstTime;
-        std::vector< std::pair<CPLString,CPLString> > m_oFunctionArgs{};
+public:
+    CPLString m_osCode{};
+    CPLString m_osLanguage;
+    int       m_nBufferRadius;
+    PyObject* m_poGDALCreateNumpyArray;
+    PyObject* m_poUserFunction;
+    bool      m_bPythonInitializationDone;
+    bool      m_bPythonInitializationSuccess;
+    bool      m_bExclusiveLock;
+    bool      m_bFirstTime;
+    std::vector< std::pair<CPLString,CPLString> > m_oFunctionArgs{};
 
-        VRTDerivedRasterBandPrivateData():
-            m_osLanguage("C"),
-            m_nBufferRadius(0),
-            m_poGDALCreateNumpyArray(nullptr),
-            m_poUserFunction(nullptr),
-            m_bPythonInitializationDone(false),
-            m_bPythonInitializationSuccess(false),
-            m_bExclusiveLock(false),
-            m_bFirstTime(true)
-        {
-        }
+    VRTDerivedRasterBandPrivateData():
+        m_osLanguage("C"),
+        m_nBufferRadius(0),
+        m_poGDALCreateNumpyArray(nullptr),
+        m_poUserFunction(nullptr),
+        m_bPythonInitializationDone(false),
+        m_bPythonInitializationSuccess(false),
+        m_bExclusiveLock(false),
+        m_bFirstTime(true)
+    {
+    }
 
-        virtual ~VRTDerivedRasterBandPrivateData()
-        {
-            if( m_poGDALCreateNumpyArray )
-                Py_DecRef(m_poGDALCreateNumpyArray);
-            if( m_poUserFunction )
-                Py_DecRef(m_poUserFunction);
-        }
+    virtual ~VRTDerivedRasterBandPrivateData()
+    {
+        if( m_poGDALCreateNumpyArray )
+            Py_DecRef(m_poGDALCreateNumpyArray);
+        if( m_poUserFunction )
+            Py_DecRef(m_poUserFunction);
+    }
 };
 
 /************************************************************************/
@@ -193,8 +211,8 @@ VRTDerivedRasterBand::VRTDerivedRasterBand( GDALDataset *poDSIn, int nBandIn ) :
 /************************************************************************/
 
 VRTDerivedRasterBand::VRTDerivedRasterBand( GDALDataset *poDSIn, int nBandIn,
-                                            GDALDataType eType,
-                                            int nXSize, int nYSize ) :
+        GDALDataType eType,
+        int nXSize, int nYSize ) :
     VRTSourcedRasterBand(poDSIn, nBandIn, eType, nXSize, nYSize),
     m_poPrivate(nullptr),
     pszFuncName(nullptr),
@@ -249,9 +267,9 @@ GDALAddDerivedBandPixelFunc( const char *pszFuncName,
                              GDALDerivedPixelFunc pfnNewFunction )
 {
     if( pszFuncName == nullptr || pszFuncName[0] == '\0' ||
-        pfnNewFunction == nullptr )
+            pfnNewFunction == nullptr )
     {
-      return CE_None;
+        return CE_None;
     }
 
     osMapPixelFunction[pszFuncName] = pfnNewFunction;
@@ -391,48 +409,48 @@ bool VRTDerivedRasterBand::InitializePython()
 
 #ifndef GDAL_VRT_DISABLE_PYTHON
     const char* pszPythonEnabled =
-                            CPLGetConfigOption("GDAL_VRT_ENABLE_PYTHON", nullptr);
+        CPLGetConfigOption("GDAL_VRT_ENABLE_PYTHON", nullptr);
 #else
     const char* pszPythonEnabled = "NO";
 #endif
     const CPLString osPythonEnabled(pszPythonEnabled ? pszPythonEnabled :
-                                            GDAL_VRT_ENABLE_PYTHON_DEFAULT);
+                                    GDAL_VRT_ENABLE_PYTHON_DEFAULT);
 
     if( EQUAL(osPythonEnabled, "TRUSTED_MODULES") )
     {
         bool bIsTrustedModule = false;
         const CPLString osVRTTrustedModules(
-                    CPLGetConfigOption( "GDAL_VRT_PYTHON_TRUSTED_MODULES", "") );
+            CPLGetConfigOption( "GDAL_VRT_PYTHON_TRUSTED_MODULES", "") );
         if( !osPythonModule.empty() )
         {
             char** papszTrustedModules = CSLTokenizeString2(
-                                                osVRTTrustedModules, ",", 0 );
+                                             osVRTTrustedModules, ",", 0 );
             for( char** papszIter = papszTrustedModules;
-                !bIsTrustedModule && papszIter && *papszIter;
-                ++papszIter )
+                    !bIsTrustedModule && papszIter && *papszIter;
+                    ++papszIter )
             {
                 const char* pszIterModule = *papszIter;
                 size_t nIterModuleLen = strlen(pszIterModule);
                 if( nIterModuleLen > 2 &&
-                    strncmp(pszIterModule + nIterModuleLen - 2, ".*", 2) == 0 )
+                        strncmp(pszIterModule + nIterModuleLen - 2, ".*", 2) == 0 )
                 {
                     bIsTrustedModule =
                         (strncmp( osPythonModule, pszIterModule,
-                                                  nIterModuleLen - 2 ) == 0) &&
+                                  nIterModuleLen - 2 ) == 0) &&
                         (osPythonModule.size() == nIterModuleLen - 2 ||
                          (osPythonModule.size() >= nIterModuleLen &&
                           osPythonModule[nIterModuleLen-1] == '.') );
                 }
                 else if( nIterModuleLen >= 1 &&
-                        pszIterModule[nIterModuleLen-1] == '*' )
+                         pszIterModule[nIterModuleLen-1] == '*' )
                 {
                     bIsTrustedModule = (strncmp( osPythonModule, pszIterModule,
-                                                nIterModuleLen - 1 ) == 0);
+                                                 nIterModuleLen - 1 ) == 0);
                 }
                 else
                 {
                     bIsTrustedModule =
-                                (strcmp(osPythonModule, pszIterModule) == 0);
+                        (strcmp(osPythonModule, pszIterModule) == 0);
                 }
             }
             CSLDestroy(papszTrustedModules);
@@ -450,7 +468,7 @@ bool VRTDerivedRasterBand::InitializePython()
                          "If you trust the code in %s, you can set the "
                          "GDAL_VRT_ENABLE_PYTHON configuration option to YES.",
                          GetDataset() ? GetDataset()->GetDescription() :
-                                    "(unknown VRT)");
+                         "(unknown VRT)");
             }
             else if( osVRTTrustedModules.empty() )
             {
@@ -465,7 +483,7 @@ bool VRTDerivedRasterBand::InitializePython()
                          "GDAL_VRT_ENABLE_PYTHON configuration option to YES).",
                          osPythonModule.c_str(),
                          GetDataset() ? GetDataset()->GetDescription() :
-                                    "(unknown VRT)",
+                         "(unknown VRT)",
                          osPythonModule.c_str());
             }
             else
@@ -481,7 +499,7 @@ bool VRTDerivedRasterBand::InitializePython()
                          osPythonModule.c_str(),
                          osVRTTrustedModules.c_str(),
                          GetDataset() ? GetDataset()->GetDescription() :
-                                    "(unknown VRT)",
+                         "(unknown VRT)",
                          osPythonModule.c_str());
             }
             return false;
@@ -505,17 +523,17 @@ bool VRTDerivedRasterBand::InitializePython()
 
         // Reject all imports except a few trusted modules
         const char* const apszTrustedImports[] = {
-                "import math",
-                "from math import",
-                "import numpy", // caution: numpy has lots of I/O functions !
-                "from numpy import",
-                // TODO: not sure if importing arbitrary stuff from numba is OK
-                // so let's just restrict to jit.
-                "from numba import jit",
+            "import math",
+            "from math import",
+            "import numpy", // caution: numpy has lots of I/O functions !
+            "from numpy import",
+            // TODO: not sure if importing arbitrary stuff from numba is OK
+            // so let's just restrict to jit.
+            "from numba import jit",
 
-                // Not imports but still whitelisted, whereas other __ is banned
-                "__init__",
-                "__call__",
+            // Not imports but still whitelisted, whereas other __ is banned
+            "__init__",
+            "__call__",
         };
         for( size_t i = 0; i < CPL_ARRAYSIZE(apszTrustedImports); ++i )
         {
@@ -540,7 +558,7 @@ bool VRTDerivedRasterBand::InitializePython()
                                               "dump", // numpy.ndarray.dump
                                               "fromregex", // numpy.fromregex
                                               "__"
-                                             };
+                                            };
         for( size_t i = 0; i < CPL_ARRAYSIZE(apszUntrusted); ++i )
         {
             if( osCode.find(apszUntrusted[i]) != std::string::npos )
@@ -559,7 +577,7 @@ bool VRTDerivedRasterBand::InitializePython()
                      "If you trust the code in %s, you can set the "
                      "GDAL_VRT_ENABLE_PYTHON configuration option to YES.",
                      GetDataset() ? GetDataset()->GetDescription() :
-                                    "(unknown VRT)");
+                     "(unknown VRT)");
             return false;
         }
     }
@@ -574,20 +592,20 @@ bool VRTDerivedRasterBand::InitializePython()
             // Note: this is dead code with our current default policy
             // GDAL_VRT_ENABLE_PYTHON == "TRUSTED_MODULES"
             CPLError(CE_Failure, CPLE_AppDefined,
-                 "Python code needs to be executed, but this is "
-                 "disabled by default. If you trust the code in %s, "
-                 "you can set the GDAL_VRT_ENABLE_PYTHON configuration "
-                 "option to YES.",
-                GetDataset() ? GetDataset()->GetDescription() :
-                                                    "(unknown VRT)");
+                     "Python code needs to be executed, but this is "
+                     "disabled by default. If you trust the code in %s, "
+                     "you can set the GDAL_VRT_ENABLE_PYTHON configuration "
+                     "option to YES.",
+                     GetDataset() ? GetDataset()->GetDescription() :
+                     "(unknown VRT)");
         }
         else
         {
             CPLError(CE_Failure, CPLE_AppDefined,
-                    "Python code in %s needs to be executed, but this has been "
-                    "explicitly disabled.",
+                     "Python code in %s needs to be executed, but this has been "
+                     "explicitly disabled.",
                      GetDataset() ? GetDataset()->GetDescription() :
-                                                            "(unknown VRT)");
+                     "(unknown VRT)");
         }
         return false;
     }
@@ -605,7 +623,7 @@ bool VRTDerivedRasterBand::InitializePython()
     // be thread-safe. This problem doesn't seem to appear for code in
     // regular files
     const bool bUseExclusiveLock = m_poPrivate->m_bExclusiveLock ||
-                    m_poPrivate->m_osCode.find("@jit") != std::string::npos;
+                                   m_poPrivate->m_osCode.find("@jit") != std::string::npos;
     GIL_Holder oHolder(bUseExclusiveLock);
 
     // As we don't want to depend on numpy C API/ABI, we use a trick to build
@@ -616,12 +634,12 @@ bool VRTDerivedRasterBand::InitializePython()
     // multithreaded use cases.
     CPLString osModuleName( CPLSPrintf("gdal_vrt_module_%p", this) );
     PyObject* poCompiledString = Py_CompileString(
-        ("import numpy\n"
-        "def GDALCreateNumpyArray(buffer, dtype, height, width):\n"
-        "    return numpy.frombuffer(buffer, str(dtype.decode('ascii')))."
-                                                "reshape([height, width])\n"
-        "\n" + m_poPrivate->m_osCode).c_str(),
-        osModuleName, Py_file_input);
+                                     ("import numpy\n"
+                                      "def GDALCreateNumpyArray(buffer, dtype, height, width):\n"
+                                      "    return numpy.frombuffer(buffer, str(dtype.decode('ascii')))."
+                                      "reshape([height, width])\n"
+                                      "\n" + m_poPrivate->m_osCode).c_str(),
+                                     osModuleName, Py_file_input);
     if( poCompiledString == nullptr || PyErr_Occurred() )
     {
         CPLError(CE_Failure, CPLE_AppDefined,
@@ -656,18 +674,18 @@ bool VRTDerivedRasterBand::InitializePython()
                 osException += ". You may need to define PYTHONPATH";
             }
             CPLError(CE_Failure, CPLE_AppDefined,
-                 "%s", osException.c_str());
+                     "%s", osException.c_str());
             Py_DecRef(poModule);
             return false;
         }
         m_poPrivate->m_poUserFunction = PyObject_GetAttrString(poUserModule,
-                                                            osPythonFunction );
+                                        osPythonFunction );
         Py_DecRef(poUserModule);
     }
     else
     {
         m_poPrivate->m_poUserFunction = PyObject_GetAttrString(poModule,
-                                            osPythonFunction );
+                                        osPythonFunction );
     }
     if (m_poPrivate->m_poUserFunction == nullptr || PyErr_Occurred())
     {
@@ -780,16 +798,16 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
     }
     const int nSrcTypeSize = GDALGetDataTypeSizeBytes(eSrcType);
 
-/* -------------------------------------------------------------------- */
-/*      Initialize the buffer to some background value. Use the         */
-/*      nodata value if available.                                      */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Initialize the buffer to some background value. Use the         */
+    /*      nodata value if available.                                      */
+    /* -------------------------------------------------------------------- */
     if( bSkipBufferInitialization )
     {
         // Do nothing
     }
     else if( nPixelSpace == nBufTypeSize &&
-        (!m_bNoDataValueSet || m_dfNoDataValue == 0) ) {
+             (!m_bNoDataValueSet || m_dfNoDataValue == 0) ) {
         memset( pData, 0,
                 static_cast<size_t>(nBufXSize * nBufYSize * nPixelSpace) );
     }
@@ -806,17 +824,17 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Do we have overviews that would be appropriate to satisfy       */
-/*      this request?                                                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Do we have overviews that would be appropriate to satisfy       */
+    /*      this request?                                                   */
+    /* -------------------------------------------------------------------- */
     if( (nBufXSize < nXSize || nBufYSize < nYSize)
-        && GetOverviewCount() > 0 )
+            && GetOverviewCount() > 0 )
     {
         if( OverviewRasterIO(
-               eRWFlag, nXOff, nYOff, nXSize, nYSize,
-               pData, nBufXSize, nBufYSize,
-               eBufType, nPixelSpace, nLineSpace, psExtraArg ) == CE_None )
+                    eRWFlag, nXOff, nYOff, nXSize, nYSize,
+                    pData, nBufXSize, nBufYSize,
+                    eBufType, nPixelSpace, nLineSpace, psExtraArg ) == CE_None )
             return CE_None;
     }
 
@@ -829,9 +847,9 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
         if( pfnPixelFunc == nullptr )
         {
             CPLError( CE_Failure, CPLE_IllegalArg,
-                    "VRTDerivedRasterBand::IRasterIO:"
-                    "Derived band pixel function '%s' not registered.",
-                    this->pszFuncName) ;
+                      "VRTDerivedRasterBand::IRasterIO:"
+                      "Derived band pixel function '%s' not registered.",
+                      this->pszFuncName) ;
             return CE_Failure;
         }
     }
@@ -846,7 +864,7 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
     // Get buffers for each source.
     const int nBufferRadius = m_poPrivate->m_nBufferRadius;
     if( nBufferRadius > (INT_MAX - nBufXSize) / 2 ||
-        nBufferRadius > (INT_MAX - nBufYSize) / 2 )
+            nBufferRadius > (INT_MAX - nBufYSize) / 2 )
     {
         return CE_Failure;
     }
@@ -933,13 +951,13 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
         if( sExtraArg.dfXOff + sExtraArg.dfXSize > nRasterXSize )
         {
             nExtBufXSizeReq -= static_cast<int>((sExtraArg.dfXOff +
-                        sExtraArg.dfXSize - nRasterXSize) / dfXRatio);
+                                                 sExtraArg.dfXSize - nRasterXSize) / dfXRatio);
             sExtraArg.dfXSize = nRasterXSize - sExtraArg.dfXOff;
         }
         if( sExtraArg.dfYOff + sExtraArg.dfYSize > nRasterYSize )
         {
             nExtBufYSizeReq -= static_cast<int>((sExtraArg.dfYOff +
-                        sExtraArg.dfYSize - nRasterYSize) / dfYRatio);
+                                                 sExtraArg.dfYSize - nRasterYSize) / dfYRatio);
             sExtraArg.dfYSize = nRasterYSize - sExtraArg.dfYOff;
         }
 
@@ -956,15 +974,15 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
     for( int iSource = 0; iSource < nSources && eErr == CE_None; iSource++ ) {
         GByte* pabyBuffer = static_cast<GByte*>(pBuffers[iSource]);
         eErr = static_cast<VRTSource *>( papoSources[iSource] )->RasterIO(
-            eSrcType,
-            nXOffExt, nYOffExt, nXSizeExt, nYSizeExt,
-            pabyBuffer + (nYShiftInBuffer * nExtBufXSize +
-                                            nXShiftInBuffer) * nSrcTypeSize,
-            nExtBufXSizeReq, nExtBufYSizeReq,
-            eSrcType,
-            nSrcTypeSize,
-            nSrcTypeSize * nExtBufXSize,
-            &sExtraArg );
+                   eSrcType,
+                   nXOffExt, nYOffExt, nXSizeExt, nYSizeExt,
+                   pabyBuffer + (nYShiftInBuffer * nExtBufXSize +
+                                 nXShiftInBuffer) * nSrcTypeSize,
+                   nExtBufXSizeReq, nExtBufYSizeReq,
+                   eSrcType,
+                   nSrcTypeSize,
+                   nSrcTypeSize * nExtBufXSize,
+                   &sExtraArg );
 
         // Extend first lines
         for( int iY = 0; iY < nYShiftInBuffer; iY++ )
@@ -978,7 +996,7 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
         {
             memcpy( pabyBuffer + iY * nExtBufXSize * nSrcTypeSize,
                     pabyBuffer + (nYShiftInBuffer + nExtBufYSizeReq - 1) *
-                                                    nExtBufXSize * nSrcTypeSize,
+                    nExtBufXSize * nSrcTypeSize,
                     nExtBufXSize * nSrcTypeSize );
         }
         // Extend first cols
@@ -990,7 +1008,7 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
                 {
                     memcpy( pabyBuffer + (iY * nExtBufXSize + iX) * nSrcTypeSize,
                             pabyBuffer + (iY * nExtBufXSize +
-                                                nXShiftInBuffer) * nSrcTypeSize,
+                                          nXShiftInBuffer) * nSrcTypeSize,
                             nSrcTypeSize );
                 }
             }
@@ -1001,11 +1019,11 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
             for( int iY = 0; iY < nExtBufYSize; iY ++ )
             {
                 for( int iX = nXShiftInBuffer + nExtBufXSizeReq;
-                         iX < nExtBufXSize; iX++ )
+                        iX < nExtBufXSize; iX++ )
                 {
                     memcpy( pabyBuffer + (iY * nExtBufXSize + iX) * nSrcTypeSize,
                             pabyBuffer + (iY * nExtBufXSize + nXShiftInBuffer +
-                                            nExtBufXSizeReq - 1) * nSrcTypeSize,
+                                          nExtBufXSizeReq - 1) * nSrcTypeSize,
                             nSrcTypeSize );
                 }
             }
@@ -1038,108 +1056,108 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
         // Do we need a temporary buffer or can we use directly the output
         // buffer ?
         if( nBufferRadius != 0 ||
-            eDataType != eBufType ||
-            nPixelSpace != nBufTypeSize ||
-            nLineSpace != static_cast<GSpacing>(nBufTypeSize) * nBufXSize )
+                eDataType != eBufType ||
+                nPixelSpace != nBufTypeSize ||
+                nLineSpace != static_cast<GSpacing>(nBufTypeSize) * nBufXSize )
         {
             pabyTmpBuffer = static_cast<GByte*>(VSI_CALLOC_VERBOSE(
-                            static_cast<size_t>(nExtBufXSize) * nExtBufYSize,
-                            GDALGetDataTypeSizeBytes(eDataType)));
+                                                    static_cast<size_t>(nExtBufXSize) * nExtBufYSize,
+                                                    GDALGetDataTypeSizeBytes(eDataType)));
             if( !pabyTmpBuffer )
                 goto end;
         }
 
         {
-        const bool bUseExclusiveLock = m_poPrivate->m_bExclusiveLock ||
-                    ( m_poPrivate->m_bFirstTime &&
-                    m_poPrivate->m_osCode.find("@jit") != std::string::npos);
-        m_poPrivate->m_bFirstTime = false;
-        GIL_Holder oHolder(bUseExclusiveLock);
+            const bool bUseExclusiveLock = m_poPrivate->m_bExclusiveLock ||
+                                           ( m_poPrivate->m_bFirstTime &&
+                                             m_poPrivate->m_osCode.find("@jit") != std::string::npos);
+            m_poPrivate->m_bFirstTime = false;
+            GIL_Holder oHolder(bUseExclusiveLock);
 
-        // Prepare target numpy array
-        PyObject* poPyDstArray = GDALCreateNumpyArray(
-                                    m_poPrivate->m_poGDALCreateNumpyArray,
-                                    pabyTmpBuffer ? pabyTmpBuffer : pData,
-                                    eDataType,
-                                    nExtBufYSize,
-                                    nExtBufXSize);
-        if( !poPyDstArray )
-        {
-            VSIFree(pabyTmpBuffer);
-            goto end;
-        }
+            // Prepare target numpy array
+            PyObject* poPyDstArray = GDALCreateNumpyArray(
+                                         m_poPrivate->m_poGDALCreateNumpyArray,
+                                         pabyTmpBuffer ? pabyTmpBuffer : pData,
+                                         eDataType,
+                                         nExtBufYSize,
+                                         nExtBufXSize);
+            if( !poPyDstArray )
+            {
+                VSIFree(pabyTmpBuffer);
+                goto end;
+            }
 
-        // Wrap source buffers as input numpy arrays
-        PyObject* pyArgInputArray = PyTuple_New(nSources);
-        for( int i = 0; i < nSources; i++ )
-        {
-            GByte* pabyBuffer = static_cast<GByte*>(pBuffers[i]);
-            PyObject* poPySrcArray = GDALCreateNumpyArray(
-                        m_poPrivate->m_poGDALCreateNumpyArray,
-                        pabyBuffer,
-                        eSrcType,
-                        nExtBufYSize,
-                        nExtBufXSize);
-            CPLAssert(poPySrcArray);
-            PyTuple_SetItem(pyArgInputArray, i, poPySrcArray);
-        }
+            // Wrap source buffers as input numpy arrays
+            PyObject* pyArgInputArray = PyTuple_New(nSources);
+            for( int i = 0; i < nSources; i++ )
+            {
+                GByte* pabyBuffer = static_cast<GByte*>(pBuffers[i]);
+                PyObject* poPySrcArray = GDALCreateNumpyArray(
+                                             m_poPrivate->m_poGDALCreateNumpyArray,
+                                             pabyBuffer,
+                                             eSrcType,
+                                             nExtBufYSize,
+                                             nExtBufXSize);
+                CPLAssert(poPySrcArray);
+                PyTuple_SetItem(pyArgInputArray, i, poPySrcArray);
+            }
 
-        // Create arguments
-        PyObject* pyArgs = PyTuple_New(10);
-        PyTuple_SetItem(pyArgs, 0, pyArgInputArray);
-        PyTuple_SetItem(pyArgs, 1, poPyDstArray);
-        PyTuple_SetItem(pyArgs, 2, PyInt_FromLong(nXOff));
-        PyTuple_SetItem(pyArgs, 3, PyInt_FromLong(nYOff));
-        PyTuple_SetItem(pyArgs, 4, PyInt_FromLong(nXSize));
-        PyTuple_SetItem(pyArgs, 5, PyInt_FromLong(nYSize));
-        PyTuple_SetItem(pyArgs, 6, PyInt_FromLong(nRasterXSize));
-        PyTuple_SetItem(pyArgs, 7, PyInt_FromLong(nRasterYSize));
-        PyTuple_SetItem(pyArgs, 8, PyInt_FromLong(nBufferRadius));
+            // Create arguments
+            PyObject* pyArgs = PyTuple_New(10);
+            PyTuple_SetItem(pyArgs, 0, pyArgInputArray);
+            PyTuple_SetItem(pyArgs, 1, poPyDstArray);
+            PyTuple_SetItem(pyArgs, 2, PyInt_FromLong(nXOff));
+            PyTuple_SetItem(pyArgs, 3, PyInt_FromLong(nYOff));
+            PyTuple_SetItem(pyArgs, 4, PyInt_FromLong(nXSize));
+            PyTuple_SetItem(pyArgs, 5, PyInt_FromLong(nYSize));
+            PyTuple_SetItem(pyArgs, 6, PyInt_FromLong(nRasterXSize));
+            PyTuple_SetItem(pyArgs, 7, PyInt_FromLong(nRasterYSize));
+            PyTuple_SetItem(pyArgs, 8, PyInt_FromLong(nBufferRadius));
 
-        double adfGeoTransform[6];
-        adfGeoTransform[0] = 0;
-        adfGeoTransform[1] = 1;
-        adfGeoTransform[2] = 0;
-        adfGeoTransform[3] = 0;
-        adfGeoTransform[4] = 0;
-        adfGeoTransform[5] = 1;
-        if( GetDataset() )
-            GetDataset()->GetGeoTransform(adfGeoTransform);
-        PyObject* pyGT = PyTuple_New(6);
-        for(int i = 0; i < 6; i++ )
-            PyTuple_SetItem(pyGT, i, PyFloat_FromDouble(adfGeoTransform[i]));
-        PyTuple_SetItem(pyArgs, 9, pyGT);
+            double adfGeoTransform[6];
+            adfGeoTransform[0] = 0;
+            adfGeoTransform[1] = 1;
+            adfGeoTransform[2] = 0;
+            adfGeoTransform[3] = 0;
+            adfGeoTransform[4] = 0;
+            adfGeoTransform[5] = 1;
+            if( GetDataset() )
+                GetDataset()->GetGeoTransform(adfGeoTransform);
+            PyObject* pyGT = PyTuple_New(6);
+            for(int i = 0; i < 6; i++ )
+                PyTuple_SetItem(pyGT, i, PyFloat_FromDouble(adfGeoTransform[i]));
+            PyTuple_SetItem(pyArgs, 9, pyGT);
 
-        // Prepare kwargs
-        PyObject* pyKwargs = PyDict_New();
-        for( size_t i = 0; i < m_poPrivate->m_oFunctionArgs.size(); ++i )
-        {
-            const char* pszKey =
-                m_poPrivate->m_oFunctionArgs[i].first.c_str();
-            const char* pszValue =
-                m_poPrivate->m_oFunctionArgs[i].second.c_str();
-            PyDict_SetItemString(pyKwargs, pszKey,
-                PyString_FromStringAndSize(pszValue, strlen(pszValue)));
-        }
+            // Prepare kwargs
+            PyObject* pyKwargs = PyDict_New();
+            for( size_t i = 0; i < m_poPrivate->m_oFunctionArgs.size(); ++i )
+            {
+                const char* pszKey =
+                    m_poPrivate->m_oFunctionArgs[i].first.c_str();
+                const char* pszValue =
+                    m_poPrivate->m_oFunctionArgs[i].second.c_str();
+                PyDict_SetItemString(pyKwargs, pszKey,
+                                     PyString_FromStringAndSize(pszValue, strlen(pszValue)));
+            }
 
-        // Call user function
-        PyObject* pRetValue = PyObject_Call(
-                                        m_poPrivate->m_poUserFunction,
-                                        pyArgs, pyKwargs);
+            // Call user function
+            PyObject* pRetValue = PyObject_Call(
+                                      m_poPrivate->m_poUserFunction,
+                                      pyArgs, pyKwargs);
 
-        Py_DecRef(pyArgs);
-        Py_DecRef(pyKwargs);
+            Py_DecRef(pyArgs);
+            Py_DecRef(pyKwargs);
 
-        if( ErrOccurredEmitCPLError() )
-        {
-            // do nothing
-        }
-        else
-        {
-            eErr = CE_None;
-        }
-        if( pRetValue )
-            Py_DecRef(pRetValue);
+            if( ErrOccurredEmitCPLError() )
+            {
+                // do nothing
+            }
+            else
+            {
+                eErr = CE_None;
+            }
+            if( pRetValue )
+                Py_DecRef(pRetValue);
         } // End of GIL section
 
         if( pabyTmpBuffer )
@@ -1148,8 +1166,8 @@ CPLErr VRTDerivedRasterBand::IRasterIO( GDALRWFlag eRWFlag,
             for( int iY = 0; iY < nBufYSize; iY++ )
             {
                 size_t nSrcOffset = (static_cast<size_t>(iY + nBufferRadius) *
-                    nExtBufXSize + nBufferRadius) *
-                    GDALGetDataTypeSizeBytes(eDataType);
+                                     nExtBufXSize + nBufferRadius) *
+                                    GDALGetDataTypeSizeBytes(eDataType);
                 GDALCopyWords(pabyTmpBuffer + nSrcOffset,
                               eDataType,
                               GDALGetDataTypeSizeBytes(eDataType),
@@ -1183,11 +1201,11 @@ end:
 /************************************************************************/
 
 int  VRTDerivedRasterBand::IGetDataCoverageStatus( int /* nXOff */,
-                                                   int /* nYOff */,
-                                                   int /* nXSize */,
-                                                   int /* nYSize */,
-                                                   int /* nMaskFlagStop */,
-                                                   double* pdfDataPct)
+        int /* nYOff */,
+        int /* nXSize */,
+        int /* nYSize */,
+        int /* nMaskFlagStop */,
+        double* pdfDataPct)
 {
     if( pdfDataPct != nullptr )
         *pdfDataPct = -1.0;
@@ -1205,8 +1223,8 @@ CPLErr VRTDerivedRasterBand::XMLInit( CPLXMLNode *psTree,
 
 {
     const CPLErr eErr = VRTSourcedRasterBand::XMLInit( psTree, pszVRTPath,
-                                                       pUniqueHandle,
-                                                       oMapSharedSources );
+                        pUniqueHandle,
+                        oMapSharedSources );
     if( eErr != CE_None )
         return eErr;
 
@@ -1220,9 +1238,9 @@ CPLErr VRTDerivedRasterBand::XMLInit( CPLXMLNode *psTree,
     }
 
     m_poPrivate->m_osLanguage = CPLGetXMLValue( psTree,
-                                                "PixelFunctionLanguage", "C" );
+                                "PixelFunctionLanguage", "C" );
     if( !EQUAL(m_poPrivate->m_osLanguage, "C") &&
-        !EQUAL(m_poPrivate->m_osLanguage, "Python") )
+            !EQUAL(m_poPrivate->m_osLanguage, "Python") )
     {
         CPLError(CE_Failure, CPLE_NotSupported,
                  "Unsupported PixelFunctionLanguage");
@@ -1230,9 +1248,9 @@ CPLErr VRTDerivedRasterBand::XMLInit( CPLXMLNode *psTree,
     }
 
     m_poPrivate->m_osCode =
-                        CPLGetXMLValue( psTree, "PixelFunctionCode", "" );
+        CPLGetXMLValue( psTree, "PixelFunctionCode", "" );
     if( !m_poPrivate->m_osCode.empty() &&
-        !EQUAL(m_poPrivate->m_osLanguage, "Python") )
+            !EQUAL(m_poPrivate->m_osLanguage, "Python") )
     {
         CPLError(CE_Failure, CPLE_NotSupported,
                  "PixelFunctionCode can only be used with Python");
@@ -1240,15 +1258,15 @@ CPLErr VRTDerivedRasterBand::XMLInit( CPLXMLNode *psTree,
     }
 
     m_poPrivate->m_nBufferRadius =
-                        atoi(CPLGetXMLValue( psTree, "BufferRadius", "0" ));
+        atoi(CPLGetXMLValue( psTree, "BufferRadius", "0" ));
     if( m_poPrivate->m_nBufferRadius < 0 ||
-        m_poPrivate->m_nBufferRadius > 1024 )
+            m_poPrivate->m_nBufferRadius > 1024 )
     {
         CPLError(CE_Failure, CPLE_AppDefined, "Invalid value for BufferRadius");
         return CE_Failure;
     }
     if( m_poPrivate->m_nBufferRadius != 0 &&
-        !EQUAL(m_poPrivate->m_osLanguage, "Python") )
+            !EQUAL(m_poPrivate->m_osLanguage, "Python") )
     {
         CPLError(CE_Failure, CPLE_NotSupported,
                  "BufferRadius can only be used with Python");
@@ -1265,8 +1283,8 @@ CPLErr VRTDerivedRasterBand::XMLInit( CPLXMLNode *psTree,
             return CE_Failure;
         }
         for( CPLXMLNode* psIter = psArgs->psChild;
-                         psIter != nullptr;
-                         psIter = psIter->psNext )
+                psIter != nullptr;
+                psIter = psIter->psNext )
         {
             if( psIter->eType == CXT_Attribute )
             {
@@ -1295,9 +1313,9 @@ CPLXMLNode *VRTDerivedRasterBand::SerializeToXML( const char *pszVRTPath )
 {
     CPLXMLNode *psTree = VRTSourcedRasterBand::SerializeToXML( pszVRTPath );
 
-/* -------------------------------------------------------------------- */
-/*      Set subclass.                                                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Set subclass.                                                   */
+    /* -------------------------------------------------------------------- */
     CPLCreateXMLNode(
         CPLCreateXMLNode( psTree, CXT_Attribute, "subClass" ),
         CXT_Text, "VRTDerivedRasterBand" );
@@ -1322,7 +1340,7 @@ CPLXMLNode *VRTDerivedRasterBand::SerializeToXML( const char *pszVRTPath )
                 m_poPrivate->m_oFunctionArgs[i].second.c_str();
             CPLCreateXMLNode(
                 CPLCreateXMLNode( psArgs, CXT_Attribute, pszKey ),
-                                  CXT_Text, pszValue );
+                CXT_Text, pszValue );
         }
     }
     if( !m_poPrivate->m_osCode.empty() )
@@ -1332,8 +1350,8 @@ CPLXMLNode *VRTDerivedRasterBand::SerializeToXML( const char *pszVRTPath )
             CPLCreateXMLNode(
                 CPLCreateXMLNode( psTree,
                                   CXT_Element, "PixelFunctionCode" ),
-                 CXT_Literal,
-                 ("<![CDATA[" + m_poPrivate->m_osCode + "]]>").c_str() );
+                CXT_Literal,
+                ("<![CDATA[" + m_poPrivate->m_osCode + "]]>").c_str() );
         }
         else
         {
@@ -1384,16 +1402,16 @@ CPLErr VRTDerivedRasterBand::ComputeRasterMinMax( int bApproxOK, double* adfMinM
 
 CPLErr
 VRTDerivedRasterBand::ComputeStatistics( int bApproxOK,
-                                         double *pdfMin, double *pdfMax,
-                                         double *pdfMean, double *pdfStdDev,
-                                         GDALProgressFunc pfnProgress,
-                                         void *pProgressData )
+        double *pdfMin, double *pdfMax,
+        double *pdfMean, double *pdfStdDev,
+        GDALProgressFunc pfnProgress,
+        void *pProgressData )
 
 {
     return GDALRasterBand::ComputeStatistics(  bApproxOK,
-                                            pdfMin, pdfMax,
-                                            pdfMean, pdfStdDev,
-                                            pfnProgress, pProgressData );
+            pdfMin, pdfMax,
+            pdfMean, pdfStdDev,
+            pfnProgress, pProgressData );
 }
 
 /************************************************************************/
@@ -1401,16 +1419,16 @@ VRTDerivedRasterBand::ComputeStatistics( int bApproxOK,
 /************************************************************************/
 
 CPLErr VRTDerivedRasterBand::GetHistogram( double dfMin, double dfMax,
-                                           int nBuckets, GUIntBig *panHistogram,
-                                           int bIncludeOutOfRange, int bApproxOK,
-                                           GDALProgressFunc pfnProgress,
-                                           void *pProgressData )
+        int nBuckets, GUIntBig *panHistogram,
+        int bIncludeOutOfRange, int bApproxOK,
+        GDALProgressFunc pfnProgress,
+        void *pProgressData )
 
 {
     return VRTRasterBand::GetHistogram( dfMin, dfMax,
-                                            nBuckets, panHistogram,
-                                            bIncludeOutOfRange, bApproxOK,
-                                            pfnProgress, pProgressData );
+                                        nBuckets, panHistogram,
+                                        bIncludeOutOfRange, bApproxOK,
+                                        pfnProgress, pProgressData );
 }
 
 /*! @endcond */

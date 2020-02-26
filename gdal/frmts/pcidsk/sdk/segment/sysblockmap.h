@@ -3,13 +3,13 @@
  * Purpose:  Declaration of the SysBlockMap class.
  *
  * This class is used to manage access to the SYS virtual block map segment
- * (named SysBMDir).  This segment is used to keep track of one or more 
+ * (named SysBMDir).  This segment is used to keep track of one or more
  * virtual files stored in SysBData segments.  These virtual files are normally
- * used to hold tiled images for primary bands or overviews.  
+ * used to hold tiled images for primary bands or overviews.
  *
  * This class is closely partnered with the SysVirtualFile class, and the
- * primary client is the CTiledChannel class. 
- * 
+ * primary client is the CTiledChannel class.
+ *
  ******************************************************************************
  * Copyright (c) 2009
  * PCI Geomatics, 50 West Wilmot Street, Richmond Hill, Ont, Canada
@@ -42,56 +42,56 @@
 
 namespace PCIDSK
 {
-    class SysVirtualFile;
-    class PCIDSKFile;
-    
-    /************************************************************************/
-    /*                             SysBlockMap                              */
-    /************************************************************************/
+class SysVirtualFile;
+class PCIDSKFile;
 
-    class SysBlockMap final: virtual public CPCIDSKSegment
-    {
-    public:
-        SysBlockMap( PCIDSKFile *file, int segment,const char *segment_pointer );
+/************************************************************************/
+/*                             SysBlockMap                              */
+/************************************************************************/
 
-        virtual        ~SysBlockMap();
+class SysBlockMap final: virtual public CPCIDSKSegment
+{
+public:
+    SysBlockMap( PCIDSKFile *file, int segment,const char *segment_pointer );
 
-        virtual void    Synchronize() override;
-        virtual void    Initialize() override;
+    virtual        ~SysBlockMap();
 
-        SysVirtualFile *GetVirtualFile( int image );
-        int             CreateVirtualFile();
-        int             CreateVirtualImageFile( int width, int height, 
-                                                int block_width, int block_height,
-                                                eChanType chan_type,
-                                                std::string compression );
-        int             GrowVirtualFile( int image, int &last_block,
-                                         int &block_segment_ret );
-        void            SetVirtualFileSize( int image, uint64 file_length );
+    virtual void    Synchronize() override;
+    virtual void    Initialize() override;
 
-        int             GetNextBlockMapEntry( int bm_index,
-                                              uint16 &segment,
-                                              int &block_in_segment );
-    
-    private:
-        bool         partial_loaded;
-        bool         full_loaded;
-        bool         dirty;
+    SysVirtualFile *GetVirtualFile( int image );
+    int             CreateVirtualFile();
+    int             CreateVirtualImageFile( int width, int height,
+                                            int block_width, int block_height,
+                                            eChanType chan_type,
+                                            std::string compression );
+    int             GrowVirtualFile( int image, int &last_block,
+                                     int &block_segment_ret );
+    void            SetVirtualFileSize( int image, uint64 file_length );
 
-        void         PartialLoad();
-        void         FullLoad();
-        void         AllocateBlocks();
+    int             GetNextBlockMapEntry( int bm_index,
+                                          uint16 &segment,
+                                          int &block_in_segment );
 
-        PCIDSKBuffer layer_data; // only if partial_loaded
-        PCIDSKBuffer blockmap_data; // only if full_loaded.
+private:
+    bool         partial_loaded;
+    bool         full_loaded;
+    bool         dirty;
 
-        int          block_count;
-        int          first_free_block;
+    void         PartialLoad();
+    void         FullLoad();
+    void         AllocateBlocks();
 
-        int          growing_segment;
+    PCIDSKBuffer layer_data; // only if partial_loaded
+    PCIDSKBuffer blockmap_data; // only if full_loaded.
 
-        std::vector<SysVirtualFile*> virtual_files;
-    };
+    int          block_count;
+    int          first_free_block;
+
+    int          growing_segment;
+
+    std::vector<SysVirtualFile*> virtual_files;
+};
 } // end namespace PCIDSK
 
 #endif // INCLUDE_SEGMENT_SYSBLOCKMAP_H

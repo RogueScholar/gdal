@@ -165,7 +165,7 @@ int OGRSXFDataSource::Open(const char * pszFilename, bool bUpdateIn,
 
     if ( oSXFPassport.version < 3 )
     {
-        CPLError(CE_Failure, CPLE_NotSupported , "SXF File version not supported");
+        CPLError(CE_Failure, CPLE_NotSupported, "SXF File version not supported");
         CloseFile();
         return FALSE;
     }
@@ -187,7 +187,7 @@ int OGRSXFDataSource::Open(const char * pszFilename, bool bUpdateIn,
     }
 
     if(oSXFPassport.version == 3 &&
-               oSXFPassport.informationFlags.bProjectionDataCompliance == false)
+            oSXFPassport.informationFlags.bProjectionDataCompliance == false)
     {
         CPLError( CE_Failure, CPLE_NotSupported,
                   "SXF. Data does not correspond to the projection." );
@@ -209,7 +209,7 @@ int OGRSXFDataSource::Open(const char * pszFilename, bool bUpdateIn,
                   "SXF. Given material may be rotated in the conditional system of coordinates" );
     }
 
-/*---------------- TRY READ THE RSC FILE HEADER  -----------------------*/
+    /*---------------- TRY READ THE RSC FILE HEADER  -----------------------*/
 
     CPLString soRSCRileName;
     const char* pszRSCRileName =
@@ -464,7 +464,7 @@ void OGRSXFDataSource::SetVertCS(const long iVCS, SXFPassport& passport,
     const char* pszSetVertCS =
         CSLFetchNameValueDef(papszOpenOpts,
                              "SXF_SET_VERTCS",
-                              CPLGetConfigOption("SXF_SET_VERTCS", "NO"));
+                             CPLGetConfigOption("SXF_SET_VERTCS", "NO"));
     if (!CPLTestBool(pszSetVertCS))
         return;
 
@@ -472,7 +472,7 @@ void OGRSXFDataSource::SetVertCS(const long iVCS, SXFPassport& passport,
 }
 
 OGRErr OGRSXFDataSource::ReadSXFMapDescription(VSILFILE* fpSXFIn, SXFPassport& passport,
-                                               const char* const* papszOpenOpts)
+        const char* const* papszOpenOpts)
 {
     // int nObjectsRead = 0;
     passport.stMapDescription.Env.MaxX = -100000000;
@@ -605,7 +605,7 @@ OGRErr OGRSXFDataSource::ReadSXFMapDescription(VSILFILE* fpSXFIn, SXFPassport& p
         }
 
         VSIFSeekL(fpSXFIn, 212, SEEK_SET);
-        struct _buff{
+        struct _buff {
             GUInt32 nRes;
             GInt16 anFrame[8];
             // cppcheck-suppress unusedStructMember
@@ -784,7 +784,7 @@ OGRErr OGRSXFDataSource::ReadSXFMapDescription(VSILFILE* fpSXFIn, SXFPassport& p
         return eErr;
     }
     else if (iEllips == 9 && iProjSys == 33 &&
-        passport.stMapDescription.eUnitInPlan == SXF_COORD_MU_DEGREE)
+             passport.stMapDescription.eUnitInPlan == SXF_COORD_MU_DEGREE)
     {
         passport.stMapDescription.pSpatRef = new OGRSpatialReference(SRS_WKT_WGS84_LAT_LONG);
         passport.stMapDescription.pSpatRef->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
@@ -954,7 +954,7 @@ void OGRSXFDataSource::CreateLayers(VSILFILE* fpRSC, const char* const* papszOpe
     }
 
     GByte szLayersID[4];
-    struct _layer{
+    struct _layer {
         GUInt32 nLength;
         char szName[32];
         char szShortName[16];
@@ -977,9 +977,9 @@ void OGRSXFDataSource::CreateLayers(VSILFILE* fpRSC, const char* const* papszOpe
         VSIFReadL(&LAYER, nLayerStructSize, 1, fpRSC);
         papoLayers = (OGRLayer**)CPLRealloc(papoLayers, sizeof(OGRLayer*)* (nLayers + 1));
         bool bLayerFullName = CPLTestBool(
-                 CSLFetchNameValueDef(papszOpenOpts,
-                                      "SXF_LAYER_FULLNAME",
-                                       CPLGetConfigOption("SXF_LAYER_FULLNAME", "NO")));
+                                  CSLFetchNameValueDef(papszOpenOpts,
+                                          "SXF_LAYER_FULLNAME",
+                                          CPLGetConfigOption("SXF_LAYER_FULLNAME", "NO")));
         char* pszRecoded = nullptr;
         if (bLayerFullName)
         {
@@ -1019,7 +1019,7 @@ void OGRSXFDataSource::CreateLayers(VSILFILE* fpRSC, const char* const* papszOpe
     nLayers++;
 
     char szObjectsID[4];
-    struct _object{
+    struct _object {
         unsigned nLength;
         unsigned nClassifyCode;
         // cppcheck-suppress unusedStructMember

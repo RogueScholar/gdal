@@ -58,7 +58,7 @@ class FITDataset final: public GDALPamDataset
     FITinfo     *info;
     double      adfGeoTransform[6];
 
-  public:
+public:
     FITDataset();
     ~FITDataset();
     static GDALDataset *Open( GDALOpenInfo * );
@@ -116,28 +116,28 @@ FITRasterBand::FITRasterBand( FITDataset *poDSIn, int nBandIn, int nBandsIn ) :
     poDS = poDSIn;
     nBand = nBandIn;
 
-/* -------------------------------------------------------------------- */
-/*      Get the GDAL data type.                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Get the GDAL data type.                                         */
+    /* -------------------------------------------------------------------- */
     eDataType = fitDataType(poDSIn->info->dtype);
 
-/* -------------------------------------------------------------------- */
-/*      Get the page sizes.                                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Get the page sizes.                                             */
+    /* -------------------------------------------------------------------- */
     nBlockXSize = poDSIn->info->xPageSize;
     nBlockYSize = poDSIn->info->yPageSize;
 
-/* -------------------------------------------------------------------- */
-/*      Calculate the values for record offset calculations.             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Calculate the values for record offset calculations.             */
+    /* -------------------------------------------------------------------- */
     bytesPerComponent = GDALGetDataTypeSizeBytes(eDataType);
     if( bytesPerComponent == 0 )
         return;
     bytesPerPixel = nBandsIn * bytesPerComponent;
     const auto knIntMax = std::numeric_limits<int>::max();
     if( nBlockXSize <= 0 || nBlockYSize <= 0 ||
-        nBlockXSize > knIntMax / static_cast<int>(bytesPerPixel) ||
-        nBlockYSize > knIntMax /
+            nBlockXSize > knIntMax / static_cast<int>(bytesPerPixel) ||
+            nBlockYSize > knIntMax /
             (nBlockXSize * static_cast<int>(bytesPerPixel)) )
         return;
     recordSize = bytesPerPixel * nBlockXSize * nBlockYSize;
@@ -147,11 +147,11 @@ FITRasterBand::FITRasterBand( FITDataset *poDSIn, int nBandIn, int nBandsIn ) :
         (unsigned long) ceil((double) poDSIn->info->ySize / nBlockYSize);
 
     tmpImage = (char *) VSI_MALLOC_VERBOSE(recordSize);
-/* -------------------------------------------------------------------- */
-/*      Set the access flag.  For now we set it the same as the         */
-/*      whole dataset, but eventually this should take account of       */
-/*      locked channels, or read-only secondary data files.             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Set the access flag.  For now we set it the same as the         */
+    /*      whole dataset, but eventually this should take account of       */
+    /*      locked channels, or read-only secondary data files.             */
+    /* -------------------------------------------------------------------- */
     /* ... */
 }
 
@@ -211,7 +211,7 @@ CPLErr FITRasterBand::IReadBlock( int nBlockXOff, int nBlockYOff,
         // iflLowerRightOrigin - from lower right corner
         // scan left then up
         tilenum = (numYBlocks-1-nBlockYOff) * numXBlocks +
-            (numXBlocks-1-nBlockXOff);
+                  (numXBlocks-1-nBlockXOff);
         break;
     case 4:
         // iflLowerLeftOrigin - from lower left corner
@@ -237,7 +237,7 @@ CPLErr FITRasterBand::IReadBlock( int nBlockXOff, int nBlockYOff,
         // iflLeftLowerOrigin -* from lower left corner
         // scan up then right
         tilenum = (numXBlocks-1-nBlockXOff) * numYBlocks +
-            (numYBlocks-1-nBlockYOff);
+                  (numYBlocks-1-nBlockYOff);
         break;
     default:
         CPLError(CE_Failure, CPLE_NotSupported,
@@ -254,7 +254,7 @@ CPLErr FITRasterBand::IReadBlock( int nBlockXOff, int nBlockYOff,
     if ( VSIFSeekL( poFIT_DS->fp, offset, SEEK_SET ) == -1 ) {
         CPLError(CE_Failure, CPLE_NotSupported,
                  "FIT - 64bit file seek failure, handle=%p", poFIT_DS->fp );
-            return CE_Failure;
+        return CE_Failure;
     }
 
     // XXX - should handle status
@@ -338,7 +338,7 @@ CPLErr FITRasterBand::IReadBlock( int nBlockXOff, int nBlockYOff,
                 // scan right then up
                 xinc = 1;
                 yinc = -1;
-               break;
+                break;
             default:
                 CPLError(CE_Failure, CPLE_NotSupported,
                          "FIT - unrecognized image space %i",
@@ -489,7 +489,7 @@ CPLErr FITRasterBand::ReadBlock( int nBlockXOff, int nBlockYOff,
 /************************************************************************/
 
 CPLErr FITRasterBand::WriteBlock( int nBlockXOff, int nBlockYOff,
-                                 void * pImage )
+                                  void * pImage )
 
 {
     FITDataset *poFIT_DS = (FITDataset *) poDS;
@@ -513,7 +513,7 @@ double FITRasterBand::GetMinimum( int *pbSuccess )
         *pbSuccess = TRUE;
 
     if (poFIT_DS->info->version &&
-        STARTS_WITH_CI((const char *) &(poFIT_DS->info->version), "02")) {
+            STARTS_WITH_CI((const char *) &(poFIT_DS->info->version), "02")) {
         return poFIT_DS->info->minValue;
     }
 
@@ -556,7 +556,7 @@ GDALColorInterp FITRasterBand::GetColorInterpretation()
     case 1: // iflNegative - inverted luminance (min value is white)
         CPLError( CE_Warning, CPLE_NotSupported,
                   "FIT - color model Negative not supported - ignoring model");
-            return GCI_Undefined;
+        return GCI_Undefined;
 
     case 2: // iflLuminance - luminance
         if (poFIT_DS->nBands != 1) {
@@ -598,7 +598,7 @@ GDALColorInterp FITRasterBand::GetColorInterpretation()
         CPLError( CE_Warning, CPLE_NotSupported,
                   "FIT - color model  RGBPalette not supported - "
                   "ignoring model");
-            return GCI_Undefined;
+        return GCI_Undefined;
 
     case 5: // iflRGBA - full color with transparency (alpha channel)
         if (poFIT_DS->nBands != 4) {
@@ -733,7 +733,7 @@ GDALColorInterp FITRasterBand::GetColorInterpretation()
     case 12: // iflYCC PhotoCD color model (Luminance, Chrominance)
         CPLError( CE_Warning, CPLE_NotSupported,
                   "FIT - color model YCC not supported - ignoring model");
-            return GCI_Undefined;
+        return GCI_Undefined;
 
     case 13: // iflLuminanceAlpha - Luminance plus alpha
         if (poFIT_DS->nBands != 2) {
@@ -856,16 +856,16 @@ private:
 
 GDALDataset *FITDataset::Open( GDALOpenInfo * poOpenInfo )
 {
-/* -------------------------------------------------------------------- */
-/*      First we check to see if the file has the expected header       */
-/*      bytes.                                                          */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      First we check to see if the file has the expected header       */
+    /*      bytes.                                                          */
+    /* -------------------------------------------------------------------- */
 
     if( poOpenInfo->nHeaderBytes < 5 || poOpenInfo->fpL == nullptr)
         return nullptr;
 
     if( !STARTS_WITH_CI((const char *) poOpenInfo->pabyHeader, "IT01") &&
-        !STARTS_WITH_CI((const char *) poOpenInfo->pabyHeader, "IT02") )
+            !STARTS_WITH_CI((const char *) poOpenInfo->pabyHeader, "IT02") )
         return nullptr;
 
     if( poOpenInfo->eAccess == GA_Update )
@@ -876,9 +876,9 @@ GDALDataset *FITDataset::Open( GDALOpenInfo * poOpenInfo )
         return nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Create a corresponding GDALDataset.                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create a corresponding GDALDataset.                             */
+    /* -------------------------------------------------------------------- */
     FITDataset *poDS = new FITDataset();
     DeleteGuard<FITDataset> guard( poDS );
     poDS->eAccess = poOpenInfo->eAccess;
@@ -888,9 +888,9 @@ GDALDataset *FITDataset::Open( GDALOpenInfo * poOpenInfo )
     poDS->info = new FITinfo;
     FITinfo *info = poDS->info;
 
-/* -------------------------------------------------------------------- */
-/*      Read other header values.                                       */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Read other header values.                                       */
+    /* -------------------------------------------------------------------- */
     FIThead02 *head = (FIThead02 *) poOpenInfo->pabyHeader;
 
     // extract the image attributes from the file header
@@ -977,16 +977,16 @@ GDALDataset *FITDataset::Open( GDALOpenInfo * poOpenInfo )
     poDS->nRasterYSize = head->ySize;
 
     if (!GDALCheckDatasetDimensions(poDS->nRasterXSize, poDS->nRasterYSize) ||
-        !GDALCheckBandCount(head->cSize, FALSE) ||
-        head->xPageSize == 0 ||
-        head->yPageSize == 0)
+            !GDALCheckBandCount(head->cSize, FALSE) ||
+            head->xPageSize == 0 ||
+            head->yPageSize == 0)
     {
         return nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Verify all "unused" header values.                              */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Verify all "unused" header values.                              */
+    /* -------------------------------------------------------------------- */
 
     if( info->zSize != 1 )
     {
@@ -1017,9 +1017,9 @@ GDALDataset *FITDataset::Open( GDALOpenInfo * poOpenInfo )
         return nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Create band information objects.                                */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create band information objects.                                */
+    /* -------------------------------------------------------------------- */
     // Verified by above GDALCheckBandCount()
     // coverity[tainted_data]
     for( int i = 0; i < (int)head->cSize; i++ )
@@ -1030,15 +1030,15 @@ GDALDataset *FITDataset::Open( GDALOpenInfo * poOpenInfo )
             return nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Initialize any PAM information.                                 */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Initialize any PAM information.                                 */
+    /* -------------------------------------------------------------------- */
     poDS->SetDescription( poOpenInfo->pszFilename );
     poDS->TryLoadXML();
 
-/* -------------------------------------------------------------------- */
-/*      Check for external overviews.                                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Check for external overviews.                                   */
+    /* -------------------------------------------------------------------- */
     poDS->oOvManager.Initialize( poDS, poOpenInfo->pszFilename, poOpenInfo->GetSiblingFiles() );
 
     return guard.take();
@@ -1064,9 +1064,9 @@ static GDALDataset *FITCreateCopy(const char * pszFilename,
         return nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Create the dataset.                                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create the dataset.                                             */
+    /* -------------------------------------------------------------------- */
     if( !pfnProgress( 0.0, nullptr, pProgressData ) )
     {
         CPLError( CE_Failure, CPLE_UserInterrupt, "User terminated" );
@@ -1082,9 +1082,9 @@ static GDALDataset *FITCreateCopy(const char * pszFilename,
         return nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Generate header.                                                */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Generate header.                                                */
+    /* -------------------------------------------------------------------- */
     // XXX - should FIT_PAGE_SIZE be based on file page size ??
 
     const size_t size = std::max(sizeof(FIThead02), FIT_PAGE_SIZE);
@@ -1190,9 +1190,9 @@ static GDALDataset *FITCreateCopy(const char * pszFilename,
 
     CPL_IGNORE_RET_VAL(VSIFWriteL(head, size, 1, fpImage));
 
-/* -------------------------------------------------------------------- */
-/*      Loop over image, copying image data.                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Loop over image, copying image data.                            */
+    /* -------------------------------------------------------------------- */
     unsigned long bytesPerPixel = nBands * nDTSize;
 
     size_t pageBytes = blockX * blockY * bytesPerPixel;
@@ -1312,11 +1312,11 @@ static GDALDataset *FITCreateCopy(const char * pszFilename,
 
     pfnProgress( 1.0, nullptr, pProgressData );
 
-/* -------------------------------------------------------------------- */
-/*      Re-open dataset, and copy any auxiliary pam information.         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Re-open dataset, and copy any auxiliary pam information.         */
+    /* -------------------------------------------------------------------- */
     GDALPamDataset *poDS = (GDALPamDataset *)
-        GDALOpen( pszFilename, GA_ReadOnly );
+                           GDALOpen( pszFilename, GA_ReadOnly );
 
     if( poDS )
         poDS->CloneInfo( poSrcDS, GCIF_PAM_DEFAULT );
