@@ -67,9 +67,10 @@ def test_gml_geom(filename):
     if ogrtest.check_feature_geometry(geom_wkt, geom_gml, 0.0000000000001) == 1:
         clean_wkt = geom_wkt.ExportToWkt()
         gml_wkt = geom_gml.ExportToWkt()
-        pytest.fail('WKT from GML (%s) does not match clean WKT (%s).\ngml was (%s)' % (gml_wkt, clean_wkt, gml))
+        pytest.fail('WKT from GML (%s) does not match clean WKT (%s).\ngml was (%s)' % (
+            gml_wkt, clean_wkt, gml))
 
-    
+
 ###############################################################################
 # Test geometries with extra spaces at the end, as sometimes are generated
 # by ESRI WFS software.
@@ -581,6 +582,7 @@ def test_gml_MultiCurve_curveMembers():
 ###############################################################################
 # Test GML MultiGeometry with geometryMembers
 
+
 def test_gml_MultiGeometry_geometryMembers():
 
     gml = """<gml:MultiGeometry xmlns:foo="http://bar">
@@ -720,7 +722,7 @@ def test_gml_Triangle():
         print(geom.ExportToWkt())
         pytest.fail('incorrect conversion from OGR -> GML for OGRTriangle')
 
-    
+
 ###############################################################################
 # Test GML Rectangle
 
@@ -848,7 +850,8 @@ def test_gml_PolyhedralSurface():
     string = ps.ExportToGML(opts)
     if string != '<gml:PolyhedralSurface><gml:polygonPatches></gml:polygonPatches></gml:PolyhedralSurface>':
         print(geom.ExportToWkt())
-        pytest.fail('incorrect parsing of OGR -> GML for empty PolyhedralSurface')
+        pytest.fail(
+            'incorrect parsing of OGR -> GML for empty PolyhedralSurface')
 
     # several polygon patches (and test that non elements such as comments are parsed OK)
     gml = """<gml:PolyhedralSurface>
@@ -995,7 +998,7 @@ def test_gml_Tin():
         print(geom.ExportToWkt())
         pytest.fail('OGRGeometry::TriangulatedSurface incorrectly converted')
 
-    
+
 ###############################################################################
 # Test concatenated sections (#4451)
 
@@ -1030,7 +1033,8 @@ def test_gml_ConcatenatedDeduplication():
     geom = ogr.CreateGeometryFromGML(gml)
 
     expected_wkt = 'CURVEPOLYGON (COMPOUNDCURVE ((0 -1,0 1),CIRCULARSTRING (0 1,1 0,0 -1)))'
-    assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt(expected_wkt)) == 0
+    assert ogrtest.check_feature_geometry(
+        geom, ogr.CreateGeometryFromWkt(expected_wkt)) == 0
 
     assert not ogrtest.have_geos() or geom.IsValid(), 'geometry not valid'
 
@@ -1061,26 +1065,33 @@ def test_gml_invalid_geoms():
         ('<!-- bla -->', None),
         ('<foo/>', None),
         ('<gml:Point><gml:pos>31 29 16</gml:pos><gml:pos>31 29 16</gml:pos></gml:Point>', None),
-        ('<gml:Point><gml:coordinates/></gml:Point>', 'POINT EMPTY'),  # This is valid GML actually
+        ('<gml:Point><gml:coordinates/></gml:Point>',
+         'POINT EMPTY'),  # This is valid GML actually
         ('<gml:Point><gml:coordinates>0</gml:coordinates></gml:Point>', None),
-        ('<gml:Point><gml:coordinates>0 1</gml:coordinates></gml:Point>', 'POINT (0 1)'),  # Support for uncommon formatting of coordinates
-        ('<gml:Point><gml:coordinates>0 1 2</gml:coordinates></gml:Point>', 'POINT (0 1 2)'),  # Support for uncommon formatting of coordinates
+        ('<gml:Point><gml:coordinates>0 1</gml:coordinates></gml:Point>',
+         'POINT (0 1)'),  # Support for uncommon formatting of coordinates
+        ('<gml:Point><gml:coordinates>0 1 2</gml:coordinates></gml:Point>',
+         'POINT (0 1 2)'),  # Support for uncommon formatting of coordinates
         ('<gml:Point><gml:coordinates>0,1 2,3</gml:coordinates></gml:Point>', None),
         ('<gml:Point><gml:pos>0</gml:pos></gml:Point>', None),
-        ('<gml:Point><gml:pos/></gml:Point>', 'POINT EMPTY'),  # This is valid GML actually
+        # This is valid GML actually
+        ('<gml:Point><gml:pos/></gml:Point>', 'POINT EMPTY'),
         ('<gml:Point/>', None),
         ('<gml:Point><foo/></gml:Point>', None),
         ('<gml:LineString/>', None),
         ('<gml:LineString><foo/></gml:LineString>', None),
-        ('<gml:LineString><gml:posList></gml:posList></gml:LineString>', 'LINESTRING EMPTY'),  # This is valid GML actually
+        ('<gml:LineString><gml:posList></gml:posList></gml:LineString>',
+         'LINESTRING EMPTY'),  # This is valid GML actually
         ('<gml:LineString><gml:posList>0</gml:posList></gml:LineString>', None),
         ('<gml:LineString><gml:posList srsDimension="4">0 1 2 3</gml:posList></gml:LineString>', None),
         ('<gml:LineString><gml:posList srsDimension="3">0 1 2 3</gml:posList></gml:LineString>', None),
         ('<gml:Point><gml:coord></gml:coord></gml:Point>', None),
         ('<gml:Point><gml:coord><gml:X/><gml:Y/></gml:coord></gml:Point>', None),
         ('<gml:Point><gml:coord><gml:X>0</gml:X></gml:coord></gml:Point>', None),
-        ('<gml:Polygon/>', 'POLYGON EMPTY'),  # valid GML3, but invalid GML2. Be tolerant
-        ('<gml:Polygon><gml:outerBoundaryIs/></gml:Polygon>', 'POLYGON EMPTY'),  # valid GML2
+        # valid GML3, but invalid GML2. Be tolerant
+        ('<gml:Polygon/>', 'POLYGON EMPTY'),
+        ('<gml:Polygon><gml:outerBoundaryIs/></gml:Polygon>',
+         'POLYGON EMPTY'),  # valid GML2
         ('<gml:Polygon><gml:outerBoundaryIs><foo/></gml:outerBoundaryIs></gml:Polygon>', None),
         ('<gml:Polygon><gml:outerBoundaryIs><gml:Point><gml:pos>31 29 16</gml:pos></gml:Point></gml:outerBoundaryIs></gml:Polygon>', None),
         ('<gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:posList>0 1 2 3 4 5 0 1</gml:posList></gml:LinearRing></gml:outerBoundaryIs><gml:innerBoundaryIs/></gml:Polygon>', None),
@@ -1093,20 +1104,29 @@ def test_gml_invalid_geoms():
         ('<gml:Ring><gml:curveMember><gml:Point><gml:pos>31 29 16</gml:pos></gml:Point></gml:curveMember></gml:Ring>', None),
         ('<gml:Box/>', None),
         ('<gml:Box><gml:pos>31 29 16</gml:pos></gml:Box>', None),
-        ('<gml:MultiPolygon/>', 'MULTIPOLYGON EMPTY'),  # valid GML3, but invalid GML2. Be tolerant
-        ('<gml:MultiPolygon><foo/></gml:MultiPolygon>', 'MULTIPOLYGON EMPTY'),  # illegal GML, but we are tolerant
-        ('<gml:MultiPolygon><gml:polygonMember/></gml:MultiPolygon>', 'MULTIPOLYGON EMPTY'),  # valid in GML3 (accepted by PostGIS too)
+        # valid GML3, but invalid GML2. Be tolerant
+        ('<gml:MultiPolygon/>', 'MULTIPOLYGON EMPTY'),
+        ('<gml:MultiPolygon><foo/></gml:MultiPolygon>',
+         'MULTIPOLYGON EMPTY'),  # illegal GML, but we are tolerant
+        ('<gml:MultiPolygon><gml:polygonMember/></gml:MultiPolygon>',
+         'MULTIPOLYGON EMPTY'),  # valid in GML3 (accepted by PostGIS too)
         ('<gml:MultiPolygon><gml:polygonMember><foo/></gml:polygonMember></gml:MultiPolygon>', None),
         ('<gml:MultiPolygon><gml:polygonMember><gml:Point><gml:pos>31 29 16</gml:pos></gml:Point></gml:polygonMember></gml:MultiPolygon>', None),
-        ('<gml:MultiSurface><gml:surfaceMembers/></gml:MultiSurface>', 'MULTIPOLYGON EMPTY'),  # valid GML
-        ('<gml:MultiSurface><gml:surfaceMembers><foo/></gml:surfaceMembers></gml:MultiSurface>', 'MULTIPOLYGON EMPTY'),  # illegal GML, but we are tolerant
-        ('<gml:MultiSurface><gml:surfaceMembers><gml:Polygon/></gml:surfaceMembers></gml:MultiSurface>', 'MULTIPOLYGON EMPTY'),  # valid GML3
+        ('<gml:MultiSurface><gml:surfaceMembers/></gml:MultiSurface>',
+         'MULTIPOLYGON EMPTY'),  # valid GML
+        ('<gml:MultiSurface><gml:surfaceMembers><foo/></gml:surfaceMembers></gml:MultiSurface>',
+         'MULTIPOLYGON EMPTY'),  # illegal GML, but we are tolerant
+        ('<gml:MultiSurface><gml:surfaceMembers><gml:Polygon/></gml:surfaceMembers></gml:MultiSurface>',
+         'MULTIPOLYGON EMPTY'),  # valid GML3
         ('<gml:MultiPoint/>', 'MULTIPOINT EMPTY'),
         ('<gml:MultiPoint><foo/></gml:MultiPoint>', 'MULTIPOINT EMPTY'),
-        ('<gml:MultiPoint><gml:pointMember/></gml:MultiPoint>', 'MULTIPOINT EMPTY'),  # valid in GML3 (accepted by PostGIS too)
+        ('<gml:MultiPoint><gml:pointMember/></gml:MultiPoint>',
+         'MULTIPOINT EMPTY'),  # valid in GML3 (accepted by PostGIS too)
         ('<gml:MultiPoint><gml:pointMember><gml:LineString><gml:posList>0 1 2 3</gml:posList></gml:LineString></gml:pointMember></gml:MultiPoint>', None),
-        ('<gml:MultiPoint><gml:pointMembers></gml:pointMembers></gml:MultiPoint>', 'MULTIPOINT EMPTY'),
-        ('<gml:MultiPoint><gml:pointMembers><foo/></gml:pointMembers></gml:MultiPoint>', 'MULTIPOINT EMPTY'),
+        ('<gml:MultiPoint><gml:pointMembers></gml:pointMembers></gml:MultiPoint>',
+         'MULTIPOINT EMPTY'),
+        ('<gml:MultiPoint><gml:pointMembers><foo/></gml:pointMembers></gml:MultiPoint>',
+         'MULTIPOINT EMPTY'),
         ('<gml:MultiPoint><gml:pointMembers><gml:Point/></gml:pointMembers></gml:MultiPoint>', None),
         ('<gml:MultiLineString/>', 'MULTILINESTRING EMPTY'),
         ('<gml:MultiLineString><foo/></gml:MultiLineString>', 'MULTILINESTRING EMPTY'),
@@ -1114,12 +1134,14 @@ def test_gml_invalid_geoms():
         ('<gml:MultiLineString><gml:lineStringMember><gml:Point><gml:pos>31 29 16</gml:pos></gml:Point></gml:lineStringMember></gml:MultiLineString>', None),
         ('<gml:MultiCurve/>', 'MULTILINESTRING EMPTY'),
         ('<gml:MultiCurve><foo/></gml:MultiCurve>', 'MULTILINESTRING EMPTY'),
-        ('<gml:MultiCurve><gml:curveMember/></gml:MultiCurve>', 'MULTILINESTRING EMPTY'),  # valid in GML3 (accepted by PostGIS too)
+        ('<gml:MultiCurve><gml:curveMember/></gml:MultiCurve>',
+         'MULTILINESTRING EMPTY'),  # valid in GML3 (accepted by PostGIS too)
         ('<gml:MultiCurve><gml:curveMember><foo/></gml:curveMember></gml:MultiCurve>', None),
         ('<gml:MultiCurve><gml:curveMember><gml:Curve/></gml:curveMember></gml:MultiCurve>', None),
         ('<gml:MultiCurve><gml:curveMember><gml:Curve><foo/></gml:Curve></gml:curveMember></gml:MultiCurve>', None),
         ('<gml:MultiCurve><gml:curveMember><gml:Curve><gml:Point><gml:pos>31 29 16</gml:pos></gml:Point></gml:Curve></gml:curveMember></gml:MultiCurve>', None),
-        ('<gml:MultiCurve><gml:curveMembers></gml:curveMembers></gml:MultiCurve>', 'MULTILINESTRING EMPTY'),
+        ('<gml:MultiCurve><gml:curveMembers></gml:curveMembers></gml:MultiCurve>',
+         'MULTILINESTRING EMPTY'),
         ('<gml:MultiCurve><gml:curveMembers><foo/></gml:curveMembers></gml:MultiCurve>', None),
         ('<gml:MultiCurve><gml:curveMembers><gml:LineString/></gml:curveMembers></gml:MultiCurve>', None),
         ('<gml:Curve/>', None),
@@ -1142,17 +1164,22 @@ def test_gml_invalid_geoms():
         ('<gml:segments><gml:LineStringSegment><gml:Point><gml:pos>31 29 16</gml:pos></gml:Point></gml:LineStringSegment></gml:segments>', None),
         ('<gml:MultiGeometry/>', 'GEOMETRYCOLLECTION EMPTY'),
         ('<gml:MultiGeometry><foo/></gml:MultiGeometry>', 'GEOMETRYCOLLECTION EMPTY'),
-        ('<gml:MultiGeometry><gml:geometryMember/></gml:MultiGeometry>', 'GEOMETRYCOLLECTION EMPTY'),  # valid in GML3 (accepted by PostGIS too)
+        ('<gml:MultiGeometry><gml:geometryMember/></gml:MultiGeometry>',
+         'GEOMETRYCOLLECTION EMPTY'),  # valid in GML3 (accepted by PostGIS too)
         ('<gml:MultiGeometry><gml:geometryMember><foo/></gml:geometryMember></gml:MultiGeometry>', None),
         ('<gml:MultiGeometry><gml:geometryMembers><foo/></gml:geometryMembers></gml:MultiGeometry>', None),
         ('<gml:Surface/>', 'POLYGON EMPTY'),  # valid GML3
-        ('<gml:Surface><foo/></gml:Surface>', 'POLYGON EMPTY'),  # invalid GML3, but we are tolerant
+        # invalid GML3, but we are tolerant
+        ('<gml:Surface><foo/></gml:Surface>', 'POLYGON EMPTY'),
         ('<gml:Surface><gml:patches/></gml:Surface>', 'POLYGON EMPTY'),  # valid GML3
         ('<gml:Surface><gml:patches><foo/></gml:patches></gml:Surface>', None),
-        ('<gml:Surface><gml:patches><gml:PolygonPatch/></gml:patches></gml:Surface>', 'POLYGON EMPTY'),  # valid GML3
+        ('<gml:Surface><gml:patches><gml:PolygonPatch/></gml:patches></gml:Surface>',
+         'POLYGON EMPTY'),  # valid GML3
         ('<gml:Solid/>', 'POLYHEDRALSURFACE EMPTY'),  # valid GML3
-        ('<gml:Solid><foo/></gml:Solid>', 'POLYHEDRALSURFACE EMPTY'),  # invalid GML3, but we are tolerant
-        ('<gml:Solid><gml:exterior/></gml:Solid>', 'POLYHEDRALSURFACE EMPTY'),  # valid GML3
+        # invalid GML3, but we are tolerant
+        ('<gml:Solid><foo/></gml:Solid>', 'POLYHEDRALSURFACE EMPTY'),
+        ('<gml:Solid><gml:exterior/></gml:Solid>',
+         'POLYHEDRALSURFACE EMPTY'),  # valid GML3
         ('<gml:Solid><gml:exterior><foo/></gml:exterior></gml:Solid>', None),
         ('<gml:Solid><gml:exterior><Polygon><exterior><LinearRing><posList srsDimension="2">0 0 4 0 4 4 0 4 0 0</posList></LinearRing></exterior></Polygon></gml:exterior><gml:interior/></gml:Solid>', 'POLYGON ((0 0,4 0,4 4,0 4,0 0))'),
         ('<gml:OrientableSurface/>', None),
@@ -1160,11 +1187,15 @@ def test_gml_invalid_geoms():
         ('<gml:OrientableSurface><gml:baseSurface/></gml:OrientableSurface>', None),
         ('<gml:OrientableSurface><gml:baseSurface><foo/></gml:baseSurface></gml:OrientableSurface>', None),
         ('<gmlce:SimplePolygon/>', None),  # invalid
-        ('<gmlce:SimplePolygon><foo/></gmlce:SimplePolygon>', None),  # invalid GML3, but we are tolerant
-        ('<gmlce:SimplePolygon><gml:posList/></gmlce:SimplePolygon>', 'POLYGON EMPTY'),  # validates the schema
+        # invalid GML3, but we are tolerant
+        ('<gmlce:SimplePolygon><foo/></gmlce:SimplePolygon>', None),
+        ('<gmlce:SimplePolygon><gml:posList/></gmlce:SimplePolygon>',
+         'POLYGON EMPTY'),  # validates the schema
         ('<gmlce:SimpleMultiPoint/>', None),  # invalid
-        ('<gmlce:SimpleMultiPoint><foo/></gmlce:SimpleMultiPoint>', None),  # invalid GML3, but we are tolerant
-        ('<gmlce:SimpleMultiPoint><gml:posList/></gmlce:SimpleMultiPoint>', 'MULTIPOINT EMPTY'),  # validates the schema
+        # invalid GML3, but we are tolerant
+        ('<gmlce:SimpleMultiPoint><foo/></gmlce:SimpleMultiPoint>', None),
+        ('<gmlce:SimpleMultiPoint><gml:posList/></gmlce:SimpleMultiPoint>',
+         'MULTIPOINT EMPTY'),  # validates the schema
         ('<gml:Envelope/>', None),
         ('<gml:Envelope><gml:lowerCorner/><gml:upperCorner/></gml:Envelope>', None),
         ('<gml:Envelope><gml:lowerCorner>1</gml:lowerCorner><gml:upperCorner>3 4</gml:upperCorner/></gml:Envelope>', None),
@@ -1213,16 +1244,19 @@ def test_gml_invalid_geoms():
         gdal.PopErrorHandler()
         if geom is None:
             assert expected_wkt is None, \
-                ('did not get expected result for %s. Got None instead of %s' % (gml, expected_wkt))
+                ('did not get expected result for %s. Got None instead of %s' %
+                 (gml, expected_wkt))
         else:
             wkt = geom.ExportToWkt()
             if expected_wkt is None:
-                pytest.fail('did not get expected result for %s. Got %s instead of None' % (gml, wkt))
+                pytest.fail(
+                    'did not get expected result for %s. Got %s instead of None' % (gml, wkt))
             else:
                 assert wkt == expected_wkt, \
-                    ('did not get expected result for %s. Got %s instead of %s' % (gml, wkt, expected_wkt))
+                    ('did not get expected result for %s. Got %s instead of %s' %
+                     (gml, wkt, expected_wkt))
 
-    
+
 ###############################################################################
 # Test write support for GML3
 
@@ -1246,12 +1280,13 @@ def test_gml_write_gml3_geometries():
     for gml_in in gml_list:
         geom = ogr.CreateGeometryFromGML(gml_in)
         if gml_in.find('<gml:Curve') != -1:
-            gml_out = geom.ExportToGML(['FORMAT=GML3', 'GML3_LINESTRING_ELEMENT=curve'])
+            gml_out = geom.ExportToGML(
+                ['FORMAT=GML3', 'GML3_LINESTRING_ELEMENT=curve'])
         else:
             gml_out = geom.ExportToGML(['FORMAT=GML3'])
         assert gml_out == gml_in, ('got %s, instead of %s' % (gml_out, gml_in))
 
-    
+
 ###############################################################################
 # Test write support for GML3 SRS
 
@@ -1272,49 +1307,56 @@ def test_gml_write_gml3_srs():
     geom.AssignSpatialReference(sr32631)
     gml3 = geom.ExportToGML(options=['FORMAT=GML3'])
     expected_gml = '<gml:Point srsName="urn:ogc:def:crs:EPSG::32631"><gml:pos>500000 4500000</gml:pos></gml:Point>'
-    assert gml3 == expected_gml, ('got %s, instead of %s' % (gml3, expected_gml))
+    assert gml3 == expected_gml, ('got %s, instead of %s' %
+                                  (gml3, expected_gml))
 
     # Should perform the needed coordinate order swapping
     geom = ogr.CreateGeometryFromWkt('POINT(2 49)')
     geom.AssignSpatialReference(srlonglat)
     gml3 = geom.ExportToGML(options=['FORMAT=GML3'])
     expected_gml = '<gml:Point srsName="urn:ogc:def:crs:EPSG::4326"><gml:pos>49 2</gml:pos></gml:Point>'
-    assert gml3 == expected_gml, ('got %s, instead of %s' % (gml3, expected_gml))
+    assert gml3 == expected_gml, ('got %s, instead of %s' %
+                                  (gml3, expected_gml))
 
     # Should not change the coordinate order.
     geom = ogr.CreateGeometryFromWkt('POINT(49 2)')
     geom.AssignSpatialReference(srlatlong)
     gml3 = geom.ExportToGML(options=['FORMAT=GML3'])
     expected_gml = '<gml:Point srsName="urn:ogc:def:crs:EPSG::4326"><gml:pos>49 2</gml:pos></gml:Point>'
-    assert gml3 == expected_gml, ('got %s, instead of %s' % (gml3, expected_gml))
+    assert gml3 == expected_gml, ('got %s, instead of %s' %
+                                  (gml3, expected_gml))
 
     # Legacy SRS format
     geom = ogr.CreateGeometryFromWkt('POINT(2 49)')
     geom.AssignSpatialReference(srlonglat)
     gml3 = geom.ExportToGML(options=['FORMAT=GML3', 'GML3_LONGSRS=NO'])
     expected_gml = '<gml:Point srsName="EPSG:4326"><gml:pos>2 49</gml:pos></gml:Point>'
-    assert gml3 == expected_gml, ('got %s, instead of %s' % (gml3, expected_gml))
+    assert gml3 == expected_gml, ('got %s, instead of %s' %
+                                  (gml3, expected_gml))
 
     # Test SRSNAME_FORMAT=SHORT
     geom = ogr.CreateGeometryFromWkt('POINT(2 49)')
     geom.AssignSpatialReference(srlonglat)
     gml3 = geom.ExportToGML(options=['FORMAT=GML3', 'SRSNAME_FORMAT=SHORT'])
     expected_gml = '<gml:Point srsName="EPSG:4326"><gml:pos>2 49</gml:pos></gml:Point>'
-    assert gml3 == expected_gml, ('got %s, instead of %s' % (gml3, expected_gml))
+    assert gml3 == expected_gml, ('got %s, instead of %s' %
+                                  (gml3, expected_gml))
 
     # Test SRSNAME_FORMAT=SRSNAME_FORMAT
     geom = ogr.CreateGeometryFromWkt('POINT(2 49)')
     geom.AssignSpatialReference(srlonglat)
     gml3 = geom.ExportToGML(options=['FORMAT=GML3', 'SRSNAME_FORMAT=OGC_URN'])
     expected_gml = '<gml:Point srsName="urn:ogc:def:crs:EPSG::4326"><gml:pos>49 2</gml:pos></gml:Point>'
-    assert gml3 == expected_gml, ('got %s, instead of %s' % (gml3, expected_gml))
+    assert gml3 == expected_gml, ('got %s, instead of %s' %
+                                  (gml3, expected_gml))
 
     # Test SRSNAME_FORMAT=OGC_URL
     geom = ogr.CreateGeometryFromWkt('POINT(2 49)')
     geom.AssignSpatialReference(srlonglat)
     gml3 = geom.ExportToGML(options=['FORMAT=GML3', 'SRSNAME_FORMAT=OGC_URL'])
     expected_gml = '<gml:Point srsName="http://www.opengis.net/def/crs/EPSG/0/4326"><gml:pos>49 2</gml:pos></gml:Point>'
-    assert gml3 == expected_gml, ('got %s, instead of %s' % (gml3, expected_gml))
+    assert gml3 == expected_gml, ('got %s, instead of %s' %
+                                  (gml3, expected_gml))
 
 ###############################################################################
 # Test that importing too nested GML doesn't cause stack overflows
@@ -1539,32 +1581,46 @@ def test_gml_MultiSurfaceOfSurfaceOfPolygonPatchWithInteriorRing():
 def test_gml_Coordinates_ts_cs_decimal():
 
     gml_expected_wkt_list = [
-        ('<gml:Point><gml:coordinates>1,2</gml:coordinates></gml:Point>', 'POINT (1 2)'),  # default values
-        ('<gml:Point><gml:coordinates cs="," ts=" " decimal=".">1,2</gml:coordinates></gml:Point>', 'POINT (1 2)'),  # default values
-        ('<gml:Point><gml:coordinates cs="," ts=" " decimal=".">1,2,3</gml:coordinates></gml:Point>', 'POINT (1 2 3)'),  # default values
-        ('<gml:Point><gml:coordinates cs="," ts=" " decimal=".">  1,2  </gml:coordinates></gml:Point>', 'POINT (1 2)'),  # we accept that...
-        ('<gml:Point><gml:coordinates>1 2</gml:coordinates></gml:Point>', 'POINT (1 2)'),  # this is completely out of specification ! but we accept that too !
+        ('<gml:Point><gml:coordinates>1,2</gml:coordinates></gml:Point>',
+         'POINT (1 2)'),  # default values
+        ('<gml:Point><gml:coordinates cs="," ts=" " decimal=".">1,2</gml:coordinates></gml:Point>',
+         'POINT (1 2)'),  # default values
+        ('<gml:Point><gml:coordinates cs="," ts=" " decimal=".">1,2,3</gml:coordinates></gml:Point>',
+         'POINT (1 2 3)'),  # default values
+        # we accept that...
+        ('<gml:Point><gml:coordinates cs="," ts=" " decimal=".">  1,2  </gml:coordinates></gml:Point>', 'POINT (1 2)'),
+        # this is completely out of specification ! but we accept that too !
+        ('<gml:Point><gml:coordinates>1 2</gml:coordinates></gml:Point>', 'POINT (1 2)'),
         ('<gml:Point><gml:coordinates cs=";">1;2</gml:coordinates></gml:Point>', 'POINT (1 2)'),
         ('<gml:Point><gml:coordinates decimal="," cs=";">1,2;3,4</gml:coordinates></gml:Point>', 'POINT (1.2 3.4)'),
-        ('<gml:Point><gml:coordinates decimal="," cs=";">1,2;3,4;5,6</gml:coordinates></gml:Point>', 'POINT (1.2 3.4 5.6)'),
-        ('<gml:LineString><gml:coordinates>1,2 3,4</gml:coordinates></gml:LineString>', 'LINESTRING (1 2,3 4)'),  # default values
-        ('<gml:LineString><gml:coordinates cs="," ts=" " decimal=".">1,2 3,4</gml:coordinates></gml:LineString>', 'LINESTRING (1 2,3 4)'),  # default values
-        ('<gml:LineString><gml:coordinates cs="," ts=" " decimal=".">1,2,2.5 3,4</gml:coordinates></gml:LineString>', 'LINESTRING (1 2 2.5,3 4 0)'),  # default values
-        ('<gml:LineString><gml:coordinates ts="-">1,2-3,4</gml:coordinates></gml:LineString>', 'LINESTRING (1 2,3 4)'),
-        ('<gml:LineString><gml:coordinates cs=" " ts=",">1 2,3 4</gml:coordinates></gml:LineString>', 'LINESTRING (1 2,3 4)'),
-        ('<gml:LineString><gml:coordinates cs=" " ts=",">1 2 2.5,3 4</gml:coordinates></gml:LineString>', 'LINESTRING (1 2 2.5,3 4 0)'),
+        ('<gml:Point><gml:coordinates decimal="," cs=";">1,2;3,4;5,6</gml:coordinates></gml:Point>',
+         'POINT (1.2 3.4 5.6)'),
+        ('<gml:LineString><gml:coordinates>1,2 3,4</gml:coordinates></gml:LineString>',
+         'LINESTRING (1 2,3 4)'),  # default values
+        ('<gml:LineString><gml:coordinates cs="," ts=" " decimal=".">1,2 3,4</gml:coordinates></gml:LineString>',
+         'LINESTRING (1 2,3 4)'),  # default values
+        ('<gml:LineString><gml:coordinates cs="," ts=" " decimal=".">1,2,2.5 3,4</gml:coordinates></gml:LineString>',
+         'LINESTRING (1 2 2.5,3 4 0)'),  # default values
+        ('<gml:LineString><gml:coordinates ts="-">1,2-3,4</gml:coordinates></gml:LineString>',
+         'LINESTRING (1 2,3 4)'),
+        ('<gml:LineString><gml:coordinates cs=" " ts=",">1 2,3 4</gml:coordinates></gml:LineString>',
+         'LINESTRING (1 2,3 4)'),
+        ('<gml:LineString><gml:coordinates cs=" " ts=",">1 2 2.5,3 4</gml:coordinates></gml:LineString>',
+         'LINESTRING (1 2 2.5,3 4 0)'),
     ]
 
     for (gml, expected_wkt) in gml_expected_wkt_list:
         geom = ogr.CreateGeometryFromGML(gml)
         wkt = geom.ExportToWkt()
         if expected_wkt is None:
-            pytest.fail('did not get expected result for %s. Got %s instead of None' % (gml, wkt))
+            pytest.fail(
+                'did not get expected result for %s. Got %s instead of None' % (gml, wkt))
         else:
             assert wkt == expected_wkt, \
-                ('did not get expected result for %s. Got %s instead of %s' % (gml, wkt, expected_wkt))
+                ('did not get expected result for %s. Got %s instead of %s' %
+                 (gml, wkt, expected_wkt))
 
-    
+
 ###############################################################################
 # Test gml with XML header and comments
 
@@ -1600,12 +1656,14 @@ def test_gml_with_xml_header_and_comments():
         geom = ogr.CreateGeometryFromGML(gml)
         wkt = geom.ExportToWkt()
         if expected_wkt is None:
-            pytest.fail('did not get expected result for %s. Got %s instead of None' % (gml, wkt))
+            pytest.fail(
+                'did not get expected result for %s. Got %s instead of None' % (gml, wkt))
         else:
             assert wkt == expected_wkt, \
-                ('did not get expected result for %s. Got %s instead of %s' % (gml, wkt, expected_wkt))
+                ('did not get expected result for %s. Got %s instead of %s' %
+                 (gml, wkt, expected_wkt))
 
-    
+
 ###############################################################################
 # Test srsDimension attribute on top-level geometry and not on posList (#5606)
 
@@ -1639,7 +1697,8 @@ def test_gml_Arc():
     gml = "<gml:Arc><gml:posList>1 0 0 1 -1 0</gml:posList></gml:Arc>"
     geom = ogr.CreateGeometryFromGML(gml)
 
-    assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (1 0,0 1,-1 0)')) == 0
+    assert ogrtest.check_feature_geometry(
+        geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (1 0,0 1,-1 0)')) == 0
 
     gml2 = geom.ExportToGML(['FORMAT=GML3'])
     expected_gml2 = '<gml:Curve><gml:segments><gml:ArcString><gml:posList>1 0 0 1 -1 0</gml:posList></gml:ArcString></gml:segments></gml:Curve>'
@@ -1657,7 +1716,8 @@ def test_gml_ArcByBulge():
     gml = "<gml:ArcByBulge><gml:posList>2 0 -2 0</gml:posList><gml:bulge>2</gml:bulge><gml:normal>-1</gml:normal></gml:ArcByBulge>"
     geom = ogr.CreateGeometryFromGML(gml)
 
-    assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (2 0,0 2,-2 0)')) == 0
+    assert ogrtest.check_feature_geometry(
+        geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (2 0,0 2,-2 0)')) == 0
 
 ###############################################################################
 # Test GML ArcByCenterPoint
@@ -1668,7 +1728,8 @@ def test_gml_ArcByCenterPoint():
     gml = "<gml:ArcByCenterPoint><gml:pos>1 2</gml:pos><gml:radius>2</gml:radius><gml:startAngle>90</gml:startAngle><gml:endAngle>270</gml:endAngle></gml:ArcByCenterPoint>"
     geom = ogr.CreateGeometryFromGML(gml)
 
-    assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (1 4,-1 2,1 0)')) == 0
+    assert ogrtest.check_feature_geometry(
+        geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (1 4,-1 2,1 0)')) == 0
 
 
 ###############################################################################
@@ -1737,7 +1798,8 @@ def test_gml_CircleByCenterPoint():
     gml = "<gml:CircleByCenterPoint><gml:pos>1 2</gml:pos><gml:radius>2</gml:radius></gml:CircleByCenterPoint>"
     geom = ogr.CreateGeometryFromGML(gml)
 
-    assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (-1 2,3 2,-1 2)')) == 0
+    assert ogrtest.check_feature_geometry(
+        geom, ogr.CreateGeometryFromWkt('CIRCULARSTRING (-1 2,3 2,-1 2)')) == 0
 
 ###############################################################################
 # Test GML CircleByCenterPoint with uom="m"
@@ -1803,6 +1865,7 @@ def test_gml_CompoundCurve_of_ArcByCenterPoint_curve_in_same_segments():
 ###############################################################################
 # Test Ring starting with ArcByCenterPoint
 
+
 def test_gml_Ring_starting_with_ArcByCenterPoint():
 
     geom = ogr.CreateGeometryFromGML("""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -1840,7 +1903,7 @@ def test_gml_Ring_starting_with_ArcByCenterPoint():
         </ns1:PolygonPatch>
     </ns1:patches>
 </ns3:Surface>""")
-    #print(g)
+    # print(g)
 
     assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt('POLYGON ((46.745 0.331944444444444,46.7432764927165 0.347962462754535,46.7409162535525 0.363717281627594,46.7378065348593 0.3791917846605,46.7339626150092 0.394310000163572,46.7294033759096 0.408997750371246,46.7241512079629 0.423183023082575,46.7182318974714 0.436796331344972,46.7116744971061 0.449771059387196,46.7045111801497 0.462043792829896,46.6967770793052 0.473554631563425,46.6885101109471 0.484247483569652,46.6797507857586 0.494070338341013,46.6705420067727 0.502975518511247,46.6609288558889 0.5109199085045,46.6509583699943 0.517865159176619,46.6483333333333 0.519444444444444,46.4386111111111 0.338055555555556,46.4230555555555 0.289444444444444,46.4239652827541 0.273432507330975,46.4255282239253 0.25756088338307,46.4278483647801 0.241884857622964,46.4309144976449 0.226480183207377,46.4347118090807 0.21142133567082,46.4392219496614 0.196781161237034,46.4444231204746 0.18263053185483,46.450290175977 0.169038008752016,46.4567947427662 0.156069515749848,46.4639053537626 0.143788023916768,46.4715875972233 0.132253248900933,46.4798042799442 0.121521362391196,46.4885156039408 0.111644719041597,46.4976793558324 0.102671600158084,46.5002777777778 0.100555555555556,46.5408333333333 0.105555555555556,46.575 0.225,46.5944444444444 0.258333333333333,46.6583333333333 0.283333333333333,46.6955555555556 0.255555555555556,46.745 0.331944444444444))')) == 0
 
@@ -1858,7 +1921,8 @@ def test_gml_Circle():
     geom = ogr.CreateGeometryFromGML(gml)
 
     expected_wkt = 'CIRCULARSTRING (-1 0,0 1,-0.707106781186547 -0.707106781186548,-0.923879532511287 -0.38268343236509,-1 0)'
-    assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt(expected_wkt)) == 0
+    assert ogrtest.check_feature_geometry(
+        geom, ogr.CreateGeometryFromWkt(expected_wkt)) == 0
 
     geom = ogr.CreateGeometryFromWkt('CIRCULARSTRING (0 0,2 0,0 0)')
     gml2 = geom.ExportToGML(['FORMAT=GML3'])
@@ -1892,7 +1956,8 @@ def test_gml_Circle():
     geom = ogr.CreateGeometryFromGML(gml)
 
     expected_wkt = 'CURVEPOLYGON ( CIRCULARSTRING (-1 0,0 1,-0.707106781186547 -0.707106781186548,-0.923879532511287 -0.38268343236509,-1 0))'
-    assert ogrtest.check_feature_geometry(geom, ogr.CreateGeometryFromWkt(expected_wkt)) == 0
+    assert ogrtest.check_feature_geometry(
+        geom, ogr.CreateGeometryFromWkt(expected_wkt)) == 0
 
 ###############################################################################
 # Test ArcString
@@ -1978,7 +2043,8 @@ def test_gml_OGRCompoundCurve():
     </gml:curveMember>
     </gml:CompositeCurve>"""
     geom = ogr.CreateGeometryFromGML(gml)
-    assert geom.ExportToWkt() == 'COMPOUNDCURVE ((0 0,1 0,0 0),CIRCULARSTRING (0 0,1 0,0 0),(0 0,-1 0,0 0))'
+    assert geom.ExportToWkt(
+    ) == 'COMPOUNDCURVE ((0 0,1 0,0 0),CIRCULARSTRING (0 0,1 0,0 0),(0 0,-1 0,0 0))'
 
 ###############################################################################
 # Test OGRCurvePolygon
@@ -1998,12 +2064,14 @@ def test_gml_OGRCurvePolygon():
     # Test two CircularString
     gml = """<gml:Polygon><gml:exterior><gml:Ring><gml:curveMember><gml:Arc><gml:posList>0 0 1 0 0 0</gml:posList></gml:Arc></gml:curveMember></gml:Ring></gml:exterior><gml:interior><gml:Ring><gml:curveMember><gml:Arc><gml:posList>0.25 0 0.75 0 0.25 0</gml:posList></gml:Arc></gml:curveMember></gml:Ring></gml:interior></gml:Polygon>"""
     geom = ogr.CreateGeometryFromGML(gml)
-    assert geom.ExportToWkt() == 'CURVEPOLYGON (CIRCULARSTRING (0 0,1 0,0 0),CIRCULARSTRING (0.25 0.0,0.75 0.0,0.25 0.0))'
+    assert geom.ExportToWkt(
+    ) == 'CURVEPOLYGON (CIRCULARSTRING (0 0,1 0,0 0),CIRCULARSTRING (0.25 0.0,0.75 0.0,0.25 0.0))'
 
     # Test a LinearRing followed by a CircularString
     gml = """<gml:Polygon><gml:exterior><gml:LinearRing><gml:posList>-2 -2 -2 2 2 2 2 -2 -2 -2</gml:posList></gml:LinearRing></gml:exterior><gml:interior><gml:Ring><gml:curveMember><gml:Arc><gml:posList>0.25 0 0.75 0 0.25 0</gml:posList></gml:Arc></gml:curveMember></gml:Ring></gml:interior></gml:Polygon>"""
     geom = ogr.CreateGeometryFromGML(gml)
-    assert geom.ExportToWkt() == 'CURVEPOLYGON ((-2 -2,-2 2,2 2,2 -2,-2 -2),CIRCULARSTRING (0.25 0.0,0.75 0.0,0.25 0.0))'
+    assert geom.ExportToWkt(
+    ) == 'CURVEPOLYGON ((-2 -2,-2 2,2 2,2 -2,-2 -2),CIRCULARSTRING (0.25 0.0,0.75 0.0,0.25 0.0))'
 
     # Test a CircularString followed by a LinearRing
     gml = """<gml:Polygon><gml:exterior><gml:Ring><gml:curveMember><gml:Circle><gml:posList>-1 0 1 2 3 0</gml:posList></gml:Circle></gml:curveMember></gml:Ring></gml:exterior><gml:interior><gml:LinearRing><gml:posList>-2 -2 -2 2 2 2 2 -2 -2 -2</gml:posList></gml:LinearRing></gml:interior></gml:Polygon>"""
@@ -2086,7 +2154,8 @@ def test_gml_OGRMultiSurface():
     assert geom.ExportToWkt() == 'MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (0 0,1 1,1 -1,0.292893218813453 -0.707106781186548,0 0)),((0 0,0 1,1 1,0 0)))', \
         '<gml:MultiSurface> not correctly parsed'
 
-    geom = ogr.CreateGeometryFromWkt('MULTISURFACE (CURVEPOLYGON((0 0,0 1,1 1,1 0,0 0)))')
+    geom = ogr.CreateGeometryFromWkt(
+        'MULTISURFACE (CURVEPOLYGON((0 0,0 1,1 1,1 0,0 0)))')
     gml2 = geom.ExportToGML(['FORMAT=GML3'])
     expected_gml2 = '<gml:MultiSurface><gml:surfaceMember><gml:Polygon><gml:exterior><gml:LinearRing><gml:posList>0 0 0 1 1 1 1 0 0 0</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></gml:surfaceMember></gml:MultiSurface>'
     assert gml2 == expected_gml2
@@ -2176,7 +2245,8 @@ def test_gml_write_gml_ns():
     assert gml == expected_gml, ('got %s, instead of %s' % (gml, expected_gml))
 
     geom = ogr.CreateGeometryFromWkt('POINT(500000 4500000)')
-    gml = geom.ExportToGML(options=['FORMAT=GML32', 'GMLID=foo', 'NAMESPACE_DECL=YES'])
+    gml = geom.ExportToGML(
+        options=['FORMAT=GML32', 'GMLID=foo', 'NAMESPACE_DECL=YES'])
     expected_gml = '<gml:Point xmlns:gml="http://www.opengis.net/gml/3.2" gml:id="foo"><gml:pos>500000 4500000</gml:pos></gml:Point>'
     assert gml == expected_gml, ('got %s, instead of %s' % (gml, expected_gml))
 
@@ -2185,7 +2255,3 @@ def test_gml_write_gml_ns():
 
 # print 'hit enter'
 # sys.stdin.readline()
-
-
-
-

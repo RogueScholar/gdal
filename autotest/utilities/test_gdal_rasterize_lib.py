@@ -31,7 +31,6 @@
 ###############################################################################
 
 
-
 from osgeo import gdal, ogr, osr
 import gdaltest
 import pytest
@@ -88,7 +87,8 @@ def test_gdal_rasterize_lib_1():
 
     rast_lyr.CreateFeature(feat)
 
-    ret = gdal.Rasterize(target_ds, vector_ds, bands=[3, 2, 1], burnValues=[200, 220, 240], layers='rast1')
+    ret = gdal.Rasterize(target_ds, vector_ds, bands=[3, 2, 1], burnValues=[
+                         200, 220, 240], layers='rast1')
     assert ret == 1
 
     # Check results.
@@ -108,13 +108,15 @@ def test_gdal_rasterize_lib_3():
     if test_cli_utilities.get_gdal_contour_path() is None:
         pytest.skip()
 
-    gdaltest.runexternal(test_cli_utilities.get_gdal_contour_path() + ' ../gdrivers/data/n43.dt0 tmp/n43dt0.shp -i 10 -3d')
+    gdaltest.runexternal(test_cli_utilities.get_gdal_contour_path(
+    ) + ' ../gdrivers/data/n43.dt0 tmp/n43dt0.shp -i 10 -3d')
 
     with gdaltest.error_handler():
         ds = gdal.Rasterize('/vsimem/bogus.tif', 'tmp/n43dt0.shp')
     assert ds is None, 'did not expected success'
 
-    ds = gdal.Rasterize('', 'tmp/n43dt0.shp', format='MEM', outputType=gdal.GDT_Byte, useZ=True, layers=['n43dt0'], width=121, height=121, noData=0)
+    ds = gdal.Rasterize('', 'tmp/n43dt0.shp', format='MEM', outputType=gdal.GDT_Byte,
+                        useZ=True, layers=['n43dt0'], width=121, height=121, noData=0)
 
     ogr.GetDriverByName('ESRI Shapefile').DeleteDataSource('tmp/n43dt0.shp')
 
@@ -129,7 +131,8 @@ def test_gdal_rasterize_lib_3():
     gt_ref = ds_ref.GetGeoTransform()
     gt = ds.GetGeoTransform()
     for i in range(6):
-        assert gt[i] == pytest.approx(gt_ref[i], abs=1e-6), 'did not get expected geotransform'
+        assert gt[i] == pytest.approx(
+            gt_ref[i], abs=1e-6), 'did not get expected geotransform'
 
     wkt = ds.GetProjectionRef()
     assert wkt.find("WGS_1984") != -1, 'did not get expected SRS'
@@ -180,7 +183,8 @@ def test_gdal_rasterize_lib_101():
     rast_lyr = vector_ds.CreateLayer('rast1')
 
     # polygon with empty exterior ring
-    geom = ogr.CreateGeometryFromJson('{ "type": "Polygon", "coordinates": [ [ ] ] }')
+    geom = ogr.CreateGeometryFromJson(
+        '{ "type": "Polygon", "coordinates": [ [ ] ] }')
 
     feat = ogr.Feature(rast_lyr.GetLayerDefn())
     feat.SetGeometryDirectly(geom)
@@ -306,7 +310,8 @@ def test_gdal_rasterize_lib_4():
 
         rast_lyr.CreateFeature(feat)
 
-        ret = gdal.Rasterize(target_ds, vector_ds, bands=[3, 2, 1], burnValues=[200, 220, 240], layers='rast1', optim=optim)
+        ret = gdal.Rasterize(target_ds, vector_ds, bands=[3, 2, 1], burnValues=[
+                             200, 220, 240], layers='rast1', optim=optim)
         assert ret == 1
 
         # Check results.
@@ -329,7 +334,8 @@ def test_gdal_rasterize_lib_multipolygon():
     vector_ds = gdal.GetDriverByName('Memory').Create('', 0, 0, 0)
     layer = vector_ds.CreateLayer('', sr)
     feature = ogr.Feature(layer.GetLayerDefn())
-    feature.SetGeometryDirectly(ogr.CreateGeometryFromWkt('MULTIPOLYGON (((0 0,0 1,1 1,0 0)),((1 1,2 1,2 0,1 1)))'))
+    feature.SetGeometryDirectly(ogr.CreateGeometryFromWkt(
+        'MULTIPOLYGON (((0 0,0 1,1 1,0 0)),((1 1,2 1,2 0,1 1)))'))
     layer.CreateFeature(feature)
 
     target_ds = gdal.GetDriverByName('MEM').Create('', 3, 2)
@@ -343,10 +349,12 @@ def test_gdal_rasterize_lib_multipolygon():
     vector_ds = gdal.GetDriverByName('Memory').Create('', 0, 0, 0)
     layer = vector_ds.CreateLayer('', sr)
     feature = ogr.Feature(layer.GetLayerDefn())
-    feature.SetGeometryDirectly(ogr.CreateGeometryFromWkt('POLYGON ((0 0,0 1,1 1,0 0))'))
+    feature.SetGeometryDirectly(
+        ogr.CreateGeometryFromWkt('POLYGON ((0 0,0 1,1 1,0 0))'))
     layer.CreateFeature(feature)
     feature = ogr.Feature(layer.GetLayerDefn())
-    feature.SetGeometryDirectly(ogr.CreateGeometryFromWkt('POLYGON ((1 1,2 1,2 0,1 1))'))
+    feature.SetGeometryDirectly(
+        ogr.CreateGeometryFromWkt('POLYGON ((1 1,2 1,2 0,1 1))'))
     layer.CreateFeature(feature)
 
     target_ds = gdal.GetDriverByName('MEM').Create('', 3, 2)

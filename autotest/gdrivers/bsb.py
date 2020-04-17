@@ -44,7 +44,7 @@ def test_bsb_0():
     if gdaltest.bsb_dr is None:
         pytest.skip()
 
-    
+
 ###############################################################################
 # Test Read
 
@@ -136,6 +136,7 @@ def test_bsb_6():
 
 ###############################################################################
 
+
 def test_bsb_tmerc():
     if gdaltest.bsb_dr is None:
         pytest.skip()
@@ -144,7 +145,8 @@ def test_bsb_tmerc():
     gt = ds.GetGeoTransform()
     expected_gt = [28487.6637325402, 1.2711141208521637, 0.009061669923111566,
                    6539651.728646593, 0.015209115944776083, -1.267821834560455]
-    assert min([gt[i] == pytest.approx(expected_gt[i], abs=1e-8 * abs(expected_gt[i])) for i in range(6)]) == True, gt
+    assert min([gt[i] == pytest.approx(expected_gt[i], abs=1e-8 *
+                                       abs(expected_gt[i])) for i in range(6)]) == True, gt
     expected_wkt = """PROJCS["unnamed",
     GEOGCS["WGS 84",
         DATUM["WGS_1984",
@@ -167,7 +169,7 @@ def test_bsb_tmerc():
     AXIS["Northing",NORTH]]"""
     expected_sr = osr.SpatialReference()
     expected_sr.SetFromUserInput(expected_wkt)
-    expected_sr.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER);
+    expected_sr.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
     got_sr = ds.GetSpatialRef()
     assert expected_sr.IsSame(got_sr), got_sr.ExportToWkt()
     got_sr = ds.GetGCPSpatialRef()
@@ -177,10 +179,10 @@ def test_bsb_tmerc():
     assert len(gcps) == 3
 
     assert gcps[0].GCPPixel == 25 and \
-       gcps[0].GCPLine == 577 and \
-       gcps[0].GCPX == pytest.approx(28524.670169107143, abs=1e-5) and \
-       gcps[0].GCPY == pytest.approx(6538920.57567595, abs=1e-5) and \
-       gcps[0].GCPZ == 0
+        gcps[0].GCPLine == 577 and \
+        gcps[0].GCPX == pytest.approx(28524.670169107143, abs=1e-5) and \
+        gcps[0].GCPY == pytest.approx(6538920.57567595, abs=1e-5) and \
+        gcps[0].GCPZ == 0
 
 ###############################################################################
 
@@ -190,4 +192,5 @@ def test_bsb_cutline():
         pytest.skip()
 
     ds = gdal.Open('data/australia4c.kap')
-    assert ds.GetMetadataItem('BSB_CUTLINE') == 'POLYGON ((112.72859333333334 -8.25404666666667,156.57827333333333 -7.66159166666667,164.28394166666666 -40.89653000000000,106.53042166666667 -41.14970000000000))'
+    assert ds.GetMetadataItem(
+        'BSB_CUTLINE') == 'POLYGON ((112.72859333333334 -8.25404666666667,156.57827333333333 -7.66159166666667,164.28394166666666 -40.89653000000000,106.53042166666667 -41.14970000000000))'

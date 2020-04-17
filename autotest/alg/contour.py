@@ -85,7 +85,8 @@ def test_contour_1():
                        buf_type=gdal.GDT_Int16,
                        band_list=[1])
 
-    ogr_ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource('tmp/contour.shp')
+    ogr_ds = ogr.GetDriverByName(
+        'ESRI Shapefile').CreateDataSource('tmp/contour.shp')
     ogr_lyr = ogr_ds.CreateLayer('contour')
     field_defn = ogr.FieldDefn('ID', ogr.OFTInteger)
     ogr_lyr.CreateField(field_defn)
@@ -111,9 +112,11 @@ def test_contour_1():
         assert feat.GetField('elev') == expected_height[i]
         for j in range(4):
             if expected_envelopes[i][j] != pytest.approx(envelope[j], abs=precision / 2 * 1.001):
-                print('i=%d, wkt=%s' % (i, feat.GetGeometryRef().ExportToWkt()))
+                print('i=%d, wkt=%s' %
+                      (i, feat.GetGeometryRef().ExportToWkt()))
                 print(feat.GetGeometryRef().GetEnvelope())
-                pytest.fail('%f, %f' % (expected_envelopes[i][j] - envelope[j], precision / 2))
+                pytest.fail('%f, %f' % (
+                    expected_envelopes[i][j] - envelope[j], precision / 2))
         i = i + 1
         feat = lyr.GetNextFeature()
 
@@ -139,7 +142,8 @@ def test_contour_2():
     except OSError:
         pass
 
-    ogr_ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource('tmp/contour.shp')
+    ogr_ds = ogr.GetDriverByName(
+        'ESRI Shapefile').CreateDataSource('tmp/contour.shp')
     ogr_lyr = ogr_ds.CreateLayer('contour', geom_type=ogr.wkbLineString25D)
     field_defn = ogr.FieldDefn('ID', ogr.OFTInteger)
     ogr_lyr.CreateField(field_defn)
@@ -147,14 +151,16 @@ def test_contour_2():
     ogr_lyr.CreateField(field_defn)
 
     ds = gdal.Open('tmp/gdal_contour.tif')
-    gdal.ContourGenerate(ds.GetRasterBand(1), 0, 0, [10, 20, 25], 0, 0, ogr_lyr, 0, 1)
+    gdal.ContourGenerate(ds.GetRasterBand(1), 0, 0, [
+                         10, 20, 25], 0, 0, ogr_lyr, 0, 1)
     ds = None
 
     size = 160
     precision = 1. / size
 
     expected_envelopes = [[1.25, 1.75, 49.25, 49.75],
-                          [1.25 + 0.125, 1.75 - 0.125, 49.25 + 0.125, 49.75 - 0.125],
+                          [1.25 + 0.125, 1.75 - 0.125,
+                              49.25 + 0.125, 49.75 - 0.125],
                           [1.25 + 0.125 + 0.0625, 1.75 - 0.125 - 0.0625, 49.25 + 0.125 + 0.0625, 49.75 - 0.125 - 0.0625]]
     expected_height = [10, 20, 25, 10000]
 
@@ -170,9 +176,11 @@ def test_contour_2():
         assert feat.GetField('elev') == expected_height[i]
         for j in range(4):
             if expected_envelopes[i][j] != pytest.approx(envelope[j], abs=precision / 2 * 1.001):
-                print('i=%d, wkt=%s' % (i, feat.GetGeometryRef().ExportToWkt()))
+                print('i=%d, wkt=%s' %
+                      (i, feat.GetGeometryRef().ExportToWkt()))
                 print(feat.GetGeometryRef().GetEnvelope())
-                pytest.fail('%f, %f' % (expected_envelopes[i][j] - envelope[j], precision / 2))
+                pytest.fail('%f, %f' % (
+                    expected_envelopes[i][j] - envelope[j], precision / 2))
         i = i + 1
         feat = lyr.GetNextFeature()
 
@@ -203,6 +211,7 @@ def test_contour_real_world_case():
 
 # Test with -p option (polygonize)
 
+
 def test_contour_3():
 
     try:
@@ -218,7 +227,8 @@ def test_contour_3():
     except OSError:
         pass
 
-    ogr_ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource('tmp/contour.shp')
+    ogr_ds = ogr.GetDriverByName(
+        'ESRI Shapefile').CreateDataSource('tmp/contour.shp')
     ogr_lyr = ogr_ds.CreateLayer('contour', geom_type=ogr.wkbMultiPolygon)
     field_defn = ogr.FieldDefn('ID', ogr.OFTInteger)
     ogr_lyr.CreateField(field_defn)
@@ -229,11 +239,11 @@ def test_contour_3():
 
     ds = gdal.Open('tmp/gdal_contour.tif')
     #gdal.ContourGenerateEx(ds.GetRasterBand(1), 0, 0, 0, [10, 20, 25], 0, 0, ogr_lyr, 0, 1, 1)
-    gdal.ContourGenerateEx(ds.GetRasterBand(1), ogr_lyr, options = [ "FIXED_LEVELS=10,20,25",
-                                                                     "ID_FIELD=0",
-                                                                     "ELEV_FIELD_MIN=1",
-                                                                     "ELEV_FIELD_MAX=2",
-                                                                     "POLYGONIZE=TRUE" ] )
+    gdal.ContourGenerateEx(ds.GetRasterBand(1), ogr_lyr, options=["FIXED_LEVELS=10,20,25",
+                                                                  "ID_FIELD=0",
+                                                                  "ELEV_FIELD_MIN=1",
+                                                                  "ELEV_FIELD_MAX=2",
+                                                                  "POLYGONIZE=TRUE"])
     ds = None
 
     size = 160
@@ -241,7 +251,8 @@ def test_contour_3():
 
     expected_envelopes = [[1.0, 2.0, 49.0, 50.0],
                           [1.25, 1.75, 49.25, 49.75],
-                          [1.25 + 0.125, 1.75 - 0.125, 49.25 + 0.125, 49.75 - 0.125],
+                          [1.25 + 0.125, 1.75 - 0.125,
+                              49.25 + 0.125, 49.75 - 0.125],
                           [1.25 + 0.125 + 0.0625, 1.75 - 0.125 - 0.0625, 49.25 + 0.125 + 0.0625, 49.75 - 0.125 - 0.0625]]
     expected_height = [10, 20, 25, 10000]
 
@@ -253,16 +264,20 @@ def test_contour_3():
     feat = lyr.GetNextFeature()
     while feat is not None:
         if i < 3 and feat.GetField('elevMax') != expected_height[i]:
-            pytest.fail('Got %f as z. Expected %f' % (feat.GetField('elevMax'), expected_height[i]))
+            pytest.fail('Got %f as z. Expected %f' %
+                        (feat.GetField('elevMax'), expected_height[i]))
         elif i > 0 and i < 3 and feat.GetField('elevMin') != expected_height[i-1]:
-            pytest.fail('Got %f as z. Expected %f' % (feat.GetField('elevMin'), expected_height[i-1]))
+            pytest.fail('Got %f as z. Expected %f' %
+                        (feat.GetField('elevMin'), expected_height[i-1]))
 
         envelope = feat.GetGeometryRef().GetEnvelope()
         for j in range(4):
             if expected_envelopes[i][j] != pytest.approx(envelope[j], abs=precision / 2 * 1.001):
-                print('i=%d, wkt=%s' % (i, feat.GetGeometryRef().ExportToWkt()))
+                print('i=%d, wkt=%s' %
+                      (i, feat.GetGeometryRef().ExportToWkt()))
                 print(feat.GetGeometryRef().GetEnvelope())
-                pytest.fail('%f, %f' % (expected_envelopes[i][j] - envelope[j], precision / 2))
+                pytest.fail('%f, %f' % (
+                    expected_envelopes[i][j] - envelope[j], precision / 2))
         i = i + 1
         feat = lyr.GetNextFeature()
 
@@ -273,25 +288,27 @@ def test_contour_3():
 # Check behaviour when the nodata value as a double isn't exactly the Float32 pixel value
 def test_contour_nodata_precision_issue_float32():
 
-    ogr_ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource('/vsimem/contour.shp')
+    ogr_ds = ogr.GetDriverByName(
+        'ESRI Shapefile').CreateDataSource('/vsimem/contour.shp')
     ogr_lyr = ogr_ds.CreateLayer('contour', geom_type=ogr.wkbLineString)
     field_defn = ogr.FieldDefn('ID', ogr.OFTInteger)
     ogr_lyr.CreateField(field_defn)
 
     ds = gdal.Open('data/nodata_precision_issue_float32.tif')
-    gdal.ContourGenerateEx(ds.GetRasterBand(1), ogr_lyr, options = [ "LEVEL_INTERVAL=0.1",
-                                                                     "ID_FIELD=0",
-                                                                     "NODATA=%.19g" % ds.GetRasterBand(1).GetNoDataValue()] )
+    gdal.ContourGenerateEx(ds.GetRasterBand(1), ogr_lyr, options=["LEVEL_INTERVAL=0.1",
+                                                                  "ID_FIELD=0",
+                                                                  "NODATA=%.19g" % ds.GetRasterBand(1).GetNoDataValue()])
     ds = None
     assert ogr_lyr.GetFeatureCount() == 0
     ogr_ds = None
-    ogr.GetDriverByName('ESRI Shapefile').DeleteDataSource('/vsimem/contour.shp')
-
+    ogr.GetDriverByName('ESRI Shapefile').DeleteDataSource(
+        '/vsimem/contour.shp')
 
 
 def test_contour_too_many_levels():
 
-    ogr_ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource('/vsimem/contour.shp')
+    ogr_ds = ogr.GetDriverByName(
+        'ESRI Shapefile').CreateDataSource('/vsimem/contour.shp')
     ogr_lyr = ogr_ds.CreateLayer('contour', geom_type=ogr.wkbLineString)
     field_defn = ogr.FieldDefn('ID', ogr.OFTInteger)
     ogr_lyr.CreateField(field_defn)
@@ -317,19 +334,20 @@ cellsize     1
             ds = gdal.Open('/vsimem/test.asc')
             with gdaltest.error_handler():
                 assert gdal.ContourGenerateEx(ds.GetRasterBand(1), ogr_lyr,
-                                                options = [ "LEVEL_INTERVAL=1",
-                                                            "ID_FIELD=0"] ) != 0
+                                              options=["LEVEL_INTERVAL=1",
+                                                       "ID_FIELD=0"]) != 0
 
         with gdaltest.tempfile('/vsimem/test.asc', content):
             ds = gdal.Open('/vsimem/test.asc')
             with gdaltest.error_handler():
                 assert gdal.ContourGenerateEx(ds.GetRasterBand(1), ogr_lyr,
-                                                options = [ "LEVEL_INTERVAL=1",
-                                                            "LEVEL_EXP_BASE=1.0001",
-                                                            "ID_FIELD=0"] ) != 0
+                                              options=["LEVEL_INTERVAL=1",
+                                                       "LEVEL_EXP_BASE=1.0001",
+                                                       "ID_FIELD=0"]) != 0
 
     ogr_ds = None
-    ogr.GetDriverByName('ESRI Shapefile').DeleteDataSource('/vsimem/contour.shp')
+    ogr.GetDriverByName('ESRI Shapefile').DeleteDataSource(
+        '/vsimem/contour.shp')
 
 ###############################################################################
 
@@ -344,8 +362,8 @@ def test_contour_raster_acquisition_error():
 
     with gdaltest.error_handler():
         assert gdal.ContourGenerateEx(ds.GetRasterBand(1), ogr_lyr,
-                                        options = [ "LEVEL_INTERVAL=1",
-                                                    "ID_FIELD=0"] ) != 0
+                                      options=["LEVEL_INTERVAL=1",
+                                               "ID_FIELD=0"]) != 0
 
 ###############################################################################
 # Cleanup
@@ -357,8 +375,3 @@ def test_contour_cleanup():
         os.remove('tmp/gdal_contour.tif')
     except OSError:
         pass
-
-    
-
-
-

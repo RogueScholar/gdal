@@ -10,6 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import redirects
 import datetime
 import os
 import sys
@@ -41,7 +42,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [ 'programs/options/*.rst' ]
+exclude_patterns = ['programs/options/*.rst']
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -52,26 +53,26 @@ html_theme_path = ['.']
 html_theme = 'gdal_rtd'
 
 html_context = {
-  'display_github': True,
-  'theme_vcs_pageview_mode': 'edit',
-  'github_user': 'OSGeo',
-  'github_repo': 'gdal',
-  'github_version': '/master/gdal/doc/source/'
+    'display_github': True,
+    'theme_vcs_pageview_mode': 'edit',
+    'github_user': 'OSGeo',
+    'github_repo': 'gdal',
+    'github_version': '/master/gdal/doc/source/'
 }
 
 html_theme_options = {
     'canonical_url': 'https://gdal.org',
-    'analytics_id': '',  #  Provided by Google in your dashboard
+    'analytics_id': '',  # Provided by Google in your dashboard
     'logo_only': True,
     'display_version': True,
     'prev_next_buttons_location': 'both',
     'style_external_links': False,
-    #'vcs_pageview_mode': '',
+    # 'vcs_pageview_mode': '',
     'style_nav_header_background': 'white',
     # Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,
-    #'navigation_depth': 4,
+    # 'navigation_depth': 4,
     'includehidden': True,
     'titles_only': False
 }
@@ -151,7 +152,8 @@ man_pages = [
         'programs/gdaldem',
         'gdaldem',
         u'Tools to analyze and visualize DEMs.',
-        ['Matthew Perry <perrygeo@gmail.com>', author_evenr, 'Howard Butler <hobu.inc@gmail.com>', 'Chris Yesson <chris.yesson@ioz.ac.uk>'],
+        ['Matthew Perry <perrygeo@gmail.com>', author_evenr,
+            'Howard Butler <hobu.inc@gmail.com>', 'Chris Yesson <chris.yesson@ioz.ac.uk>'],
         1
     ),
     (
@@ -277,7 +279,8 @@ man_pages = [
         'programs/gdal_calc',
         'gdal_calc',
         u'Command line raster calculator with numpy syntax.',
-        ['Chris Yesson <chris dot yesson at ioz dot ac dot uk>', 'Etienne Tourigny <etourigny dot dev at gmail dot com>'],
+        ['Chris Yesson <chris dot yesson at ioz dot ac dot uk>',
+            'Etienne Tourigny <etourigny dot dev at gmail dot com>'],
         1
     ),
     (
@@ -372,20 +375,20 @@ preamble = r"""
 """
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    # 'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-'preamble': preamble,
-'inputenc':'\\usepackage[utf8]{inputenc}\n\\usepackage{CJKutf8}\n\\usepackage{substitutefont}',
-'babel':'\\usepackage[russian,main=english]{babel}\n\\selectlanguage{english}',
-'fontenc':'\\usepackage[LGR,X2,T1]{fontenc}'
+    # Additional stuff for the LaTeX preamble.
+    'preamble': preamble,
+    'inputenc': '\\usepackage[utf8]{inputenc}\n\\usepackage{CJKutf8}\n\\usepackage{substitutefont}',
+    'babel': '\\usepackage[russian,main=english]{babel}\n\\selectlanguage{english}',
+    'fontenc': '\\usepackage[LGR,X2,T1]{fontenc}'
 
-# Latex figure (float) alignment
-#'figure_align': 'htbp',
+    # Latex figure (float) alignment
+    # 'figure_align': 'htbp',
 }
 
 latex_documents = [
@@ -410,7 +413,4 @@ breathe_default_project = "api"
 # Tell sphinx what the primary language being documented is.
 primary_domain = 'cpp'
 
-import redirects
 redirect_files = redirects.gather_redirects()
-
-

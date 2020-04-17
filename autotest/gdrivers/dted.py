@@ -101,7 +101,8 @@ def test_dted_5():
     driver = gdal.GetDriverByName("GTiff")
     ds = driver.Create('tmp/n43.dt1.tif', 1201, 1201, 1, gdal.GDT_Int16)
     ds.SetProjection('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]')
-    ref_geotransform = (-80.0004166666666663, 0.0008333333333333, 0, 44.0004166666666670, 0, -0.0008333333333333)
+    ref_geotransform = (-80.0004166666666663, 0.0008333333333333,
+                        0, 44.0004166666666670, 0, -0.0008333333333333)
     ds.SetGeoTransform(ref_geotransform)
 
     ds = None
@@ -122,7 +123,8 @@ def test_dted_6():
     driver = gdal.GetDriverByName("GTiff")
     ds = driver.Create('tmp/n43.dt2.tif', 3601, 3601, 1, gdal.GDT_Int16)
     ds.SetProjection('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]')
-    ref_geotransform = (-80.0001388888888888888, 0.0002777777777777777, 0, 44.0001388888888888, 0, -0.0002777777777777777)
+    ref_geotransform = (-80.0001388888888888888, 0.0002777777777777777,
+                        0, 44.0001388888888888, 0, -0.0002777777777777777)
     ds.SetGeoTransform(ref_geotransform)
 
     ds = None
@@ -187,7 +189,8 @@ def test_dted_9():
     driver = gdal.GetDriverByName("GTiff")
     dsDst = driver.Create('tmp/n53.dt1.tif', 601, 1201, 1, gdal.GDT_Int16)
     dsDst.SetProjection('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]')
-    dsDst.SetGeoTransform((-80.0008333333333333, 0.001666666666667, 0, 54.0004166666666670, 0, -0.0008333333333333))
+    dsDst.SetGeoTransform((-80.0008333333333333, 0.001666666666667,
+                           0, 54.0004166666666670, 0, -0.0008333333333333))
 
     bandDst = dsDst.GetRasterBand(1)
 
@@ -295,7 +298,8 @@ def test_dted_16():
 
         max_error = 0.000001
         gt = ds.GetGeoTransform()
-        assert gt == pytest.approx((-80.0, 0.0083333333333333332, 0, 44.0, 0, -0.0083333333333333332), abs=max_error)
+        assert gt == pytest.approx(
+            (-80.0, 0.0083333333333333332, 0, 44.0, 0, -0.0083333333333333332), abs=max_error)
 
 
 ###############################################################################
@@ -315,7 +319,3 @@ def test_dted_cleanup():
         os.remove('tmp/n43.dt2')
     except OSError:
         pass
-
-
-
-
