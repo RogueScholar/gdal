@@ -36,7 +36,7 @@ extern "C" void CPL_DLL RegisterOGRDWG_DGNV8();
 
 extern "C" int CPL_DLL GDALIsInGlobalDestructor();
 
-static CPLMutex* hMutex = nullptr;
+static CPLMutex *hMutex = nullptr;
 static bool bInitialized = false;
 static bool bInitSuccess = false;
 static OdStaticRxObject<OGRDWGServices> oDWGServices;
@@ -46,12 +46,11 @@ static OdStaticRxObject<OGRDGNV8Services> oDGNServices;
 /*                        OGRTEIGHAErrorHandler()                       */
 /************************************************************************/
 
-static void OGRTEIGHAErrorHandler( OdResult oResult )
+static void OGRTEIGHAErrorHandler(OdResult oResult)
 
 {
-    CPLError( CE_Failure, CPLE_AppDefined,
-              "GeError:%ls",
-              OdError(oResult).description().c_str() );
+  CPLError(CE_Failure, CPLE_AppDefined, "GeError:%ls",
+           OdError(oResult).description().c_str());
 }
 
 /************************************************************************/
@@ -67,94 +66,81 @@ ODRX_DECLARE_STATIC_MODULE_ENTRY_POINT(ModelerModule);
 ODRX_BEGIN_STATIC_MODULE_MAP()
 ODRX_DEFINE_STATIC_APPMODULE(L"TG_Db", OdDgnModule)
 ODRX_DEFINE_STATIC_APPMODULE(OdWinBitmapModuleName, BitmapModule)
-ODRX_DEFINE_STATIC_APPMODULE(OdRecomputeDimBlockModuleName, OdRecomputeDimBlockModule)
+ODRX_DEFINE_STATIC_APPMODULE(OdRecomputeDimBlockModuleName,
+                             OdRecomputeDimBlockModule)
 ODRX_DEFINE_STATIC_APPMODULE(OdModelerGeometryModuleName, ModelerModule)
 ODRX_END_STATIC_MODULE_MAP()
 #endif
 
-bool OGRTEIGHAInitialize()
-{
-    CPLMutexHolderD(&hMutex);
-    if( bInitialized )
-        return bInitSuccess;
+bool OGRTEIGHAInitialize() {
+  CPLMutexHolderD(&hMutex);
+  if (bInitialized)
+    return bInitSuccess;
 
 #ifndef _TOOLKIT_IN_DLL_
-    //Additional static modules initialization
-    ODRX_INIT_STATIC_MODULE_MAP();
+  // Additional static modules initialization
+  ODRX_INIT_STATIC_MODULE_MAP();
 #endif
 
-    bInitialized = true;
+  bInitialized = true;
 
-    OdGeContext::gErrorFunc = OGRTEIGHAErrorHandler;
+  OdGeContext::gErrorFunc = OGRTEIGHAErrorHandler;
 
-    try
-    {
-        odInitialize(&oDWGServices);
-        oDWGServices.disableOutput( true );
+  try {
+    odInitialize(&oDWGServices);
+    oDWGServices.disableOutput(true);
 
-        /********************************************************************/
-        /* Find the data file and and initialize the character mapper       */
-        /********************************************************************/
-        OdString iniFile = oDWGServices.findFile(OD_T("adinit.dat"));
-        if (!iniFile.isEmpty())
-            OdCharMapper::initialize(iniFile);
+    /********************************************************************/
+    /* Find the data file and and initialize the character mapper       */
+    /********************************************************************/
+    OdString iniFile = oDWGServices.findFile(OD_T("adinit.dat"));
+    if (!iniFile.isEmpty())
+      OdCharMapper::initialize(iniFile);
 
-        odrxInitialize(&oDGNServices);
-        oDGNServices.disableProgressMeterOutput( true );
+    odrxInitialize(&oDGNServices);
+    oDGNServices.disableProgressMeterOutput(true);
 
-        ::odrxDynamicLinker()->loadModule(L"TG_Db", false);
+    ::odrxDynamicLinker()->loadModule(L"TG_Db", false);
 
-        bInitSuccess = true;
-    }
-    catch ( const std::exception& e )
-    {
-        CPLError(CE_Failure, CPLE_AppDefined,
-                 "An exception occurred in OGRTEIGHAInitialize(): %S", e.what());
-    }
-    catch ( ... )
-    {
-        CPLError(CE_Failure, CPLE_AppDefined,
-                 "An exception occurred in OGRTEIGHAInitialize()");
-    }
-    return bInitSuccess;
+    bInitSuccess = true;
+  } catch (const std::exception &e) {
+    CPLError(CE_Failure, CPLE_AppDefined,
+             "An exception occurred in OGRTEIGHAInitialize(): %S", e.what());
+  } catch (...) {
+    CPLError(CE_Failure, CPLE_AppDefined,
+             "An exception occurred in OGRTEIGHAInitialize()");
+  }
+  return bInitSuccess;
 }
 
 /************************************************************************/
 /*                        OGRDWGGetServices()                           */
 /************************************************************************/
 
-OGRDWGServices* OGRDWGGetServices()
-{
-    return &oDWGServices;
-}
+OGRDWGServices *OGRDWGGetServices() { return &oDWGServices; }
 
 /************************************************************************/
 /*                        OGRDGNV8GetServices()                         */
 /************************************************************************/
 
-OGRDGNV8Services* OGRDGNV8GetServices()
-{
-    return &oDGNServices;
-}
+OGRDGNV8Services *OGRDGNV8GetServices() { return &oDGNServices; }
 
 /************************************************************************/
 /*                       OGRTEIGHADeinitialize()                        */
 /************************************************************************/
 
-void OGRTEIGHADeinitialize()
-{
-    if( GDALIsInGlobalDestructor()   )
-        return;
-    if( bInitSuccess )
-    {
-        odUninitialize();
-        odrxUninitialize();
-    }
-    bInitialized = false;
-    bInitSuccess = false;
-    if( hMutex != nullptr )
-        CPLDestroyMutex(hMutex);
-    hMutex = nullptr;
+void OGRTEIGHADeinitialize() {
+  if (GDALIsInGlobalDestructor())
+    return;
+  if (bInitSuccess) {
+    odUninitialize();
+    odrxUninitialize();
+  }
+  bInitialized = false;
+  bInitSuccess = false;
+  if (hMutex != nullptr)
+    CPLDestroyMutex(hMutex);
+  hMutex = nullptr;
 }
 
 /************************************************************************/
@@ -166,6 +152,6 @@ void OGRTEIGHADeinitialize()
 void RegisterOGRDWG_DGNV8()
 
 {
-    RegisterOGRDWG();
-    RegisterOGRDGNV8();
+  RegisterOGRDWG();
+  RegisterOGRDGNV8();
 }
