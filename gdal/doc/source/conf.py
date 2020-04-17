@@ -16,13 +16,11 @@ import redirects
 
 sys.path.insert(0, os.path.abspath("_extensions"))
 
-
 # -- Project information -----------------------------------------------------
 
 project = "GDAL"
 copyright = "1998-" + str(datetime.date.today().year)
 author = "Frank Warmerdam, Even Rouault, and others"
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -363,7 +361,6 @@ man_pages = [
     ),
 ]
 
-
 # latex
 
 preamble = r"""
@@ -379,8 +376,10 @@ latex_elements = {
     # 'pointsize': '10pt',
     # Additional stuff for the LaTeX preamble.
     "preamble": preamble,
-    "inputenc": "\\usepackage[utf8]{inputenc}\n\\usepackage{CJKutf8}\n\\usepackage{substitutefont}",
-    "babel": "\\usepackage[russian,main=english]{babel}\n\\selectlanguage{english}",
+    "inputenc":
+    "\\usepackage[utf8]{inputenc}\n\\usepackage{CJKutf8}\n\\usepackage{substitutefont}",
+    "babel":
+    "\\usepackage[russian,main=english]{babel}\n\\selectlanguage{english}",
     "fontenc": "\\usepackage[LGR,X2,T1]{fontenc}"
     # Latex figure (float) alignment
     # 'figure_align': 'htbp',

@@ -50,7 +50,8 @@ def test_gdal_rasterize_lib_1():
 
     # Create a raster to rasterize into.
 
-    target_ds = gdal.GetDriverByName("MEM").Create("", 100, 100, 3, gdal.GDT_Byte)
+    target_ds = gdal.GetDriverByName("MEM").Create("", 100, 100, 3,
+                                                   gdal.GDT_Byte)
     target_ds.SetGeoTransform((1000, 1, 0, 1100, 0, -1))
     target_ds.SetProjection(sr_wkt)
 
@@ -113,10 +114,8 @@ def test_gdal_rasterize_lib_3():
     if test_cli_utilities.get_gdal_contour_path() is None:
         pytest.skip()
 
-    gdaltest.runexternal(
-        test_cli_utilities.get_gdal_contour_path()
-        + " ../gdrivers/data/n43.dt0 tmp/n43dt0.shp -i 10 -3d"
-    )
+    gdaltest.runexternal(test_cli_utilities.get_gdal_contour_path() +
+                         " ../gdrivers/data/n43.dt0 tmp/n43dt0.shp -i 10 -3d")
 
     with gdaltest.error_handler():
         ds = gdal.Rasterize("/vsimem/bogus.tif", "tmp/n43dt0.shp")
@@ -138,20 +137,17 @@ def test_gdal_rasterize_lib_3():
 
     ds_ref = gdal.Open("../gdrivers/data/n43.dt0")
 
-    assert (
-        ds.GetRasterBand(1).GetNoDataValue() == 0.0
-    ), "did not get expected nodata value"
+    assert (ds.GetRasterBand(1).GetNoDataValue() == 0.0
+            ), "did not get expected nodata value"
 
-    assert (
-        ds.RasterXSize == 121 and ds.RasterYSize == 121
-    ), "did not get expected dimensions"
+    assert (ds.RasterXSize == 121
+            and ds.RasterYSize == 121), "did not get expected dimensions"
 
     gt_ref = ds_ref.GetGeoTransform()
     gt = ds.GetGeoTransform()
     for i in range(6):
         assert gt[i] == pytest.approx(
-            gt_ref[i], abs=1e-6
-        ), "did not get expected geotransform"
+            gt_ref[i], abs=1e-6), "did not get expected geotransform"
 
     wkt = ds.GetProjectionRef()
     assert wkt.find("WGS_1984") != -1, "did not get expected SRS"
@@ -202,7 +198,8 @@ def test_gdal_rasterize_lib_101():
     rast_lyr = vector_ds.CreateLayer("rast1")
 
     # polygon with empty exterior ring
-    geom = ogr.CreateGeometryFromJson('{ "type": "Polygon", "coordinates": [ [ ] ] }')
+    geom = ogr.CreateGeometryFromJson(
+        '{ "type": "Polygon", "coordinates": [ [ ] ] }')
 
     feat = ogr.Feature(rast_lyr.GetLayerDefn())
     feat.SetGeometryDirectly(geom)
@@ -232,14 +229,18 @@ def test_gdal_rasterize_lib_102():
         "HEIGHT_SCALE": "501",
         "LAT_OFF": "-0.0734",
         "LAT_SCALE": "0.2883",
-        "LINE_DEN_COEFF": "1 0.0002790015 0.001434672 1.481312e-07 5.866139e-06 1.878347e-07 -7.1677e-08 -1.099383e-05 1.968371e-06 -5.50509e-06 0 -1.227539e-08 0 0 2.40682e-07 -1.144941e-08 0 -1.884406e-08 0 0",
-        "LINE_NUM_COEFF": "0.002744972 -0.382552 -1.279674 -0.0001147828 0.001140472 1.262068e-07 -1.69402e-07 -0.005830625 -0.001964747 0 -2.006924e-07 3.066144e-07 3.005069e-06 2.103552e-06 -1.981401e-06 -1.636042e-06 7.045145e-06 -5.699422e-08 1.169591e-07 0",
+        "LINE_DEN_COEFF":
+        "1 0.0002790015 0.001434672 1.481312e-07 5.866139e-06 1.878347e-07 -7.1677e-08 -1.099383e-05 1.968371e-06 -5.50509e-06 0 -1.227539e-08 0 0 2.40682e-07 -1.144941e-08 0 -1.884406e-08 0 0",
+        "LINE_NUM_COEFF":
+        "0.002744972 -0.382552 -1.279674 -0.0001147828 0.001140472 1.262068e-07 -1.69402e-07 -0.005830625 -0.001964747 0 -2.006924e-07 3.066144e-07 3.005069e-06 2.103552e-06 -1.981401e-06 -1.636042e-06 7.045145e-06 -5.699422e-08 1.169591e-07 0",
         "LINE_OFF": "112.98500331785",
         "LINE_SCALE": "113.01499668215",
         "LONG_OFF": "-4.498",
         "LONG_SCALE": "0.5511",
-        "SAMP_DEN_COEFF": "1 0.001297913 0.0005878427 -0.0004554233 -7.353773e-05 7.928584e-06 -1.826261e-06 9.516839e-05 5.332457e-07 -4.236274e-05 -1.89316e-08 -1.520878e-06 -8.941367e-07 -7.770314e-07 1.413225e-06 9.681702e-08 -4.724849e-08 -2.244317e-07 1.0665e-08 4.212225e-08",
-        "SAMP_NUM_COEFF": "0.01819195 1.091934 -0.1976373 0.003166136 0.002648549 0.0003527143 -6.27017e-05 -0.01889831 -0.0005888535 1.729232e-07 3.037208e-06 0.000174218 -3.129558e-05 -4.602708e-05 2.724941e-05 -9.314161e-07 8.328574e-06 -1.240182e-05 -4.652876e-07 -1.322223e-07",
+        "SAMP_DEN_COEFF":
+        "1 0.001297913 0.0005878427 -0.0004554233 -7.353773e-05 7.928584e-06 -1.826261e-06 9.516839e-05 5.332457e-07 -4.236274e-05 -1.89316e-08 -1.520878e-06 -8.941367e-07 -7.770314e-07 1.413225e-06 9.681702e-08 -4.724849e-08 -2.244317e-07 1.0665e-08 4.212225e-08",
+        "SAMP_NUM_COEFF":
+        "0.01819195 1.091934 -0.1976373 0.003166136 0.002648549 0.0003527143 -6.27017e-05 -0.01889831 -0.0005888535 1.729232e-07 3.037208e-06 0.000174218 -3.129558e-05 -4.602708e-05 2.724941e-05 -9.314161e-07 8.328574e-06 -1.240182e-05 -4.652876e-07 -1.322223e-07",
         "SAMP_OFF": "176.619681301916",
         "SAMP_SCALE": "177.068486184099",
     }
@@ -269,9 +270,10 @@ def test_gdal_rasterize_lib_102():
 
     # Re-try with transformer options
     target_ds.GetRasterBand(1).Fill(255)
-    ret = gdal.Rasterize(
-        target_ds, vector_ds, burnValues=[0], transformerOptions=["RPC_HEIGHT=1000"]
-    )
+    ret = gdal.Rasterize(target_ds,
+                         vector_ds,
+                         burnValues=[0],
+                         transformerOptions=["RPC_HEIGHT=1000"])
     assert ret == 1
 
     # Check results.
@@ -295,7 +297,8 @@ def test_gdal_rasterize_lib_4():
 
     # Create a raster to rasterize into.
     for optim in ["RASTER", "VECTOR", "AUTO"]:
-        target_ds = gdal.GetDriverByName("MEM").Create("", 100, 100, 3, gdal.GDT_Byte)
+        target_ds = gdal.GetDriverByName("MEM").Create("", 100, 100, 3,
+                                                       gdal.GDT_Byte)
         target_ds.SetGeoTransform((1000, 1, 0, 1100, 0, -1))
         target_ds.SetProjection(sr_wkt)
 
@@ -362,9 +365,7 @@ def test_gdal_rasterize_lib_multipolygon():
     feature = ogr.Feature(layer.GetLayerDefn())
     feature.SetGeometryDirectly(
         ogr.CreateGeometryFromWkt(
-            "MULTIPOLYGON (((0 0,0 1,1 1,0 0)),((1 1,2 1,2 0,1 1)))"
-        )
-    )
+            "MULTIPOLYGON (((0 0,0 1,1 1,0 0)),((1 1,2 1,2 0,1 1)))"))
     layer.CreateFeature(feature)
 
     target_ds = gdal.GetDriverByName("MEM").Create("", 3, 2)
@@ -379,13 +380,11 @@ def test_gdal_rasterize_lib_multipolygon():
     layer = vector_ds.CreateLayer("", sr)
     feature = ogr.Feature(layer.GetLayerDefn())
     feature.SetGeometryDirectly(
-        ogr.CreateGeometryFromWkt("POLYGON ((0 0,0 1,1 1,0 0))")
-    )
+        ogr.CreateGeometryFromWkt("POLYGON ((0 0,0 1,1 1,0 0))"))
     layer.CreateFeature(feature)
     feature = ogr.Feature(layer.GetLayerDefn())
     feature.SetGeometryDirectly(
-        ogr.CreateGeometryFromWkt("POLYGON ((1 1,2 1,2 0,1 1))")
-    )
+        ogr.CreateGeometryFromWkt("POLYGON ((1 1,2 1,2 0,1 1))"))
     layer.CreateFeature(feature)
 
     target_ds = gdal.GetDriverByName("MEM").Create("", 3, 2)

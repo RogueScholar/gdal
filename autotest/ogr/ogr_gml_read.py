@@ -147,9 +147,11 @@ def test_ogr_gml_4():
     # Test 1st feature
     feat = lyr.GetNextFeature()
 
-    assert feat.GetField("featureCode") == 10198, "Wrong featureCode field value"
+    assert feat.GetField(
+        "featureCode") == 10198, "Wrong featureCode field value"
 
-    assert feat.GetField("anchorPosition") == 8, "Wrong anchorPosition field value"
+    assert feat.GetField(
+        "anchorPosition") == 8, "Wrong anchorPosition field value"
 
     wkt = "POINT (347243.85 461299.5)"
 
@@ -158,7 +160,8 @@ def test_ogr_gml_4():
     # Test 2nd feature
     feat = lyr.GetNextFeature()
 
-    assert feat.GetField("featureCode") == 10069, "Wrong featureCode field value"
+    assert feat.GetField(
+        "featureCode") == 10069, "Wrong featureCode field value"
 
     wkt = "POINT (347251.45 461250.85)"
 
@@ -234,18 +237,12 @@ def test_ogr_gml_7():
     except:
         pytest.skip()
 
-    assert (
-        ldefn.GetFieldDefn(0).GetFieldTypeName(ldefn.GetFieldDefn(0).GetType())
-        == "Real"
-    )
-    assert (
-        ldefn.GetFieldDefn(1).GetFieldTypeName(ldefn.GetFieldDefn(1).GetType())
-        == "Integer"
-    )
-    assert (
-        ldefn.GetFieldDefn(2).GetFieldTypeName(ldefn.GetFieldDefn(2).GetType())
-        == "String"
-    )
+    assert (ldefn.GetFieldDefn(0).GetFieldTypeName(
+        ldefn.GetFieldDefn(0).GetType()) == "Real")
+    assert (ldefn.GetFieldDefn(1).GetFieldTypeName(
+        ldefn.GetFieldDefn(1).GetType()) == "Integer")
+    assert (ldefn.GetFieldDefn(2).GetFieldTypeName(
+        ldefn.GetFieldDefn(2).GetType()) == "String")
 
 
 ###############################################################################
@@ -262,8 +259,7 @@ def test_ogr_gml_8():
     feat = lyr.GetNextFeature()
     if sys.version_info >= (3, 0, 0):
         assert feat.GetFieldAsString("name") == "\xc4\x80liamanu".encode(
-            "latin1"
-        ).decode("utf-8")
+            "latin1").decode("utf-8")
     else:
         assert feat.GetFieldAsString("name") == "\xc4\x80liamanu"
 
@@ -351,36 +347,31 @@ def test_ogr_gml_10():
     lyr = ds.GetLayerByName("test")
     feat = lyr.GetNextFeature()
 
-    assert (
-        feat.GetFieldDefnRef(feat.GetFieldIndex("string")).GetType() == ogr.OFTString
-    ), (
-        "String type is reported wrong. Got "
-        + str(feat.GetFieldDefnRef(feat.GetFieldIndex("string")).GetType())
-    )
-    assert feat.GetFieldDefnRef(feat.GetFieldIndex("real")).GetType() == ogr.OFTReal, (
-        "Real type is reported wrong. Got "
-        + str(feat.GetFieldDefnRef(feat.GetFieldIndex("real")).GetType())
-    )
-    assert feat.GetFieldDefnRef(feat.GetFieldIndex("float")).GetType() == ogr.OFTReal, (
-        "Float type is not reported as OFTReal. Got "
-        + str(feat.GetFieldDefnRef(feat.GetFieldIndex("float")).GetType())
-    )
-    assert (
-        feat.GetFieldDefnRef(feat.GetFieldIndex("integer")).GetType() == ogr.OFTInteger
-    ), (
-        "Integer type is reported wrong. Got "
-        + str(feat.GetFieldDefnRef(feat.GetFieldIndex("integer")).GetType())
-    )
-    assert feat.GetFieldDefnRef(feat.GetFieldIndex("date")).GetType() == ogr.OFTDate
-    assert feat.GetFieldDefnRef(feat.GetFieldIndex("time")).GetType() == ogr.OFTTime
-    assert (
-        feat.GetFieldDefnRef(feat.GetFieldIndex("datetime")).GetType()
-        == ogr.OFTDateTime
-    )
+    assert (feat.GetFieldDefnRef(
+        feat.GetFieldIndex("string")).GetType() == ogr.OFTString), (
+            "String type is reported wrong. Got " +
+            str(feat.GetFieldDefnRef(feat.GetFieldIndex("string")).GetType()))
+    assert feat.GetFieldDefnRef(
+        feat.GetFieldIndex("real")).GetType() == ogr.OFTReal, (
+            "Real type is reported wrong. Got " +
+            str(feat.GetFieldDefnRef(feat.GetFieldIndex("real")).GetType()))
+    assert feat.GetFieldDefnRef(
+        feat.GetFieldIndex("float")).GetType() == ogr.OFTReal, (
+            "Float type is not reported as OFTReal. Got " +
+            str(feat.GetFieldDefnRef(feat.GetFieldIndex("float")).GetType()))
+    assert (feat.GetFieldDefnRef(
+        feat.GetFieldIndex("integer")).GetType() == ogr.OFTInteger), (
+            "Integer type is reported wrong. Got " +
+            str(feat.GetFieldDefnRef(feat.GetFieldIndex("integer")).GetType()))
+    assert feat.GetFieldDefnRef(
+        feat.GetFieldIndex("date")).GetType() == ogr.OFTDate
+    assert feat.GetFieldDefnRef(
+        feat.GetFieldIndex("time")).GetType() == ogr.OFTTime
+    assert (feat.GetFieldDefnRef(
+        feat.GetFieldIndex("datetime")).GetType() == ogr.OFTDateTime)
 
-    assert (
-        feat.GetField("string") == "test string of length 24"
-    ), "Unexpected string content." + feat.GetField("string")
+    assert (feat.GetField("string") == "test string of length 24"
+            ), "Unexpected string content." + feat.GetField("string")
     assert feat.GetFieldAsDouble("real") == 12.34, "Unexpected real content."
     assert feat.GetField("float") == 1234.5678, "Unexpected float content."
     assert feat.GetField("integer") == 1234, "Unexpected integer content."
@@ -388,30 +379,18 @@ def test_ogr_gml_10():
     assert feat.GetField("time") == "12:34:56"
     assert feat.GetField("datetime") == "2019/11/06 12:34:56+00"
 
-    assert (
-        lyr.GetLayerDefn()
-        .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("string"))
-        .GetWidth()
-        == 100
-    ), "Unexpected width of string field."
-    assert (
-        lyr.GetLayerDefn()
-        .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("real"))
-        .GetWidth()
-        == 4
-    ), "Unexpected width of real field."
-    assert (
-        lyr.GetLayerDefn()
-        .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("real"))
-        .GetPrecision()
-        == 2
-    ), "Unexpected precision of real field."
-    assert (
-        lyr.GetLayerDefn()
-        .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("integer"))
-        .GetWidth()
-        == 5
-    ), "Unexpected width of integer field."
+    assert (lyr.GetLayerDefn().GetFieldDefn(
+        lyr.GetLayerDefn().GetFieldIndex("string")).GetWidth() == 100
+            ), "Unexpected width of string field."
+    assert (lyr.GetLayerDefn().GetFieldDefn(
+        lyr.GetLayerDefn().GetFieldIndex("real")).GetWidth() == 4
+            ), "Unexpected width of real field."
+    assert (lyr.GetLayerDefn().GetFieldDefn(
+        lyr.GetLayerDefn().GetFieldIndex("real")).GetPrecision() == 2
+            ), "Unexpected precision of real field."
+    assert (lyr.GetLayerDefn().GetFieldDefn(
+        lyr.GetLayerDefn().GetFieldIndex("integer")).GetWidth() == 5
+            ), "Unexpected width of integer field."
     ds = None
 
     os.remove("tmp/fields.gml")
@@ -444,19 +423,17 @@ def test_ogr_gml_11():
 
     ds = ogr.Open("data/testgeometryelementpath.gml")
     lyr = ds.GetLayer(0)
-    assert (
-        lyr.GetGeometryColumn() == "location1container|location1"
-    ), "did not get expected geometry column name"
+    assert (lyr.GetGeometryColumn() == "location1container|location1"
+            ), "did not get expected geometry column name"
 
     feat = lyr.GetNextFeature()
-    assert (
-        feat.GetField("attrib1") == "attrib1_value"
-    ), "did not get expected value for attrib1"
-    assert (
-        feat.GetField("attrib2") == "attrib2_value"
-    ), "did not get expected value for attrib2"
+    assert (feat.GetField("attrib1") == "attrib1_value"
+            ), "did not get expected value for attrib1"
+    assert (feat.GetField("attrib2") == "attrib2_value"
+            ), "did not get expected value for attrib2"
     geom = feat.GetGeometryRef()
-    assert geom.ExportToWkt() == "POINT (3 50)", "did not get expected geometry"
+    assert geom.ExportToWkt(
+    ) == "POINT (3 50)", "did not get expected geometry"
     ds = None
 
 
@@ -470,22 +447,19 @@ def test_ogr_gml_12():
         pytest.skip()
 
     ds = ogr.Open(
-        "/vsizip/data/testgeometryelementpath.zip/testgeometryelementpath.gml"
-    )
+        "/vsizip/data/testgeometryelementpath.zip/testgeometryelementpath.gml")
     lyr = ds.GetLayer(0)
-    assert (
-        lyr.GetGeometryColumn() == "location1container|location1"
-    ), "did not get expected geometry column name"
+    assert (lyr.GetGeometryColumn() == "location1container|location1"
+            ), "did not get expected geometry column name"
 
     feat = lyr.GetNextFeature()
-    assert (
-        feat.GetField("attrib1") == "attrib1_value"
-    ), "did not get expected value for attrib1"
-    assert (
-        feat.GetField("attrib2") == "attrib2_value"
-    ), "did not get expected value for attrib2"
+    assert (feat.GetField("attrib1") == "attrib1_value"
+            ), "did not get expected value for attrib1"
+    assert (feat.GetField("attrib2") == "attrib2_value"
+            ), "did not get expected value for attrib2"
     geom = feat.GetGeometryRef()
-    assert geom.ExportToWkt() == "POINT (3 50)", "did not get expected geometry"
+    assert geom.ExportToWkt(
+    ) == "POINT (3 50)", "did not get expected geometry"
     ds = None
 
 
@@ -506,9 +480,8 @@ def test_ogr_gml_13():
             "value1",
             "value2",
         ], "did not get expected value for attrib1"
-        assert (
-            feat.GetField(feat.GetFieldIndex("attrib2")) == "value3"
-        ), "did not get expected value for attrib2"
+        assert (feat.GetField(feat.GetFieldIndex("attrib2")) == "value3"
+                ), "did not get expected value for attrib2"
         assert feat.GetFieldAsIntegerList(feat.GetFieldIndex("attrib3")) == [
             4,
             5,
@@ -536,26 +509,25 @@ def test_ogr_gml_14():
     if gdaltest.wms_drv is None:
         pytest.skip()
 
-    if (
-        gdaltest.gdalurlopen("http://download.osgeo.org/gdal/data/gml/xlink3.gml")
-        is None
-    ):
+    if (gdaltest.gdalurlopen(
+            "http://download.osgeo.org/gdal/data/gml/xlink3.gml") is None):
         pytest.skip("cannot open URL")
 
     files = ["xlink1.gml", "xlink2.gml", "expected1.gml", "expected2.gml"]
     for f in files:
         if not gdaltest.download_file(
-            "http://download.osgeo.org/gdal/data/gml/" + f, f
-        ):
+                "http://download.osgeo.org/gdal/data/gml/" + f, f):
             pytest.skip()
 
     gdal.SetConfigOption("GML_SKIP_RESOLVE_ELEMS", "NONE")
-    gdal.SetConfigOption("GML_SAVE_RESOLVED_TO", "tmp/cache/xlink1resolved.gml")
+    gdal.SetConfigOption("GML_SAVE_RESOLVED_TO",
+                         "tmp/cache/xlink1resolved.gml")
     with gdaltest.error_handler():
         gml_ds = ogr.Open("tmp/cache/xlink1.gml")
     gml_ds = None
     gdal.SetConfigOption("GML_SKIP_RESOLVE_ELEMS", "gml:directedNode")
-    gdal.SetConfigOption("GML_SAVE_RESOLVED_TO", "tmp/cache/xlink2resolved.gml")
+    gdal.SetConfigOption("GML_SAVE_RESOLVED_TO",
+                         "tmp/cache/xlink2resolved.gml")
     gml_ds = ogr.Open("tmp/cache/xlink1.gml")
     del gml_ds
     gdal.SetConfigOption("GML_SKIP_RESOLVE_ELEMS", None)
@@ -602,9 +574,8 @@ def test_ogr_gml_15():
     if test_cli_utilities.get_test_ogrsf_path() is None:
         pytest.skip()
 
-    ret = gdaltest.runexternal(
-        test_cli_utilities.get_test_ogrsf_path() + " -ro data/test_point.gml"
-    )
+    ret = gdaltest.runexternal(test_cli_utilities.get_test_ogrsf_path() +
+                               " -ro data/test_point.gml")
 
     assert ret.find("INFO") != -1 and ret.find("ERROR") == -1
 
@@ -622,11 +593,8 @@ def test_ogr_gml_16():
     lyr = ds.GetLayer(0)
     feat = lyr.GetNextFeature()
 
-    if (
-        feat.GetField("Name_") != "aname"
-        or feat.GetField("a_int_attr") != 2
-        or feat.GetField("a_double_attr") != 3.45
-    ):
+    if (feat.GetField("Name_") != "aname" or feat.GetField("a_int_attr") != 2
+            or feat.GetField("a_double_attr") != 3.45):
         feat.DumpReadable()
         pytest.fail("did not get expected values")
 
@@ -733,20 +701,18 @@ def test_ogr_gml_20():
 
     idx = ldefn.GetFieldIndex("cat")
     fddefn = ldefn.GetFieldDefn(idx)
-    assert (
-        fddefn.GetFieldTypeName(fddefn.GetType()) == "Integer64"
-    ), 'did not get expected column type for col "cat"'
+    assert (fddefn.GetFieldTypeName(fddefn.GetType()) == "Integer64"
+            ), 'did not get expected column type for col "cat"'
     idx = ldefn.GetFieldIndex("str1")
     fddefn = ldefn.GetFieldDefn(idx)
-    assert (
-        fddefn.GetFieldTypeName(fddefn.GetType()) == "String"
-    ), 'did not get expected column type for col "str1"'
+    assert (fddefn.GetFieldTypeName(fddefn.GetType()) == "String"
+            ), 'did not get expected column type for col "str1"'
 
-    assert (
-        lyr.GetGeometryColumn() == "the_geom"
-    ), "did not get expected geometry column name"
+    assert (lyr.GetGeometryColumn() == "the_geom"
+            ), "did not get expected geometry column name"
 
-    assert ldefn.GetGeomType() == ogr.wkbPoint, "did not get expected geometry type"
+    assert ldefn.GetGeomType(
+    ) == ogr.wkbPoint, "did not get expected geometry type"
 
     ds = None
 
@@ -777,8 +743,7 @@ def test_ogr_gml_21(frmt="GML3"):
             pass
 
     ds = ogr.GetDriverByName("GML").CreateDataSource(
-        "tmp/gml_21.gml", options=["FORMAT=" + frmt]
-    )
+        "tmp/gml_21.gml", options=["FORMAT=" + frmt])
     lyr = ds.CreateLayer("firstlayer", srs=sr)
     lyr.CreateField(ogr.FieldDefn("string_field", ogr.OFTString))
 
@@ -799,9 +764,8 @@ def test_ogr_gml_21(frmt="GML3"):
     ds = ogr.Open("tmp/gml_21.gml")
     lyr = ds.GetLayer(0)
     feat = lyr.GetNextFeature()
-    assert (
-        feat.GetGeometryRef().ExportToWkt() == "POINT (2 49)"
-    ), "did not get expected geometry"
+    assert (feat.GetGeometryRef().ExportToWkt() == "POINT (2 49)"
+            ), "did not get expected geometry"
     ds = None
 
     # Test that .gml and .xsd are identical to what is expected
@@ -904,7 +868,8 @@ def test_ogr_gml_23():
     assert got_wkt == "POINT (2 49)", "did not get expected geometry"
 
     extent = lyr.GetExtent()
-    assert extent == (2.0, 3.0, 49.0, 50.0), "did not get expected layer extent"
+    assert extent == (2.0, 3.0, 49.0,
+                      50.0), "did not get expected layer extent"
 
 
 ###############################################################################
@@ -943,7 +908,8 @@ def test_ogr_gml_24():
     assert got_wkt == "POINT (2 49)", "did not get expected geometry"
 
     extent = lyr.GetExtent()
-    assert extent == (2.0, 3.0, 49.0, 50.0), "did not get expected layer extent"
+    assert extent == (2.0, 3.0, 49.0,
+                      50.0), "did not get expected layer extent"
 
 
 ###############################################################################
@@ -972,9 +938,8 @@ def test_ogr_gml_25():
     feat = lyr.GetNextFeature()
     geom = feat.GetGeometryRef()
     got_wkt = geom.ExportToWkt()
-    assert (
-        got_wkt == "POLYGON ((14 21,6 21,6 9,14 9,22 9,22 21,14 21))"
-    ), "did not get expected geometry"
+    assert (got_wkt == "POLYGON ((14 21,6 21,6 9,14 9,22 9,22 21,14 21))"
+            ), "did not get expected geometry"
 
 
 ###############################################################################
@@ -992,19 +957,15 @@ def test_ogr_gml_26():
         pytest.skip()
 
     gdaltest.runexternal(
-        test_cli_utilities.get_ogr2ogr_path()
-        + " -f GML tmp/ogr_gml_26.gml data/poly.shp -zfield eas_id"
-    )
+        test_cli_utilities.get_ogr2ogr_path() +
+        " -f GML tmp/ogr_gml_26.gml data/poly.shp -zfield eas_id")
 
     f = open("tmp/ogr_gml_26.gml", "rt")
     content = f.read()
     f.close()
-    assert (
-        content.find(
-            "<gml:coord><gml:X>478315.53125</gml:X><gml:Y>4762880.5</gml:Y><gml:Z>158</gml:Z></gml:coord>"
-        )
-        != -1
-    )
+    assert (content.find(
+        "<gml:coord><gml:X>478315.53125</gml:X><gml:Y>4762880.5</gml:Y><gml:Z>158</gml:Z></gml:coord>"
+    ) != -1)
 
     ds = ogr.Open("tmp/ogr_gml_26.gml")
 
@@ -1030,17 +991,15 @@ def test_ogr_gml_27():
         pytest.skip()
 
     gdaltest.runexternal(
-        test_cli_utilities.get_ogr2ogr_path()
-        + " -f GML tmp/ogr_gml_27.gml data/poly.shp -zfield eas_id -dsco FORMAT=GML3"
+        test_cli_utilities.get_ogr2ogr_path() +
+        " -f GML tmp/ogr_gml_27.gml data/poly.shp -zfield eas_id -dsco FORMAT=GML3"
     )
 
     f = open("tmp/ogr_gml_27.gml", "rt")
     content = f.read()
     f.close()
-    assert (
-        content.find("<gml:lowerCorner>478315.53125 4762880.5 158</gml:lowerCorner>")
-        != -1
-    )
+    assert (content.find(
+        "<gml:lowerCorner>478315.53125 4762880.5 158</gml:lowerCorner>") != -1)
 
     ds = ogr.Open("tmp/ogr_gml_27.gml")
 
@@ -1065,10 +1024,8 @@ def test_ogr_gml_28():
     if test_cli_utilities.get_ogr2ogr_path() is None:
         pytest.skip()
 
-    gdaltest.runexternal(
-        test_cli_utilities.get_ogr2ogr_path()
-        + " -f GML tmp/ogr_gml_28.gml data/idlink.dbf"
-    )
+    gdaltest.runexternal(test_cli_utilities.get_ogr2ogr_path() +
+                         " -f GML tmp/ogr_gml_28.gml data/idlink.dbf")
 
     # Try with .xsd
     ds = ogr.Open("tmp/ogr_gml_28.gml")
@@ -1110,15 +1067,13 @@ def test_ogr_gml_29():
     for j, expected_result in enumerate(expected_results):
         lyr = ds.GetLayer(j)
         assert lyr.GetGeomType() == expected_result[0], (
-            "layer %d, did not get expected layer geometry type" % j
-        )
+            "layer %d, did not get expected layer geometry type" % j)
         for _ in range(2):
             feat = lyr.GetNextFeature()
             geom = feat.GetGeometryRef()
             got_wkt = geom.ExportToWkt()
             assert got_wkt == expected_result[1], (
-                "layer %d, did not get expected geometry" % j
-            )
+                "layer %d, did not get expected geometry" % j)
 
     ds = None
 
@@ -1190,12 +1145,14 @@ def test_ogr_gml_31():
     lyr = ds.GetLayer(1)
     feat = lyr.GetNextFeature()
     feat = lyr.GetNextFeature()
-    assert feat.GetFID() == 1, "did not get feature when reading directly second layer"
+    assert feat.GetFID(
+    ) == 1, "did not get feature when reading directly second layer"
 
     lyr = ds.GetLayer(0)
     feat = lyr.GetNextFeature()
     feat = lyr.GetNextFeature()
-    assert feat.GetFID() == 1, "did not get feature when reading back first layer"
+    assert feat.GetFID(
+    ) == 1, "did not get feature when reading back first layer"
 
 
 ###############################################################################
@@ -1221,7 +1178,8 @@ def test_ogr_gml_32():
     lyr = ds.GetLayer(1)
     feat = lyr.GetNextFeature()
     feat = lyr.GetNextFeature()
-    assert feat.GetFID() == 1, "did not get feature when reading directly second layer"
+    assert feat.GetFID(
+    ) == 1, "did not get feature when reading directly second layer"
 
     ds = None
 
@@ -1231,9 +1189,8 @@ def test_ogr_gml_32():
 
     data = str(data)
 
-    assert (
-        data.find("<SequentialLayers>true</SequentialLayers>") != -1
-    ), "did not find <SequentialLayers>true</SequentialLayers> in .gfs"
+    assert (data.find("<SequentialLayers>true</SequentialLayers>") != -1
+            ), "did not find <SequentialLayers>true</SequentialLayers> in .gfs"
 
     gdal.Unlink("/vsimem/ogr_gml_31.gml")
     gdal.Unlink("/vsimem/ogr_gml_31.gfs")
@@ -1346,7 +1303,8 @@ def test_ogr_gml_35():
     assert not os.path.exists("tmp/GmlTopo-sample.sqlite")
 
     assert gdal.GetLastErrorMsg() == "", "did not expect error"
-    assert ds.GetLayerCount() == 3, "expected 3 layers, got %d" % ds.GetLayerCount()
+    assert ds.GetLayerCount(
+    ) == 3, "expected 3 layers, got %d" % ds.GetLayerCount()
 
     lyr = ds.GetLayerByName("Suolo")
     feat = lyr.GetNextFeature()
@@ -1462,7 +1420,8 @@ def test_ogr_gml_38(resolver="HUGE"):
     gdal.SetConfigOption("GML_FACE_HOLE_NEGATIVE", None)
 
     if resolver == "HUGE":
-        assert not os.path.exists("tmp/sample_gml_face_hole_negative_no.sqlite")
+        assert not os.path.exists(
+            "tmp/sample_gml_face_hole_negative_no.sqlite")
 
     assert gdal.GetLastErrorMsg() == "", "did not expect error"
 
@@ -1494,8 +1453,7 @@ def test_ogr_gml_40():
     ds = ogr.Open("data/testLookForSimpleType.xml")
     lyr = ds.GetLayer(0)
     fld_defn = lyr.GetLayerDefn().GetFieldDefn(
-        lyr.GetLayerDefn().GetFieldIndex("CITYNAME")
-    )
+        lyr.GetLayerDefn().GetFieldIndex("CITYNAME"))
     assert fld_defn.GetWidth() == 26
 
 
@@ -1511,15 +1469,14 @@ def test_ogr_gml_41():
         pytest.skip()
 
     if not gdaltest.download_file(
-        "http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip", "SCHEMAS_OPENGIS_NET.zip"
-    ):
+            "http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip",
+            "SCHEMAS_OPENGIS_NET.zip"):
         pytest.skip()
 
     ds = ogr.Open("data/expected_gml_21.gml")
 
-    gdal.SetConfigOption(
-        "GDAL_OPENGIS_SCHEMAS", "/vsizip/./tmp/cache/SCHEMAS_OPENGIS_NET.zip"
-    )
+    gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS",
+                         "/vsizip/./tmp/cache/SCHEMAS_OPENGIS_NET.zip")
     lyr = ds.ExecuteSQL("SELECT ValidateSchema()")
     gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", None)
 
@@ -1530,12 +1487,8 @@ def test_ogr_gml_41():
     ds.ReleaseResultSet(lyr)
 
     if val == 0:
-        assert (
-            gdal.GetLastErrorMsg().find(
-                "not implemented due to missing libxml2 support"
-            )
-            != -1
-        )
+        assert (gdal.GetLastErrorMsg().find(
+            "not implemented due to missing libxml2 support") != -1)
         pytest.skip()
 
     gdaltest.have_gml_validation = True
@@ -1558,13 +1511,13 @@ def test_ogr_gml_42():
     try:
         os.stat("tmp/cache/SCHEMAS_OPENGIS_NET/gml")
     except OSError:
-        gdaltest.unzip(
-            "tmp/cache/SCHEMAS_OPENGIS_NET", "tmp/cache/SCHEMAS_OPENGIS_NET.zip"
-        )
+        gdaltest.unzip("tmp/cache/SCHEMAS_OPENGIS_NET",
+                       "tmp/cache/SCHEMAS_OPENGIS_NET.zip")
 
     ds = ogr.Open("data/expected_gml_gml32.gml")
 
-    gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", "./tmp/cache/SCHEMAS_OPENGIS_NET")
+    gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS",
+                         "./tmp/cache/SCHEMAS_OPENGIS_NET")
     lyr = ds.ExecuteSQL("SELECT ValidateSchema()")
     gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", None)
 
@@ -1601,12 +1554,9 @@ def test_ogr_gml_43():
         gfs_found = False
 
     if gfs_found:
-        if (
-            gdaltest.gdalurlopen(
+        if (gdaltest.gdalurlopen(
                 "http://testing.deegree.org:80/deegree-wfs/services?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=app:Springs&NAMESPACE=xmlns(app=http://www.deegree.org/app)"
-            )
-            is None
-        ):
+        ) is None):
             can_download_schema = False
         else:
             can_download_schema = gdal.GetDriverByName("HTTP") is not None
@@ -1678,8 +1628,8 @@ def test_ogr_gml_45():
 
     drv = ogr.GetDriverByName("GML")
     ds = drv.CreateDataSource(
-        "/vsimem/ogr_gml_45.gml", options=["PREFIX=foo", "TARGET_NAMESPACE=http://bar/"]
-    )
+        "/vsimem/ogr_gml_45.gml",
+        options=["PREFIX=foo", "TARGET_NAMESPACE=http://bar/"])
     lyr = ds.CreateLayer("test")
     lyr.CreateField(ogr.FieldDefn("str", ogr.OFTString))
     lyr.CreateField(ogr.FieldDefn("int", ogr.OFTInteger))
@@ -1704,7 +1654,8 @@ def test_ogr_gml_45():
 
     ds = ogr.Open("/vsimem/ogr_gml_45.gml")
 
-    gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", "./tmp/cache/SCHEMAS_OPENGIS_NET")
+    gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS",
+                         "./tmp/cache/SCHEMAS_OPENGIS_NET")
     lyr = ds.ExecuteSQL("SELECT ValidateSchema()")
     gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", None)
 
@@ -1753,9 +1704,8 @@ def test_ogr_gml_46():
     for wkt in wkt_list:
         for frmt in format_list:
             drv = ogr.GetDriverByName("GML")
-            ds = drv.CreateDataSource(
-                "/vsimem/ogr_gml_46.gml", options=["FORMAT=%s" % frmt]
-            )
+            ds = drv.CreateDataSource("/vsimem/ogr_gml_46.gml",
+                                      options=["FORMAT=%s" % frmt])
             if wkt != "":
                 geom = ogr.CreateGeometryFromWkt(wkt)
                 geom_type = geom.GetGeometryType()
@@ -1802,9 +1752,8 @@ def test_ogr_gml_46():
 
             feat = None
 
-            gdal.SetConfigOption(
-                "GDAL_OPENGIS_SCHEMAS", "./tmp/cache/SCHEMAS_OPENGIS_NET"
-            )
+            gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS",
+                                 "./tmp/cache/SCHEMAS_OPENGIS_NET")
             lyr = ds.ExecuteSQL("SELECT ValidateSchema()")
             gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", None)
 
@@ -1817,8 +1766,7 @@ def test_ogr_gml_46():
 
             if val == 0:
                 gdaltest.post_reason(
-                    "validation failed for format=%s, wkt=%s" % (frmt, wkt)
-                )
+                    "validation failed for format=%s, wkt=%s" % (frmt, wkt))
 
                 f = gdal.VSIFOpenL("/vsimem/ogr_gml_46.gml", "rb")
                 content = gdal.VSIFReadL(1, 10000, f)
@@ -1857,7 +1805,8 @@ def test_ogr_gml_47():
 
         ds = ogr.Open(filename)
 
-        gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", "./tmp/cache/SCHEMAS_OPENGIS_NET")
+        gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS",
+                             "./tmp/cache/SCHEMAS_OPENGIS_NET")
         lyr = ds.ExecuteSQL("SELECT ValidateSchema()")
         gdal.SetConfigOption("GDAL_OPENGIS_SCHEMAS", None)
 
@@ -1966,22 +1915,25 @@ def test_ogr_gml_50():
     ds = ogr.Open("/vsimem/ogr_gml_50.gml")
     lyr = ds.GetLayer(0)
     feat = lyr.GetNextFeature()
-    if feat.GetFieldAsStringList(lyr.GetLayerDefn().GetFieldIndex("stringlist")) != [
-        "a",
-        "b",
-    ]:
+    if feat.GetFieldAsStringList(
+            lyr.GetLayerDefn().GetFieldIndex("stringlist")) != [
+                "a",
+                "b",
+            ]:
         feat.DumpReadable()
         pytest.fail()
-    if feat.GetFieldAsIntegerList(lyr.GetLayerDefn().GetFieldIndex("intlist")) != [
-        2,
-        3,
-    ]:
+    if feat.GetFieldAsIntegerList(
+            lyr.GetLayerDefn().GetFieldIndex("intlist")) != [
+                2,
+                3,
+            ]:
         feat.DumpReadable()
         pytest.fail()
-    if feat.GetFieldAsDoubleList(lyr.GetLayerDefn().GetFieldIndex("reallist")) != [
-        4.56,
-        5.67,
-    ]:
+    if feat.GetFieldAsDoubleList(
+            lyr.GetLayerDefn().GetFieldIndex("reallist")) != [
+                4.56,
+                5.67,
+            ]:
         feat.DumpReadable()
         pytest.fail()
     ds = None
@@ -2007,10 +1959,9 @@ def test_ogr_gml_51():
     for frmt in ["GML2", "GML3"]:
 
         gdaltest.runexternal(
-            test_cli_utilities.get_ogr2ogr_path()
-            + " -f GML tmp/ogr_gml_51.gml data/poly.shp -dsco FORMAT=%s -dsco WRITE_FEATURE_BOUNDED_BY=no -dsco STRIP_PREFIX=YES"
-            % frmt
-        )
+            test_cli_utilities.get_ogr2ogr_path() +
+            " -f GML tmp/ogr_gml_51.gml data/poly.shp -dsco FORMAT=%s -dsco WRITE_FEATURE_BOUNDED_BY=no -dsco STRIP_PREFIX=YES"
+            % frmt)
 
         f = open("tmp/ogr_gml_51.gml", "rt")
         content = f.read()
@@ -2021,10 +1972,8 @@ def test_ogr_gml_51():
         assert content.find("""<poly""") != -1
         assert content.find("""<AREA>215229.266</AREA>""") != -1
 
-        assert (
-            content.find("""<gml:boundedBy><gml:Envelope><gml:lowerCorner>479647""")
-            == -1
-        )
+        assert (content.find(
+            """<gml:boundedBy><gml:Envelope><gml:lowerCorner>479647""") == -1)
 
         ds = ogr.Open("tmp/ogr_gml_51.gml")
         lyr = ds.GetLayer(0)
@@ -2059,14 +2008,13 @@ def test_ogr_gml_52():
         assert "3067" in wkt
 
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetField("gid") != "1"
-            or feat.GetField("regular_attribute") != 5
-            or feat.GetField("foo_href") != "some_ref"
-            or feat.GetField("teksti") != "En francais !"
-            or feat.GetField("teksti_kieli") != "fr"
-            or ogrtest.check_feature_geometry(feat, "POINT (280000 7000000 0)") != 0
-        ):
+        if (feat.GetField("gid") != "1"
+                or feat.GetField("regular_attribute") != 5
+                or feat.GetField("foo_href") != "some_ref"
+                or feat.GetField("teksti") != "En francais !"
+                or feat.GetField("teksti_kieli") != "fr"
+                or ogrtest.check_feature_geometry(
+                    feat, "POINT (280000 7000000 0)") != 0):
             feat.DumpReadable()
             pytest.fail()
 
@@ -2075,26 +2023,20 @@ def test_ogr_gml_52():
         srs = lyr.GetSpatialRef()
         assert srs is not None
         feat = lyr.GetNextFeature()
-        if (
-            ogrtest.check_feature_geometry(
+        if (ogrtest.check_feature_geometry(
                 feat,
                 "POLYGON ((280000 7000000 0,281000 7000000 0,281000 7001000 0,280000 7001000 0,280000 7000000 0))",
-            )
-            != 0
-        ):
+        ) != 0):
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("C")
         assert lyr.GetGeomType() == ogr.wkbLineString25D
         feat = lyr.GetNextFeature()
-        if (
-            ogrtest.check_feature_geometry(
+        if (ogrtest.check_feature_geometry(
                 feat,
                 "LINESTRING (280000 7000000 0,281000 7000000 0,281000 7001000 0,280000 7001000 0,280000 7000000 0)",
-            )
-            != 0
-        ):
+        ) != 0):
             feat.DumpReadable()
             pytest.fail()
 
@@ -2177,22 +2119,23 @@ def test_ogr_gml_56():
     lyr = ds.GetLayerByName("mainFeature")
     assert lyr.GetSpatialRef() is not None
     feat = lyr.GetNextFeature()
-    assert (
-        feat.GetFieldAsString(feat.GetFieldIndex("subFeatureProperty_href"))
-        == "#subFeature.0"
-    )
+    assert (feat.GetFieldAsString(
+        feat.GetFieldIndex("subFeatureProperty_href")) == "#subFeature.0")
     assert feat.GetFieldAsStringList(
-        feat.GetFieldIndex("subFeatureRepeatedProperty_href")
-    ) == ["#subFeatureRepeated.0", "#subFeatureRepeated.1"]
-    assert feat.GetGeomFieldRef(0).ExportToWkt() == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
+        feat.GetFieldIndex("subFeatureRepeatedProperty_href")) == [
+            "#subFeatureRepeated.0", "#subFeatureRepeated.1"
+        ]
+    assert feat.GetGeomFieldRef(
+        0).ExportToWkt() == "POLYGON ((0 0,0 1,1 1,1 0,0 0))"
     assert feat.GetGeomFieldRef(1).ExportToWkt() == "POINT (10 10)"
 
     lyr = ds.GetLayerByName("subFeature")
     assert lyr.GetLayerDefn().GetGeomFieldCount() == 0
     feat = lyr.GetNextFeature()
     assert feat.GetFieldAsStringList(
-        feat.GetFieldIndex("subFeatureRepeatedProperty_href")
-    ) == ["#subFeatureRepeated.2"]
+        feat.GetFieldIndex("subFeatureRepeatedProperty_href")) == [
+            "#subFeatureRepeated.2"
+        ]
     assert feat.GetField("foo") == "bar"
 
     lyr = ds.GetLayerByName("subFeatureRepeated")
@@ -2223,8 +2166,7 @@ def test_ogr_gml_57():
         if i == 3:
             options = ["FORMAT=GML3.2"]
         ds = ogr.GetDriverByName("GML").CreateDataSource(
-            "/vsimem/ogr_gml_57.gml", options=options
-        )
+            "/vsimem/ogr_gml_57.gml", options=options)
         assert ds.TestCapability(ogr.ODsCCreateGeomFieldAfterCreateLayer) == 1
         lyr = ds.CreateLayer("myLayer", geom_type=ogr.wkbNone)
         assert lyr.TestCapability(ogr.OLCCreateGeomField) == 1
@@ -2246,7 +2188,8 @@ def test_ogr_gml_57():
         lyr.CreateGeomField(geomfielddefn)
         feat = ogr.Feature(lyr.GetLayerDefn())
         feat.SetGeomFieldDirectly(0, ogr.CreateGeometryFromWkt("POINT (0 1)"))
-        feat.SetGeomFieldDirectly(1, ogr.CreateGeometryFromWkt("LINESTRING (2 3,4 5)"))
+        feat.SetGeomFieldDirectly(
+            1, ogr.CreateGeometryFromWkt("LINESTRING (2 3,4 5)"))
         lyr.CreateFeature(feat)
         feat = None
         ds = None
@@ -2259,30 +2202,12 @@ def test_ogr_gml_57():
         ds = ogr.Open("/vsimem/ogr_gml_57.gml")
         lyr = ds.GetLayer(0)
         feat = lyr.GetNextFeature()
-        assert not (
-            i == 1
-            and feat.GetGeomFieldRef(0)
-            .GetSpatialReference()
-            .ExportToWkt()
-            .find("32630")
-            < 0
-        )
-        assert not (
-            i == 1
-            and feat.GetGeomFieldRef(1)
-            .GetSpatialReference()
-            .ExportToWkt()
-            .find("32630")
-            < 0
-        )
-        assert not (
-            i == 2
-            and feat.GetGeomFieldRef(1)
-            .GetSpatialReference()
-            .ExportToWkt()
-            .find("32631")
-            < 0
-        )
+        assert not (i == 1 and feat.GetGeomFieldRef(
+            0).GetSpatialReference().ExportToWkt().find("32630") < 0)
+        assert not (i == 1 and feat.GetGeomFieldRef(
+            1).GetSpatialReference().ExportToWkt().find("32630") < 0)
+        assert not (i == 2 and feat.GetGeomFieldRef(
+            1).GetSpatialReference().ExportToWkt().find("32631") < 0)
         assert feat.GetGeomFieldRef(0).ExportToWkt() == "POINT (0 1)"
         assert feat.GetGeomFieldRef(1).ExportToWkt() == "LINESTRING (2 3,4 5)"
         ds = None
@@ -2330,10 +2255,8 @@ def test_ogr_gml_58():
     ]
     for (key, val) in expected:
         assert feat.GetField(key) == val
-    assert (
-        feat.GetGeomFieldRef(0).ExportToWkt()
-        == "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))"
-    )
+    assert (feat.GetGeomFieldRef(0).ExportToWkt() ==
+            "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))")
     assert feat.GetGeomFieldRef(1).ExportToWkt() == "POINT (2.5 49.5)"
 
     feat = lyr.GetNextFeature()
@@ -2355,10 +2278,8 @@ def test_ogr_gml_58():
     ]
     for (key, val) in expected:
         assert feat.GetField(key) == val
-    assert (
-        feat.GetGeomFieldRef(0).ExportToWkt()
-        == "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))"
-    )
+    assert (feat.GetGeomFieldRef(0).ExportToWkt() ==
+            "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))")
     assert feat.GetGeomFieldRef(1) is None
     feat = None
     lyr = None
@@ -2485,10 +2406,8 @@ def test_ogr_gml_58():
     ]
     for (key, val) in expected:
         assert feat.GetField(key) == val
-    assert (
-        feat.GetGeomFieldRef(0).ExportToWkt()
-        == "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))"
-    )
+    assert (feat.GetGeomFieldRef(0).ExportToWkt() ==
+            "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))")
     assert feat.GetGeomFieldRef(1).ExportToWkt() == "POINT (2.5 49.5)"
 
     feat = lyr.GetNextFeature()
@@ -2517,10 +2436,8 @@ def test_ogr_gml_58():
     ]
     for (key, val) in expected:
         assert feat.GetField(key) == val
-    assert (
-        feat.GetGeomFieldRef(0).ExportToWkt()
-        == "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))"
-    )
+    assert (feat.GetGeomFieldRef(0).ExportToWkt() ==
+            "MULTIPOLYGON (((2 49,2 50,3 50,3 49)))")
     assert feat.GetGeomFieldRef(1) is None
     feat = None
     lyr = None
@@ -2621,7 +2538,8 @@ def test_ogr_gml_61():
 
     ds = ogr.Open("data/gmlsubfeature.gml")
     lyr = ds.GetLayer(0)
-    assert lyr.GetFeatureCount() == 2, "did not get expected geometry column name"
+    assert lyr.GetFeatureCount(
+    ) == 2, "did not get expected geometry column name"
 
     feat = lyr.GetNextFeature()
     if feat.GetField("gml_id") != "Object.1" or feat.GetField("foo") != "bar":
@@ -2676,30 +2594,24 @@ def test_ogr_gml_62():
         lyr = ds.GetLayer(0)
         assert lyr.GetLayerDefn().GetFieldCount() == 4, i
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetField("element_attr1") != "1"
-            or feat.GetField("element2_attr1") != "a"
-            or feat.GetField("element2") != "foo"
-            or feat.IsFieldSet("element3_attr1")
-        ):
+        if (feat.GetField("element_attr1") != "1"
+                or feat.GetField("element2_attr1") != "a"
+                or feat.GetField("element2") != "foo"
+                or feat.IsFieldSet("element3_attr1")):
             feat.DumpReadable()
             pytest.fail(i)
         feat = lyr.GetNextFeature()
-        if (
-            feat.IsFieldSet("element_attr1")
-            or feat.IsFieldSet("element2_attr1")
-            or feat.IsFieldSet("element2")
-            or feat.GetField("element3_attr1") != 1
-        ):
+        if (feat.IsFieldSet("element_attr1")
+                or feat.IsFieldSet("element2_attr1")
+                or feat.IsFieldSet("element2")
+                or feat.GetField("element3_attr1") != 1):
             feat.DumpReadable()
             pytest.fail(i)
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetField("element_attr1") != "a"
-            or feat.IsFieldSet("element2_attr1")
-            or feat.IsFieldSet("element2")
-            or feat.IsFieldSet("element3_attr1")
-        ):
+        if (feat.GetField("element_attr1") != "a"
+                or feat.IsFieldSet("element2_attr1")
+                or feat.IsFieldSet("element2")
+                or feat.IsFieldSet("element3_attr1")):
             feat.DumpReadable()
             pytest.fail(i)
         feat = None
@@ -2792,13 +2704,12 @@ def test_ogr_gml_65():
         filename = "/vsimem/ogr_gml_65.gml"
         # filename = 'ogr_gml_65.gml'
         ds = ogr.GetDriverByName("GML").CreateDataSource(
-            filename, options=["FORMAT=GML3", option]
-        )
+            filename, options=["FORMAT=GML3", option])
         lyr = ds.CreateLayer("lyr")
         feat = ogr.Feature(lyr.GetLayerDefn())
         feat.SetGeometry(
-            ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 1 2,3 4 5,6 7 8,0 1 2)))")
-        )
+            ogr.CreateGeometryFromWkt(
+                "MULTIPOLYGON (((0 1 2,3 4 5,6 7 8,0 1 2)))"))
         lyr.CreateFeature(feat)
         ds = None
 
@@ -2811,10 +2722,8 @@ def test_ogr_gml_65():
         ds = ogr.Open(filename)
         lyr = ds.GetLayer(0)
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "MULTIPOLYGON (((0 1 2,3 4 5,6 7 8,0 1 2)))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "MULTIPOLYGON (((0 1 2,3 4 5,6 7 8,0 1 2)))"):
             feat.DumpReadable()
             pytest.fail()
         ds = None
@@ -2834,12 +2743,13 @@ def test_ogr_gml_66():
 
     filename = "/vsimem/ogr_gml_66.gml"
     # filename = 'ogr_gml_66.gml'
-    ds = ogr.GetDriverByName("GML").CreateDataSource(filename, options=["FORMAT=GML3"])
+    ds = ogr.GetDriverByName("GML").CreateDataSource(filename,
+                                                     options=["FORMAT=GML3"])
     lyr = ds.CreateLayer("compoundcurve", geom_type=ogr.wkbCompoundCurve)
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
-        ogr.CreateGeometryFromWkt("COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))")
-    )
+        ogr.CreateGeometryFromWkt(
+            "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
@@ -2854,8 +2764,8 @@ def test_ogr_gml_66():
     lyr = ds.CreateLayer("curvepolygon", geom_type=ogr.wkbCurvePolygon)
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
-        ogr.CreateGeometryFromWkt("CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0))")
-    )
+        ogr.CreateGeometryFromWkt(
+            "CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
@@ -2867,21 +2777,19 @@ def test_ogr_gml_66():
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
         ogr.CreateGeometryFromWkt(
-            "MULTISURFACE (CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0)))"
-        )
-    )
+            "MULTISURFACE (CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0)))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
-    f.SetGeometry(ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
+    f.SetGeometry(
+        ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
     lyr.CreateFeature(f)
     f = None
 
     lyr = ds.CreateLayer("multicurve", geom_type=ogr.wkbMultiCurve)
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
-        ogr.CreateGeometryFromWkt("MULTICURVE ( CIRCULARSTRING(0 0,1 0,0 0))")
-    )
+        ogr.CreateGeometryFromWkt("MULTICURVE ( CIRCULARSTRING(0 0,1 0,0 0))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
@@ -2903,13 +2811,15 @@ def test_ogr_gml_66():
 
     lyr = ds.CreateLayer("multipolygon", geom_type=ogr.wkbMultiPolygon)
     f = ogr.Feature(lyr.GetLayerDefn())
-    f.SetGeometry(ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
+    f.SetGeometry(
+        ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
     lyr.CreateFeature(f)
     f = None
 
     lyr = ds.CreateLayer("multilinestring", geom_type=ogr.wkbMultiLineString)
     f = ogr.Feature(lyr.GetLayerDefn())
-    f.SetGeometry(ogr.CreateGeometryFromWkt("MULTILINESTRING ((0 0,0 1,1 1,0 0))"))
+    f.SetGeometry(
+        ogr.CreateGeometryFromWkt("MULTILINESTRING ((0 0,0 1,1 1,0 0))"))
     lyr.CreateFeature(f)
     f = None
 
@@ -2920,8 +2830,8 @@ def test_ogr_gml_66():
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
-        ogr.CreateGeometryFromWkt("COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))")
-    )
+        ogr.CreateGeometryFromWkt(
+            "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
@@ -2936,8 +2846,8 @@ def test_ogr_gml_66():
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
-        ogr.CreateGeometryFromWkt("CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0))")
-    )
+        ogr.CreateGeometryFromWkt(
+            "CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
@@ -2947,35 +2857,36 @@ def test_ogr_gml_66():
 
     lyr = ds.CreateLayer("multisurface_untyped")
     f = ogr.Feature(lyr.GetLayerDefn())
-    f.SetGeometry(ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
+    f.SetGeometry(
+        ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
         ogr.CreateGeometryFromWkt(
-            "MULTISURFACE (CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0)))"
-        )
-    )
+            "MULTISURFACE (CURVEPOLYGON ( CIRCULARSTRING(0 0,1 0,0 0)))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
-    f.SetGeometry(ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
+    f.SetGeometry(
+        ogr.CreateGeometryFromWkt("MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"))
     lyr.CreateFeature(f)
     f = None
 
     lyr = ds.CreateLayer("multicurve_untyped")
     f = ogr.Feature(lyr.GetLayerDefn())
-    f.SetGeometry(ogr.CreateGeometryFromWkt("MULTILINESTRING ((0 0,0 1,1 1,0 0))"))
+    f.SetGeometry(
+        ogr.CreateGeometryFromWkt("MULTILINESTRING ((0 0,0 1,1 1,0 0))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
-        ogr.CreateGeometryFromWkt("MULTICURVE (CIRCULARSTRING (0 0,1 1,2 0))")
-    )
+        ogr.CreateGeometryFromWkt("MULTICURVE (CIRCULARSTRING (0 0,1 1,2 0))"))
     lyr.CreateFeature(f)
     f = None
     f = ogr.Feature(lyr.GetLayerDefn())
-    f.SetGeometry(ogr.CreateGeometryFromWkt("MULTILINESTRING ((0 0,0 1,1 1,0 0))"))
+    f.SetGeometry(
+        ogr.CreateGeometryFromWkt("MULTILINESTRING ((0 0,0 1,1 1,0 0))"))
     lyr.CreateFeature(f)
     f = None
 
@@ -2989,91 +2900,91 @@ def test_ogr_gml_66():
         lyr = ds.GetLayerByName("compoundcurve")
         assert lyr.GetGeomType() == ogr.wkbCompoundCurve
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"):
             feat.DumpReadable()
             pytest.fail()
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"):
             feat.DumpReadable()
             pytest.fail()
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "COMPOUNDCURVE ((0 0,1 1,2 0))":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "COMPOUNDCURVE ((0 0,1 1,2 0))":
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("curvepolygon")
         assert lyr.GetGeomType() == ogr.wkbCurvePolygon
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0))"
+            ):
             feat.DumpReadable()
             pytest.fail()
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "CURVEPOLYGON ((0 0,0 1,1 1,0 0))":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "CURVEPOLYGON ((0 0,0 1,1 1,0 0))":
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("multisurface")
         assert lyr.GetGeomType() == ogr.wkbMultiSurface
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0)))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt(
+        ) != "MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0)))"
+            ):
             feat.DumpReadable()
             pytest.fail()
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "MULTISURFACE (((0 0,0 1,1 1,0 0)))":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "MULTISURFACE (((0 0,0 1,1 1,0 0)))":
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("multicurve")
         assert lyr.GetGeomType() == ogr.wkbMultiCurve
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "MULTICURVE (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "MULTICURVE (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0))"):
             feat.DumpReadable()
             pytest.fail()
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "MULTICURVE ((0 0,0 1,1 1,0 0))":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "MULTICURVE ((0 0,0 1,1 1,0 0))":
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("polygon")
         assert lyr.GetGeomType() == ogr.wkbPolygon
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "POLYGON ((0 0,0 1,1 1,0 0))":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "POLYGON ((0 0,0 1,1 1,0 0))":
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("linestring")
         assert lyr.GetGeomType() == ogr.wkbLineString
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "LINESTRING (0 0,0 1,1 1,0 0)":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "LINESTRING (0 0,0 1,1 1,0 0)":
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("multipolygon")
         assert lyr.GetGeomType() == ogr.wkbMultiPolygon
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "MULTIPOLYGON (((0 0,0 1,1 1,0 0)))":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "MULTIPOLYGON (((0 0,0 1,1 1,0 0)))":
             feat.DumpReadable()
             pytest.fail()
 
         lyr = ds.GetLayerByName("multilinestring")
         assert lyr.GetGeomType() == ogr.wkbMultiLineString
         feat = lyr.GetNextFeature()
-        if feat.GetGeometryRef().ExportToWkt() != "MULTILINESTRING ((0 0,0 1,1 1,0 0))":
+        if feat.GetGeometryRef().ExportToWkt(
+        ) != "MULTILINESTRING ((0 0,0 1,1 1,0 0))":
             feat.DumpReadable()
             pytest.fail()
 
@@ -3081,19 +2992,19 @@ def test_ogr_gml_66():
         if i != 0:
             assert lyr.GetGeomType() == ogr.wkbCompoundCurve
             feat = lyr.GetNextFeature()
-            if feat.GetGeometryRef().ExportToWkt() != "COMPOUNDCURVE ((0 0,1 1,2 0))":
+            if feat.GetGeometryRef().ExportToWkt(
+            ) != "COMPOUNDCURVE ((0 0,1 1,2 0))":
                 feat.DumpReadable()
                 pytest.fail()
         else:
             feat = lyr.GetNextFeature()
-            if feat.GetGeometryRef().ExportToWkt() != "LINESTRING (0 0,1 1,2 0)":
+            if feat.GetGeometryRef().ExportToWkt(
+            ) != "LINESTRING (0 0,1 1,2 0)":
                 feat.DumpReadable()
                 pytest.fail()
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "COMPOUNDCURVE (CIRCULARSTRING (0 0,1 1,2 0))"):
             feat.DumpReadable()
             pytest.fail()
 
@@ -3101,22 +3012,20 @@ def test_ogr_gml_66():
         if i != 0:
             assert lyr.GetGeomType() == ogr.wkbCurvePolygon
             feat = lyr.GetNextFeature()
-            if (
-                feat.GetGeometryRef().ExportToWkt()
-                != "CURVEPOLYGON ((0 0,0 1,1 1,0 0))"
-            ):
+            if (feat.GetGeometryRef().ExportToWkt() !=
+                    "CURVEPOLYGON ((0 0,0 1,1 1,0 0))"):
                 feat.DumpReadable()
                 pytest.fail()
         else:
             feat = lyr.GetNextFeature()
-            if feat.GetGeometryRef().ExportToWkt() != "POLYGON ((0 0,0 1,1 1,0 0))":
+            if feat.GetGeometryRef().ExportToWkt(
+            ) != "POLYGON ((0 0,0 1,1 1,0 0))":
                 feat.DumpReadable()
                 pytest.fail()
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0))"
+            ):
             feat.DumpReadable()
             pytest.fail()
 
@@ -3124,25 +3033,20 @@ def test_ogr_gml_66():
         if i != 0:
             assert lyr.GetGeomType() == ogr.wkbMultiSurface
             feat = lyr.GetNextFeature()
-            if (
-                feat.GetGeometryRef().ExportToWkt()
-                != "MULTISURFACE (((0 0,0 1,1 1,0 0)))"
-            ):
+            if (feat.GetGeometryRef().ExportToWkt() !=
+                    "MULTISURFACE (((0 0,0 1,1 1,0 0)))"):
                 feat.DumpReadable()
                 pytest.fail()
         else:
             feat = lyr.GetNextFeature()
-            if (
-                feat.GetGeometryRef().ExportToWkt()
-                != "MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"
-            ):
+            if (feat.GetGeometryRef().ExportToWkt() !=
+                    "MULTIPOLYGON (((0 0,0 1,1 1,0 0)))"):
                 feat.DumpReadable()
                 pytest.fail()
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0)))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt(
+        ) != "MULTISURFACE (CURVEPOLYGON (CIRCULARSTRING (0 0,0.5 0.5,1 0,0.5 -0.5,0 0)))"
+            ):
             feat.DumpReadable()
             pytest.fail()
 
@@ -3150,22 +3054,19 @@ def test_ogr_gml_66():
         if i != 0:
             assert lyr.GetGeomType() == ogr.wkbMultiCurve
             feat = lyr.GetNextFeature()
-            if feat.GetGeometryRef().ExportToWkt() != "MULTICURVE ((0 0,0 1,1 1,0 0))":
+            if feat.GetGeometryRef().ExportToWkt(
+            ) != "MULTICURVE ((0 0,0 1,1 1,0 0))":
                 feat.DumpReadable()
                 pytest.fail()
         else:
             feat = lyr.GetNextFeature()
-            if (
-                feat.GetGeometryRef().ExportToWkt()
-                != "MULTILINESTRING ((0 0,0 1,1 1,0 0))"
-            ):
+            if (feat.GetGeometryRef().ExportToWkt() !=
+                    "MULTILINESTRING ((0 0,0 1,1 1,0 0))"):
                 feat.DumpReadable()
                 pytest.fail()
         feat = lyr.GetNextFeature()
-        if (
-            feat.GetGeometryRef().ExportToWkt()
-            != "MULTICURVE (CIRCULARSTRING (0 0,1 1,2 0))"
-        ):
+        if (feat.GetGeometryRef().ExportToWkt() !=
+                "MULTICURVE (CIRCULARSTRING (0 0,1 1,2 0))"):
             feat.DumpReadable()
             pytest.fail()
 
@@ -3232,76 +3133,42 @@ def test_ogr_gml_67():
 
         ds = ogr.Open(filename)
         lyr = ds.GetLayer(0)
-        assert (
-            lyr.GetLayerDefn()
-            .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("b1"))
-            .GetType()
-            == ogr.OFTInteger
-            and lyr.GetLayerDefn()
-            .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("b1"))
-            .GetSubType()
-            == ogr.OFSTBoolean
-        ), i
-        assert (
-            lyr.GetLayerDefn()
-            .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("bool_list"))
-            .GetType()
-            == ogr.OFTIntegerList
-            and lyr.GetLayerDefn()
-            .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("bool_list"))
-            .GetSubType()
-            == ogr.OFSTBoolean
-        ), i
+        assert (lyr.GetLayerDefn().GetFieldDefn(
+            lyr.GetLayerDefn().GetFieldIndex("b1")).GetType() == ogr.OFTInteger
+                and lyr.GetLayerDefn().GetFieldDefn(lyr.GetLayerDefn(
+                ).GetFieldIndex("b1")).GetSubType() == ogr.OFSTBoolean), i
+        assert (lyr.GetLayerDefn().GetFieldDefn(lyr.GetLayerDefn(
+        ).GetFieldIndex("bool_list")).GetType() == ogr.OFTIntegerList
+                and lyr.GetLayerDefn().GetFieldDefn(
+                    lyr.GetLayerDefn().GetFieldIndex(
+                        "bool_list")).GetSubType() == ogr.OFSTBoolean), i
         if i == 0:
-            assert (
-                lyr.GetLayerDefn()
-                .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("short"))
-                .GetType()
-                == ogr.OFTInteger
-                and lyr.GetLayerDefn()
-                .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("short"))
-                .GetSubType()
-                == ogr.OFSTInt16
-            ), i
+            assert (lyr.GetLayerDefn().GetFieldDefn(lyr.GetLayerDefn(
+            ).GetFieldIndex("short")).GetType() == ogr.OFTInteger
+                    and lyr.GetLayerDefn().GetFieldDefn(lyr.GetLayerDefn(
+                    ).GetFieldIndex("short")).GetSubType() == ogr.OFSTInt16), i
         if i == 0:
-            assert (
-                lyr.GetLayerDefn()
-                .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("float"))
-                .GetType()
-                == ogr.OFTReal
-                and lyr.GetLayerDefn()
-                .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("float"))
-                .GetSubType()
-                == ogr.OFSTFloat32
-            ), i
-        assert (
-            lyr.GetLayerDefn()
-            .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("int64"))
-            .GetType()
-            == ogr.OFTInteger64
-        ), i
-        assert (
-            lyr.GetLayerDefn()
-            .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("int64list"))
-            .GetType()
-            == ogr.OFTInteger64List
-        ), i
+            assert (lyr.GetLayerDefn().GetFieldDefn(lyr.GetLayerDefn(
+            ).GetFieldIndex("float")).GetType() == ogr.OFTReal
+                    and lyr.GetLayerDefn().GetFieldDefn(
+                        lyr.GetLayerDefn().GetFieldIndex(
+                            "float")).GetSubType() == ogr.OFSTFloat32), i
+        assert (lyr.GetLayerDefn().GetFieldDefn(
+            lyr.GetLayerDefn().GetFieldIndex("int64")).GetType() ==
+                ogr.OFTInteger64), i
+        assert (lyr.GetLayerDefn().GetFieldDefn(
+            lyr.GetLayerDefn().GetFieldIndex("int64list")).GetType() ==
+                ogr.OFTInteger64List), i
         f = lyr.GetNextFeature()
-        if (
-            f.GetField("b1") != 1
-            or f.GetField("b2") != 0
-            or f.GetFieldAsString("bool_list") != "(2:1,0)"
-            or f.GetField("short") != -32768
-            or f.GetField("float") != 1.23
-        ):
+        if (f.GetField("b1") != 1 or f.GetField("b2") != 0
+                or f.GetFieldAsString("bool_list") != "(2:1,0)"
+                or f.GetField("short") != -32768
+                or f.GetField("float") != 1.23):
             f.DumpReadable()
             pytest.fail(i)
         f = lyr.GetNextFeature()
-        if (
-            f.GetFID() != 1234567890123
-            or f.GetField("int64") != 1234567890123
-            or f.GetField("int64list") != [1, 1234567890123]
-        ):
+        if (f.GetFID() != 1234567890123 or f.GetField("int64") != 1234567890123
+                or f.GetField("int64list") != [1, 1234567890123]):
             f.DumpReadable()
             pytest.fail(i)
         ds = None
@@ -3329,9 +3196,8 @@ def test_ogr_gml_68():
     ]
 
     lyr = ds.GetLayer(0)
-    assert (
-        lyr.GetGeomType() == ogr.wkbMultiPolygon
-    ), " did not get expected layer geometry type"
+    assert (lyr.GetGeomType() == ogr.wkbMultiPolygon
+            ), " did not get expected layer geometry type"
     for i in range(2):
         feat = lyr.GetNextFeature()
         geom = feat.GetGeometryRef()
@@ -3364,9 +3230,8 @@ def test_ogr_gml_69():
     lyr.CreateGeomField(field_defn)
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetField("field_not_nullable", "not_null")
-    f.SetGeomFieldDirectly(
-        "geomfield_not_nullable", ogr.CreateGeometryFromWkt("POINT(0 0)")
-    )
+    f.SetGeomFieldDirectly("geomfield_not_nullable",
+                           ogr.CreateGeometryFromWkt("POINT(0 0)"))
     lyr.CreateFeature(f)
     f = None
 
@@ -3390,34 +3255,19 @@ def test_ogr_gml_69():
 
     ds = None
 
-    ds = gdal.OpenEx("/vsimem/ogr_gml_69.gml", open_options=["EMPTY_AS_NULL=NO"])
+    ds = gdal.OpenEx("/vsimem/ogr_gml_69.gml",
+                     open_options=["EMPTY_AS_NULL=NO"])
     lyr = ds.GetLayerByName("test")
-    assert (
-        lyr.GetLayerDefn()
-        .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("field_not_nullable"))
-        .IsNullable()
-        == 0
-    )
-    assert (
-        lyr.GetLayerDefn()
-        .GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex("field_nullable"))
-        .IsNullable()
-        == 1
-    )
-    assert (
-        lyr.GetLayerDefn()
-        .GetGeomFieldDefn(
-            lyr.GetLayerDefn().GetGeomFieldIndex("geomfield_not_nullable")
-        )
-        .IsNullable()
-        == 0
-    )
-    assert (
-        lyr.GetLayerDefn()
-        .GetGeomFieldDefn(lyr.GetLayerDefn().GetGeomFieldIndex("geomfield_nullable"))
-        .IsNullable()
-        == 1
-    )
+    assert (lyr.GetLayerDefn().GetFieldDefn(lyr.GetLayerDefn().GetFieldIndex(
+        "field_not_nullable")).IsNullable() == 0)
+    assert (lyr.GetLayerDefn().GetFieldDefn(
+        lyr.GetLayerDefn().GetFieldIndex("field_nullable")).IsNullable() == 1)
+    assert (lyr.GetLayerDefn().GetGeomFieldDefn(
+        lyr.GetLayerDefn().GetGeomFieldIndex(
+            "geomfield_not_nullable")).IsNullable() == 0)
+    assert (lyr.GetLayerDefn().GetGeomFieldDefn(
+        lyr.GetLayerDefn().GetGeomFieldIndex(
+            "geomfield_nullable")).IsNullable() == 1)
     ds = None
 
     gdal.Unlink("/vsimem/ogr_gml_69.gml")
@@ -3487,29 +3337,23 @@ def ogr_gml_71_helper(ds):
     assert layer_defn.GetGeomFieldDefn(0).GetName() == "table1.geometry"
     assert layer_defn.GetGeomFieldDefn(1).GetName() == "table2.geometry"
     f = lyr.GetNextFeature()
-    if (
-        f.GetField("table1.gml_id") != "table1-1"
-        or f.GetField("table1.foo") != 1
-        or f.IsFieldSet("table1.bar")
-        or f.GetField("table2.gml_id") != "table2-1"
-        or f.GetField("table2.bar") != 2
-        or f.GetField("table2.baz") != "foo"
-        or f.GetGeomFieldRef(0) is not None
-        or f.GetGeomFieldRef(1).ExportToWkt() != "POINT (2 49)"
-    ):
+    if (f.GetField("table1.gml_id") != "table1-1"
+            or f.GetField("table1.foo") != 1 or f.IsFieldSet("table1.bar")
+            or f.GetField("table2.gml_id") != "table2-1"
+            or f.GetField("table2.bar") != 2
+            or f.GetField("table2.baz") != "foo"
+            or f.GetGeomFieldRef(0) is not None
+            or f.GetGeomFieldRef(1).ExportToWkt() != "POINT (2 49)"):
         f.DumpReadable()
         pytest.fail()
     f = lyr.GetNextFeature()
-    if (
-        f.GetField("table1.gml_id") != "table1-2"
-        or f.IsFieldSet("table1.foo")
-        or f.GetField("table1.bar") != 2
-        or f.GetField("table2.gml_id") != "table2-2"
-        or f.GetField("table2.bar") != 2
-        or f.GetField("table2.baz") != "bar"
-        or f.GetGeomFieldRef(0).ExportToWkt() != "POINT (3 50)"
-        or f.GetGeomFieldRef(1).ExportToWkt() != "POINT (2 50)"
-    ):
+    if (f.GetField("table1.gml_id") != "table1-2" or f.IsFieldSet("table1.foo")
+            or f.GetField("table1.bar") != 2
+            or f.GetField("table2.gml_id") != "table2-2"
+            or f.GetField("table2.bar") != 2
+            or f.GetField("table2.baz") != "bar"
+            or f.GetGeomFieldRef(0).ExportToWkt() != "POINT (3 50)"
+            or f.GetGeomFieldRef(1).ExportToWkt() != "POINT (2 50)"):
         f.DumpReadable()
         pytest.fail()
 
@@ -3569,8 +3413,8 @@ def test_ogr_gml_72():
         pytest.skip()
 
     ds = ogr.GetDriverByName("GML").CreateDataSource(
-        "/vsimem/ogr_gml_72.gml", options=["NAME=name", "DESCRIPTION=description"]
-    )
+        "/vsimem/ogr_gml_72.gml",
+        options=["NAME=name", "DESCRIPTION=description"])
     ds.SetMetadata({"NAME": "ignored", "DESCRIPTION": "ignored"})
     ds = None
 
@@ -3641,9 +3485,8 @@ def test_ogr_gml_74():
         pytest.skip()
 
     # With .xsd
-    ds = gdal.OpenEx(
-        "data/expected_gml_gml32.gml", open_options=["FORCE_SRS_DETECTION=YES"]
-    )
+    ds = gdal.OpenEx("data/expected_gml_gml32.gml",
+                     open_options=["FORCE_SRS_DETECTION=YES"])
     lyr = ds.GetLayer(0)
     assert lyr.GetSpatialRef() is not None, "did not get expected SRS"
     assert lyr.GetFeatureCount() == 2, "did not get expected feature count"
@@ -3653,13 +3496,15 @@ def test_ogr_gml_74():
         os.unlink("tmp/ogr_gml_74.gfs")
 
     # Without .xsd or .gfs
-    ds = gdal.OpenEx("tmp/ogr_gml_74.gml", open_options=["FORCE_SRS_DETECTION=YES"])
+    ds = gdal.OpenEx("tmp/ogr_gml_74.gml",
+                     open_options=["FORCE_SRS_DETECTION=YES"])
     lyr = ds.GetLayer(0)
     assert lyr.GetSpatialRef() is not None, "did not get expected SRS"
     assert lyr.GetFeatureCount() == 2, "did not get expected feature count"
 
     # With .gfs
-    ds = gdal.OpenEx("tmp/ogr_gml_74.gml", open_options=["FORCE_SRS_DETECTION=YES"])
+    ds = gdal.OpenEx("tmp/ogr_gml_74.gml",
+                     open_options=["FORCE_SRS_DETECTION=YES"])
     lyr = ds.GetLayer(0)
     assert lyr.GetSpatialRef() is not None, "did not get expected SRS"
     assert lyr.GetFeatureCount() == 2, "did not get expected feature count"
@@ -3769,13 +3614,15 @@ def test_ogr_gml_77():
     assert f.GetGeometryRef().ExportToWkt() == "POINT (2 49)"
     ds = None
 
-    ds = gdal.OpenEx("/vsimem/ogr_gml_77.xml", open_options=["SWAP_COORDINATES=YES"])
+    ds = gdal.OpenEx("/vsimem/ogr_gml_77.xml",
+                     open_options=["SWAP_COORDINATES=YES"])
     lyr = ds.GetLayer(0)
     f = lyr.GetNextFeature()
     assert f.GetGeometryRef().ExportToWkt() == "POINT (2 49)"
     ds = None
 
-    ds = gdal.OpenEx("/vsimem/ogr_gml_77.xml", open_options=["SWAP_COORDINATES=NO"])
+    ds = gdal.OpenEx("/vsimem/ogr_gml_77.xml",
+                     open_options=["SWAP_COORDINATES=NO"])
     lyr = ds.GetLayer(0)
     f = lyr.GetNextFeature()
     assert f.GetGeometryRef().ExportToWkt() == "POINT (49 2)"
@@ -3818,13 +3665,15 @@ def test_ogr_gml_78():
     assert f.GetGeometryRef().ExportToWkt() == "POINT (2 49)"
     ds = None
 
-    ds = gdal.OpenEx("/vsimem/ogr_gml_78.xml", open_options=["SWAP_COORDINATES=YES"])
+    ds = gdal.OpenEx("/vsimem/ogr_gml_78.xml",
+                     open_options=["SWAP_COORDINATES=YES"])
     lyr = ds.GetLayer(0)
     f = lyr.GetNextFeature()
     assert f.GetGeometryRef().ExportToWkt() == "POINT (49 2)"
     ds = None
 
-    ds = gdal.OpenEx("/vsimem/ogr_gml_78.xml", open_options=["SWAP_COORDINATES=NO"])
+    ds = gdal.OpenEx("/vsimem/ogr_gml_78.xml",
+                     open_options=["SWAP_COORDINATES=NO"])
     lyr = ds.GetLayer(0)
     f = lyr.GetNextFeature()
     assert f.GetGeometryRef().ExportToWkt() == "POINT (2 49)"
@@ -3989,8 +3838,7 @@ def test_ogr_gml_gml2_write_geometry_error():
     lyr = ds.CreateLayer("test")
     f = ogr.Feature(lyr.GetLayerDefn())
     f.SetGeometry(
-        ogr.CreateGeometryFromWkt("GEOMETRYCOLLECTION(POINT(0 0), TIN EMPTY)")
-    )
+        ogr.CreateGeometryFromWkt("GEOMETRYCOLLECTION(POINT(0 0), TIN EMPTY)"))
     with gdaltest.error_handler():
         lyr.CreateFeature(f)
     ds = None
@@ -4078,7 +3926,8 @@ def test_ogr_gml_standalone_geom():
     ds = ogr.Open("data/standalone_geometry.gml")
     lyr = ds.GetLayer(0)
     f = lyr.GetNextFeature()
-    assert f.GetGeometryRef().ExportToWkt() == "POLYGON ((2 49,3 49,3 48,2 48,2 49))"
+    assert f.GetGeometryRef().ExportToWkt(
+    ) == "POLYGON ((2 49,3 49,3 48,2 48,2 49))"
 
 
 ###############################################################################

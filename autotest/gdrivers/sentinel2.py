@@ -86,14 +86,22 @@ def test_sentinel2_l1c_1():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 with 10m resolution, UTM 32N",
-        "SUBDATASET_1_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:10m:EPSG_32632",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution, UTM 32N",
-        "SUBDATASET_2_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:20m:EPSG_32632",
-        "SUBDATASET_3_DESC": "Bands B1, B9, B10 with 60m resolution, UTM 32N",
-        "SUBDATASET_3_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:60m:EPSG_32632",
-        "SUBDATASET_4_DESC": "RGB preview, UTM 32N",
-        "SUBDATASET_4_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:PREVIEW:EPSG_32632",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 with 10m resolution, UTM 32N",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:10m:EPSG_32632",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution, UTM 32N",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:20m:EPSG_32632",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, B10 with 60m resolution, UTM 32N",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:60m:EPSG_32632",
+        "SUBDATASET_4_DESC":
+        "RGB preview, UTM 32N",
+        "SUBDATASET_4_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml:PREVIEW:EPSG_32632",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -117,20 +125,19 @@ def test_sentinel2_l1c_1():
         gdal.ErrorReset()
         ds = gdal.Open(got_md["SUBDATASET_%d_NAME" % (i + 1)])
         assert ds is not None and gdal.GetLastErrorMsg() == "", got_md[
-            "SUBDATASET_%d_NAME" % (i + 1)
-        ]
+            "SUBDATASET_%d_NAME" % (i + 1)]
 
     # Try various invalid subdataset names
     for name in [
-        "SENTINEL2_L1C:",
-        "SENTINEL2_L1C:foo.xml:10m:EPSG_32632",
-        "SENTINEL2_L1C:%s" % filename_xml,
-        "SENTINEL2_L1C:%s:" % filename_xml,
-        "SENTINEL2_L1C:%s:10m" % filename_xml,
-        "SENTINEL2_L1C:%s:10m:" % filename_xml,
-        "SENTINEL2_L1C:%s:10m:EPSG_" % filename_xml,
-        "SENTINEL2_L1C:%s:50m:EPSG_32632" % filename_xml,
-        "SENTINEL2_L1C:%s:10m:EPSG_32633" % filename_xml,
+            "SENTINEL2_L1C:",
+            "SENTINEL2_L1C:foo.xml:10m:EPSG_32632",
+            "SENTINEL2_L1C:%s" % filename_xml,
+            "SENTINEL2_L1C:%s:" % filename_xml,
+            "SENTINEL2_L1C:%s:10m" % filename_xml,
+            "SENTINEL2_L1C:%s:10m:" % filename_xml,
+            "SENTINEL2_L1C:%s:10m:EPSG_" % filename_xml,
+            "SENTINEL2_L1C:%s:50m:EPSG_32632" % filename_xml,
+            "SENTINEL2_L1C:%s:10m:EPSG_32633" % filename_xml,
     ]:
         with gdaltest.error_handler():
             ds = gdal.Open(name)
@@ -267,9 +274,8 @@ def test_sentinel2_l1c_3():
     filename_xml = (
         "data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/S2A_OPER_MTD_SAFL1C.xml"
     )
-    ds = gdal.OpenEx(
-        "SENTINEL2_L1C:%s:60m:EPSG_32632" % filename_xml, open_options=["ALPHA=YES"]
-    )
+    ds = gdal.OpenEx("SENTINEL2_L1C:%s:60m:EPSG_32632" % filename_xml,
+                     open_options=["ALPHA=YES"])
     assert ds is not None
 
     assert ds.RasterCount == 4
@@ -613,37 +619,68 @@ def test_sentinel2_l1c_tile_1():
     assert ds is not None and gdal.GetLastErrorMsg() == ""
 
     expected_md = {
-        "CLOUDY_PIXEL_PERCENTAGE": "0",
-        "DATASTRIP_ID": "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
-        "DATATAKE_1_DATATAKE_SENSING_START": "2015-12-31T23:59:59.999Z",
-        "DATATAKE_1_DATATAKE_TYPE": "INS-NOBS",
-        "DATATAKE_1_ID": "GS2A_20151231T235959_000123_N01.03",
-        "DATATAKE_1_SENSING_ORBIT_DIRECTION": "DESCENDING",
-        "DATATAKE_1_SENSING_ORBIT_NUMBER": "22",
-        "DATATAKE_1_SPACECRAFT_NAME": "Sentinel-2A",
-        "DEGRADED_ANC_DATA_PERCENTAGE": "0",
-        "DEGRADED_MSI_DATA_PERCENTAGE": "0",
-        "DOWNLINK_PRIORITY": "NOMINAL",
-        "FORMAT_CORRECTNESS_FLAG": "PASSED",
-        "GENERAL_QUALITY_FLAG": "PASSED",
-        "GENERATION_TIME": "2015-12-31T23:59:59.999Z",
-        "GEOMETRIC_QUALITY_FLAG": "PASSED",
-        "PREVIEW_GEO_INFO": "BrowseImageFootprint",
-        "PREVIEW_IMAGE_URL": "http://example.com",
-        "PROCESSING_BASELINE": "01.03",
-        "PROCESSING_LEVEL": "Level-1C",
-        "PRODUCT_START_TIME": "2015-12-31T23:59:59.999Z",
-        "PRODUCT_STOP_TIME": "2015-12-31T23:59:59.999Z",
-        "PRODUCT_TYPE": "S2MSI1C",
-        "QUANTIFICATION_VALUE": "1000",
-        "RADIOMETRIC_QUALITY_FLAG": "PASSED",
-        "REFERENCE_BAND": "B1",
-        "REFLECTANCE_CONVERSION_U": "0.97",
-        "SENSING_TIME": "2015-12-31T23:59:59.999Z",
-        "SENSOR_QUALITY_FLAG": "PASSED",
-        "SPECIAL_VALUE_NODATA": "1",
-        "SPECIAL_VALUE_SATURATED": "0",
-        "TILE_ID": "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
+        "CLOUDY_PIXEL_PERCENTAGE":
+        "0",
+        "DATASTRIP_ID":
+        "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
+        "DATATAKE_1_DATATAKE_SENSING_START":
+        "2015-12-31T23:59:59.999Z",
+        "DATATAKE_1_DATATAKE_TYPE":
+        "INS-NOBS",
+        "DATATAKE_1_ID":
+        "GS2A_20151231T235959_000123_N01.03",
+        "DATATAKE_1_SENSING_ORBIT_DIRECTION":
+        "DESCENDING",
+        "DATATAKE_1_SENSING_ORBIT_NUMBER":
+        "22",
+        "DATATAKE_1_SPACECRAFT_NAME":
+        "Sentinel-2A",
+        "DEGRADED_ANC_DATA_PERCENTAGE":
+        "0",
+        "DEGRADED_MSI_DATA_PERCENTAGE":
+        "0",
+        "DOWNLINK_PRIORITY":
+        "NOMINAL",
+        "FORMAT_CORRECTNESS_FLAG":
+        "PASSED",
+        "GENERAL_QUALITY_FLAG":
+        "PASSED",
+        "GENERATION_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "GEOMETRIC_QUALITY_FLAG":
+        "PASSED",
+        "PREVIEW_GEO_INFO":
+        "BrowseImageFootprint",
+        "PREVIEW_IMAGE_URL":
+        "http://example.com",
+        "PROCESSING_BASELINE":
+        "01.03",
+        "PROCESSING_LEVEL":
+        "Level-1C",
+        "PRODUCT_START_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "PRODUCT_STOP_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "PRODUCT_TYPE":
+        "S2MSI1C",
+        "QUANTIFICATION_VALUE":
+        "1000",
+        "RADIOMETRIC_QUALITY_FLAG":
+        "PASSED",
+        "REFERENCE_BAND":
+        "B1",
+        "REFLECTANCE_CONVERSION_U":
+        "0.97",
+        "SENSING_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "SENSOR_QUALITY_FLAG":
+        "PASSED",
+        "SPECIAL_VALUE_NODATA":
+        "1",
+        "SPECIAL_VALUE_SATURATED":
+        "0",
+        "TILE_ID":
+        "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
     }
     got_md = ds.GetMetadata()
     if got_md != expected_md:
@@ -653,14 +690,22 @@ def test_sentinel2_l1c_tile_1():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 with 10m resolution",
-        "SUBDATASET_1_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:10m",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution",
-        "SUBDATASET_2_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:20m",
-        "SUBDATASET_3_DESC": "Bands B1, B9, B10 with 60m resolution",
-        "SUBDATASET_3_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:60m",
-        "SUBDATASET_4_DESC": "RGB preview",
-        "SUBDATASET_4_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:PREVIEW",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 with 10m resolution",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:10m",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:20m",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, B10 with 60m resolution",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:60m",
+        "SUBDATASET_4_DESC":
+        "RGB preview",
+        "SUBDATASET_4_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:PREVIEW",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -674,15 +719,14 @@ def test_sentinel2_l1c_tile_1():
         gdal.ErrorReset()
         ds = gdal.Open(got_md["SUBDATASET_%d_NAME" % (i + 1)])
         assert ds is not None and gdal.GetLastErrorMsg() == "", got_md[
-            "SUBDATASET_%d_NAME" % (i + 1)
-        ]
+            "SUBDATASET_%d_NAME" % (i + 1)]
 
     # Try various invalid subdataset names
     for name in [
-        "SENTINEL2_L1C_TILE:",
-        "SENTINEL2_L1C_TILE:foo.xml:10m",
-        "SENTINEL2_L1C_TILE:%s" % filename_xml,
-        "SENTINEL2_L1C_TILE:%s:" % filename_xml,
+            "SENTINEL2_L1C_TILE:",
+            "SENTINEL2_L1C_TILE:foo.xml:10m",
+            "SENTINEL2_L1C_TILE:%s" % filename_xml,
+            "SENTINEL2_L1C_TILE:%s:" % filename_xml,
     ]:
         with gdaltest.error_handler():
             ds = gdal.Open(name)
@@ -704,12 +748,18 @@ def test_sentinel2_l1c_tile_2():
     assert ds is not None and gdal.GetLastErrorMsg() == ""
 
     expected_md = {
-        "CLOUDY_PIXEL_PERCENTAGE": "0",
-        "DATASTRIP_ID": "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
-        "DEGRADED_MSI_DATA_PERCENTAGE": "0",
-        "DOWNLINK_PRIORITY": "NOMINAL",
-        "SENSING_TIME": "2015-12-31T23:59:59.999Z",
-        "TILE_ID": "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
+        "CLOUDY_PIXEL_PERCENTAGE":
+        "0",
+        "DATASTRIP_ID":
+        "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
+        "DEGRADED_MSI_DATA_PERCENTAGE":
+        "0",
+        "DOWNLINK_PRIORITY":
+        "NOMINAL",
+        "SENSING_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "TILE_ID":
+        "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
     }
     got_md = ds.GetMetadata()
     if got_md != expected_md:
@@ -719,14 +769,22 @@ def test_sentinel2_l1c_tile_2():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 with 10m resolution",
-        "SUBDATASET_1_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:10m",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution",
-        "SUBDATASET_2_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:20m",
-        "SUBDATASET_3_DESC": "Bands B1, B9, B10 with 60m resolution",
-        "SUBDATASET_3_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:60m",
-        "SUBDATASET_4_DESC": "RGB preview",
-        "SUBDATASET_4_NAME": "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:PREVIEW",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 with 10m resolution",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:10m",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:20m",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, B10 with 60m resolution",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:60m",
+        "SUBDATASET_4_DESC":
+        "RGB preview",
+        "SUBDATASET_4_NAME":
+        "SENTINEL2_L1C_TILE:data/fake_sentinel2_l1c/S2A_OPER_PRD_MSIL1C.SAFE/GRANULE/S2A_OPER_MSI_L1C_T32TQR_N01.03/S2A_OPER_MTD_L1C_T32TQR.xml:PREVIEW",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -748,37 +806,68 @@ def test_sentinel2_l1c_tile_3():
     assert ds is not None and gdal.GetLastErrorMsg() == ""
 
     expected_md = {
-        "CLOUDY_PIXEL_PERCENTAGE": "0",
-        "DATASTRIP_ID": "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
-        "DATATAKE_1_DATATAKE_SENSING_START": "2015-12-31T23:59:59.999Z",
-        "DATATAKE_1_DATATAKE_TYPE": "INS-NOBS",
-        "DATATAKE_1_ID": "GS2A_20151231T235959_000123_N01.03",
-        "DATATAKE_1_SENSING_ORBIT_DIRECTION": "DESCENDING",
-        "DATATAKE_1_SENSING_ORBIT_NUMBER": "22",
-        "DATATAKE_1_SPACECRAFT_NAME": "Sentinel-2A",
-        "DEGRADED_ANC_DATA_PERCENTAGE": "0",
-        "DEGRADED_MSI_DATA_PERCENTAGE": "0",
-        "DOWNLINK_PRIORITY": "NOMINAL",
-        "FORMAT_CORRECTNESS_FLAG": "PASSED",
-        "GENERAL_QUALITY_FLAG": "PASSED",
-        "GENERATION_TIME": "2015-12-31T23:59:59.999Z",
-        "GEOMETRIC_QUALITY_FLAG": "PASSED",
-        "PREVIEW_GEO_INFO": "BrowseImageFootprint",
-        "PREVIEW_IMAGE_URL": "http://example.com",
-        "PROCESSING_BASELINE": "01.03",
-        "PROCESSING_LEVEL": "Level-1C",
-        "PRODUCT_START_TIME": "2015-12-31T23:59:59.999Z",
-        "PRODUCT_STOP_TIME": "2015-12-31T23:59:59.999Z",
-        "PRODUCT_TYPE": "S2MSI1C",
-        "QUANTIFICATION_VALUE": "1000",
-        "RADIOMETRIC_QUALITY_FLAG": "PASSED",
-        "REFERENCE_BAND": "B1",
-        "REFLECTANCE_CONVERSION_U": "0.97",
-        "SENSING_TIME": "2015-12-31T23:59:59.999Z",
-        "SENSOR_QUALITY_FLAG": "PASSED",
-        "SPECIAL_VALUE_NODATA": "1",
-        "SPECIAL_VALUE_SATURATED": "0",
-        "TILE_ID": "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
+        "CLOUDY_PIXEL_PERCENTAGE":
+        "0",
+        "DATASTRIP_ID":
+        "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
+        "DATATAKE_1_DATATAKE_SENSING_START":
+        "2015-12-31T23:59:59.999Z",
+        "DATATAKE_1_DATATAKE_TYPE":
+        "INS-NOBS",
+        "DATATAKE_1_ID":
+        "GS2A_20151231T235959_000123_N01.03",
+        "DATATAKE_1_SENSING_ORBIT_DIRECTION":
+        "DESCENDING",
+        "DATATAKE_1_SENSING_ORBIT_NUMBER":
+        "22",
+        "DATATAKE_1_SPACECRAFT_NAME":
+        "Sentinel-2A",
+        "DEGRADED_ANC_DATA_PERCENTAGE":
+        "0",
+        "DEGRADED_MSI_DATA_PERCENTAGE":
+        "0",
+        "DOWNLINK_PRIORITY":
+        "NOMINAL",
+        "FORMAT_CORRECTNESS_FLAG":
+        "PASSED",
+        "GENERAL_QUALITY_FLAG":
+        "PASSED",
+        "GENERATION_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "GEOMETRIC_QUALITY_FLAG":
+        "PASSED",
+        "PREVIEW_GEO_INFO":
+        "BrowseImageFootprint",
+        "PREVIEW_IMAGE_URL":
+        "http://example.com",
+        "PROCESSING_BASELINE":
+        "01.03",
+        "PROCESSING_LEVEL":
+        "Level-1C",
+        "PRODUCT_START_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "PRODUCT_STOP_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "PRODUCT_TYPE":
+        "S2MSI1C",
+        "QUANTIFICATION_VALUE":
+        "1000",
+        "RADIOMETRIC_QUALITY_FLAG":
+        "PASSED",
+        "REFERENCE_BAND":
+        "B1",
+        "REFLECTANCE_CONVERSION_U":
+        "0.97",
+        "SENSING_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "SENSOR_QUALITY_FLAG":
+        "PASSED",
+        "SPECIAL_VALUE_NODATA":
+        "1",
+        "SPECIAL_VALUE_SATURATED":
+        "0",
+        "TILE_ID":
+        "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
     }
     got_md = ds.GetMetadata()
     if got_md != expected_md:
@@ -862,19 +951,24 @@ def test_sentinel2_l1c_tile_4():
     gdal.ErrorReset()
     # Simulate absence of main MTD file
     gdal.SetConfigOption("SENTINEL2_USE_MAIN_MTD", "NO")
-    ds = gdal.OpenEx(
-        "SENTINEL2_L1C_TILE:%s:10m" % filename_xml, open_options=["ALPHA=YES"]
-    )
+    ds = gdal.OpenEx("SENTINEL2_L1C_TILE:%s:10m" % filename_xml,
+                     open_options=["ALPHA=YES"])
     gdal.SetConfigOption("SENTINEL2_USE_MAIN_MTD", None)
     assert ds is not None and gdal.GetLastErrorMsg() == ""
 
     expected_md = {
-        "CLOUDY_PIXEL_PERCENTAGE": "0",
-        "DATASTRIP_ID": "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
-        "DEGRADED_MSI_DATA_PERCENTAGE": "0",
-        "DOWNLINK_PRIORITY": "NOMINAL",
-        "SENSING_TIME": "2015-12-31T23:59:59.999Z",
-        "TILE_ID": "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
+        "CLOUDY_PIXEL_PERCENTAGE":
+        "0",
+        "DATASTRIP_ID":
+        "S2A_OPER_MSI_L1C_DS_MTI__20151231T235959_S20151231T235959_N01.03",
+        "DEGRADED_MSI_DATA_PERCENTAGE":
+        "0",
+        "DOWNLINK_PRIORITY":
+        "NOMINAL",
+        "SENSING_TIME":
+        "2015-12-31T23:59:59.999Z",
+        "TILE_ID":
+        "S2A_OPER_MSI_L1C_TL_MTI__20151231T235959_A000123_T32TQR_N01.03",
     }
     got_md = ds.GetMetadata()
     if got_md != expected_md:
@@ -1010,7 +1104,8 @@ def test_sentinel2_l1c_tile_6():
     )
 
     # Just tell it doesn't crash without any tile
-    gdal.Open("/vsimem/GRANULE/S2A_OPER_MSI_L1C_bla_N01.03/S2A_OPER_MTD_L1C_bla.xml")
+    gdal.Open(
+        "/vsimem/GRANULE/S2A_OPER_MSI_L1C_bla_N01.03/S2A_OPER_MTD_L1C_bla.xml")
 
     with gdaltest.error_handler():
         ds = gdal.Open(
@@ -1070,12 +1165,18 @@ def test_sentinel2_l1b_1():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 of granule S2B_OPER_MTD_L1B.xml with 10m resolution",
-        "SUBDATASET_1_NAME": "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:10m",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12 of granule S2B_OPER_MTD_L1B.xml with 20m resolution",
-        "SUBDATASET_2_NAME": "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:20m",
-        "SUBDATASET_3_DESC": "Bands B1, B9, B10 of granule S2B_OPER_MTD_L1B.xml with 60m resolution",
-        "SUBDATASET_3_NAME": "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:60m",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 of granule S2B_OPER_MTD_L1B.xml with 10m resolution",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:10m",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12 of granule S2B_OPER_MTD_L1B.xml with 20m resolution",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:20m",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, B10 of granule S2B_OPER_MTD_L1B.xml with 60m resolution",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:60m",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -1089,16 +1190,15 @@ def test_sentinel2_l1b_1():
         gdal.ErrorReset()
         ds = gdal.Open(got_md["SUBDATASET_%d_NAME" % (i + 1)])
         assert ds is not None and gdal.GetLastErrorMsg() == "", got_md[
-            "SUBDATASET_%d_NAME" % (i + 1)
-        ]
+            "SUBDATASET_%d_NAME" % (i + 1)]
 
     # Try various invalid subdataset names
     for name in [
-        "SENTINEL2_L1B:",
-        "SENTINEL2_L1B:foo.xml:10m",
-        "SENTINEL2_L1B:%s" % filename_xml,
-        "SENTINEL2_L1B:%s:" % filename_xml,
-        "SENTINEL2_L1B:%s:30m" % filename_xml,
+            "SENTINEL2_L1B:",
+            "SENTINEL2_L1B:foo.xml:10m",
+            "SENTINEL2_L1B:%s" % filename_xml,
+            "SENTINEL2_L1B:%s:" % filename_xml,
+            "SENTINEL2_L1B:%s:30m" % filename_xml,
     ]:
         with gdaltest.error_handler():
             ds = gdal.Open(name)
@@ -1118,7 +1218,8 @@ def test_sentinel2_l1b_2():
 
     expected_md = {
         "CLOUDY_PIXEL_PERCENTAGE": "0",
-        "DATASTRIP_ID": "S2B_OPER_MSI_L1B_DS_MTI__20151231T235959_S20151231T235959_N01.03",
+        "DATASTRIP_ID":
+        "S2B_OPER_MSI_L1B_DS_MTI__20151231T235959_S20151231T235959_N01.03",
         "DATATAKE_1_DATATAKE_SENSING_START": "2015-12-31T23:59:59.999Z",
         "DATATAKE_1_DATATAKE_TYPE": "INS-NOBS",
         "DATATAKE_1_ID": "GS2B_20151231T235959_000123_N01.03",
@@ -1134,7 +1235,8 @@ def test_sentinel2_l1b_2():
         "GENERAL_QUALITY_FLAG": "PASSED",
         "GENERATION_TIME": "2015-12-31T23:59:59.999Z",
         "GEOMETRIC_QUALITY_FLAG": "PASSED",
-        "GRANULE_ID": "S2B_OPER_MSI_L1B_GR_MTI__20151231T235959_S20151231T235959_D02_N01.03",
+        "GRANULE_ID":
+        "S2B_OPER_MSI_L1B_GR_MTI__20151231T235959_S20151231T235959_D02_N01.03",
         "INCIDENCE_AZIMUTH_ANGLE": "96",
         "INCIDENCE_ZENITH_ANGLE": "8",
         "PREVIEW_GEO_INFO": "BrowseImageFootprint",
@@ -1160,12 +1262,18 @@ def test_sentinel2_l1b_2():
         pytest.fail()
 
     subdatasets_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 with 10m resolution",
-        "SUBDATASET_1_NAME": "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:10m",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution",
-        "SUBDATASET_2_NAME": "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:20m",
-        "SUBDATASET_3_DESC": "Bands B1, B9, B10 with 60m resolution",
-        "SUBDATASET_3_NAME": "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:60m",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 with 10m resolution",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:10m",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:20m",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, B10 with 60m resolution",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L1B:data/fake_sentinel2_l1b/S2B_OPER_PRD_MSIL1B.SAFE/GRANULE/S2B_OPER_MSI_L1B_N01.03/S2B_OPER_MTD_L1B.xml:60m",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != subdatasets_md:
@@ -1206,7 +1314,8 @@ def test_sentinel2_l1b_3():
 
     expected_md = {
         "CLOUDY_PIXEL_PERCENTAGE": "0",
-        "DATASTRIP_ID": "S2B_OPER_MSI_L1B_DS_MTI__20151231T235959_S20151231T235959_N01.03",
+        "DATASTRIP_ID":
+        "S2B_OPER_MSI_L1B_DS_MTI__20151231T235959_S20151231T235959_N01.03",
         "DATATAKE_1_DATATAKE_SENSING_START": "2015-12-31T23:59:59.999Z",
         "DATATAKE_1_DATATAKE_TYPE": "INS-NOBS",
         "DATATAKE_1_ID": "GS2B_20151231T235959_000123_N01.03",
@@ -1222,7 +1331,8 @@ def test_sentinel2_l1b_3():
         "GENERAL_QUALITY_FLAG": "PASSED",
         "GENERATION_TIME": "2015-12-31T23:59:59.999Z",
         "GEOMETRIC_QUALITY_FLAG": "PASSED",
-        "GRANULE_ID": "S2B_OPER_MSI_L1B_GR_MTI__20151231T235959_S20151231T235959_D02_N01.03",
+        "GRANULE_ID":
+        "S2B_OPER_MSI_L1B_GR_MTI__20151231T235959_S20151231T235959_D02_N01.03",
         "INCIDENCE_AZIMUTH_ANGLE": "96",
         "INCIDENCE_ZENITH_ANGLE": "8",
         "PREVIEW_GEO_INFO": "BrowseImageFootprint",
@@ -1254,45 +1364,25 @@ def test_sentinel2_l1b_3():
     gcps = ds.GetGCPs()
     assert len(gcps) == 5
 
-    assert (
-        gcps[0].GCPPixel == 0
-        and gcps[0].GCPLine == 0
-        and gcps[0].GCPX == 11
-        and gcps[0].GCPY == 46
-        and gcps[0].GCPZ == 1
-    )
+    assert (gcps[0].GCPPixel == 0 and gcps[0].GCPLine == 0
+            and gcps[0].GCPX == 11 and gcps[0].GCPY == 46
+            and gcps[0].GCPZ == 1)
 
-    assert (
-        gcps[1].GCPPixel == 0
-        and gcps[1].GCPLine == 384
-        and gcps[1].GCPX == 11
-        and gcps[1].GCPY == 45
-        and gcps[1].GCPZ == 2
-    )
+    assert (gcps[1].GCPPixel == 0 and gcps[1].GCPLine == 384
+            and gcps[1].GCPX == 11 and gcps[1].GCPY == 45
+            and gcps[1].GCPZ == 2)
 
-    assert (
-        gcps[2].GCPPixel == 1276
-        and gcps[2].GCPLine == 384
-        and gcps[2].GCPX == 13
-        and gcps[2].GCPY == 45
-        and gcps[2].GCPZ == 3
-    )
+    assert (gcps[2].GCPPixel == 1276 and gcps[2].GCPLine == 384
+            and gcps[2].GCPX == 13 and gcps[2].GCPY == 45
+            and gcps[2].GCPZ == 3)
 
-    assert (
-        gcps[3].GCPPixel == 1276
-        and gcps[3].GCPLine == 0
-        and gcps[3].GCPX == 13
-        and gcps[3].GCPY == 46
-        and gcps[3].GCPZ == 4
-    )
+    assert (gcps[3].GCPPixel == 1276 and gcps[3].GCPLine == 0
+            and gcps[3].GCPX == 13 and gcps[3].GCPY == 46
+            and gcps[3].GCPZ == 4)
 
-    assert (
-        gcps[4].GCPPixel == 1276.0 / 2
-        and gcps[4].GCPLine == 384.0 / 2
-        and gcps[4].GCPX == 12
-        and gcps[4].GCPY == 45.5
-        and gcps[4].GCPZ == 2.5
-    )
+    assert (gcps[4].GCPPixel == 1276.0 / 2 and gcps[4].GCPLine == 384.0 / 2
+            and gcps[4].GCPX == 12 and gcps[4].GCPY == 45.5
+            and gcps[4].GCPZ == 2.5)
 
     assert ds.RasterCount == 3
 
@@ -1428,10 +1518,13 @@ def test_sentinel2_l1b_4():
 """,
     )
 
-    ds = gdal.Open("/vsimem/foo/GRANULE/S2B_OPER_MTD_L1B_N01.03/S2B_OPER_MTD_L1B.xml")
+    ds = gdal.Open(
+        "/vsimem/foo/GRANULE/S2B_OPER_MTD_L1B_N01.03/S2B_OPER_MTD_L1B.xml")
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B1 with 60m resolution",
-        "SUBDATASET_1_NAME": "SENTINEL2_L1B:/vsimem/foo/GRANULE/S2B_OPER_MTD_L1B_N01.03/S2B_OPER_MTD_L1B.xml:60m",
+        "SUBDATASET_1_DESC":
+        "Bands B1 with 60m resolution",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L1B:/vsimem/foo/GRANULE/S2B_OPER_MTD_L1B_N01.03/S2B_OPER_MTD_L1B.xml:60m",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -1449,7 +1542,8 @@ def test_sentinel2_l1b_4():
     assert ds.RasterCount == 2
     ds = None
 
-    gdal.Unlink("/vsimem/foo/GRANULE/S2B_OPER_MTD_L1B_N01.03/S2B_OPER_MTD_L1B.xml")
+    gdal.Unlink(
+        "/vsimem/foo/GRANULE/S2B_OPER_MTD_L1B_N01.03/S2B_OPER_MTD_L1B.xml")
     gdal.Unlink(
         "/vsimem/foo/GRANULE/S2B_OPER_MTD_L1B_N01.03/IMG_DATA/S2B_OPER_MSI_L1B_B01.jp2"
     )
@@ -1718,10 +1812,14 @@ def test_sentinel2_l2a_1():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B1, B2, B3, B4, B5, B6, B7, B9, B10, B11, B12, B8A, AOT, CLD, SCL, SNW, WVP with 60m resolution, UTM 32N",
-        "SUBDATASET_1_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a/S2A_USER_PRD_MSIL2A.SAFE/S2A_USER_MTD_SAFL2A.xml:60m:EPSG_32632",
-        "SUBDATASET_2_DESC": "RGB preview, UTM 32N",
-        "SUBDATASET_2_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a/S2A_USER_PRD_MSIL2A.SAFE/S2A_USER_MTD_SAFL2A.xml:PREVIEW:EPSG_32632",
+        "SUBDATASET_1_DESC":
+        "Bands B1, B2, B3, B4, B5, B6, B7, B9, B10, B11, B12, B8A, AOT, CLD, SCL, SNW, WVP with 60m resolution, UTM 32N",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a/S2A_USER_PRD_MSIL2A.SAFE/S2A_USER_MTD_SAFL2A.xml:60m:EPSG_32632",
+        "SUBDATASET_2_DESC":
+        "RGB preview, UTM 32N",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a/S2A_USER_PRD_MSIL2A.SAFE/S2A_USER_MTD_SAFL2A.xml:PREVIEW:EPSG_32632",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -1735,20 +1833,19 @@ def test_sentinel2_l2a_1():
         gdal.ErrorReset()
         ds = gdal.Open(got_md["SUBDATASET_%d_NAME" % (i + 1)])
         assert ds is not None and gdal.GetLastErrorMsg() == "", got_md[
-            "SUBDATASET_%d_NAME" % (i + 1)
-        ]
+            "SUBDATASET_%d_NAME" % (i + 1)]
 
     # Try various invalid subdataset names
     for name in [
-        "SENTINEL2_L2A:",
-        "SENTINEL2_L2A:foo.xml:10m:EPSG_32632",
-        "SENTINEL2_L2A:%s" % filename_xml,
-        "SENTINEL2_L2A:%s:" % filename_xml,
-        "SENTINEL2_L2A:%s:10m" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:EPSG_" % filename_xml,
-        "SENTINEL2_L2A:%s:50m:EPSG_32632" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:EPSG_32633" % filename_xml,
+            "SENTINEL2_L2A:",
+            "SENTINEL2_L2A:foo.xml:10m:EPSG_32632",
+            "SENTINEL2_L2A:%s" % filename_xml,
+            "SENTINEL2_L2A:%s:" % filename_xml,
+            "SENTINEL2_L2A:%s:10m" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:EPSG_" % filename_xml,
+            "SENTINEL2_L2A:%s:50m:EPSG_32632" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:EPSG_32633" % filename_xml,
     ]:
         with gdaltest.error_handler():
             ds = gdal.Open(name)
@@ -2009,7 +2106,8 @@ def test_sentinel2_l2a_4():
         "DATATAKE_1_SPACECRAFT_NAME": "Sentinel-2A",
         "DEGRADED_ANC_DATA_PERCENTAGE": "0.0",
         "DEGRADED_MSI_DATA_PERCENTAGE": "0",
-        "FOOTPRINT": "POLYGON((22.6 57.7, 24.5 57.6, 24.4 56.7, 22.6 56.7, 22.6 57.7))",
+        "FOOTPRINT":
+        "POLYGON((22.6 57.7, 24.5 57.6, 24.4 56.7, 22.6 56.7, 22.6 57.7))",
         "FORMAT_CORRECTNESS": "PASSED",
         "GENERAL_QUALITY": "PASSED",
         "GENERATION_TIME": "2018-08-18T12:03:45.000000Z",
@@ -2025,7 +2123,8 @@ def test_sentinel2_l2a_4():
         "PRODUCT_START_TIME": "2018-08-18T09:40:31.024Z",
         "PRODUCT_STOP_TIME": "2018-08-18T09:40:31.024Z",
         "PRODUCT_TYPE": "S2MSI2A",
-        "PRODUCT_URI": "S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE",
+        "PRODUCT_URI":
+        "S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE",
         "RADIATIVE_TRANSFER_ACCURACY": "0.0",
         "RADIOMETRIC_QUALITY": "PASSED",
         "REFLECTANCE_CONVERSION_U": "0.97",
@@ -2050,14 +2149,22 @@ def test_sentinel2_l2a_4():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 with 10m resolution, UTM 34N",
-        "SUBDATASET_1_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:10m:EPSG_32634",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12, AOT, CLD, SCL, SNW, WVP with 20m resolution, UTM 34N",
-        "SUBDATASET_2_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:20m:EPSG_32634",
-        "SUBDATASET_3_DESC": "Bands B1, B9, AOT, CLD, SCL, SNW, WVP with 60m resolution, UTM 34N",
-        "SUBDATASET_3_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:60m:EPSG_32634",
-        "SUBDATASET_4_DESC": "True color image, UTM 34N",
-        "SUBDATASET_4_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:TCI:EPSG_32634",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 with 10m resolution, UTM 34N",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:10m:EPSG_32634",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12, AOT, CLD, SCL, SNW, WVP with 20m resolution, UTM 34N",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:20m:EPSG_32634",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, AOT, CLD, SCL, SNW, WVP with 60m resolution, UTM 34N",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:60m:EPSG_32634",
+        "SUBDATASET_4_DESC":
+        "True color image, UTM 34N",
+        "SUBDATASET_4_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2A/S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE/MTD_MSIL2A.xml:TCI:EPSG_32634",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -2071,20 +2178,19 @@ def test_sentinel2_l2a_4():
         gdal.ErrorReset()
         ds = gdal.Open(got_md["SUBDATASET_%d_NAME" % (i + 1)])
         assert ds is not None and gdal.GetLastErrorMsg() == "", got_md[
-            "SUBDATASET_%d_NAME" % (i + 1)
-        ]
+            "SUBDATASET_%d_NAME" % (i + 1)]
 
     # Try various invalid subdataset names
     for name in [
-        "SENTINEL2_L2A:",
-        "SENTINEL2_L2A:foo.xml:10m:EPSG_32632",
-        "SENTINEL2_L2A:%s" % filename_xml,
-        "SENTINEL2_L2A:%s:" % filename_xml,
-        "SENTINEL2_L2A:%s:10m" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:EPSG_" % filename_xml,
-        "SENTINEL2_L2A:%s:50m:EPSG_32632" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:EPSG_32633" % filename_xml,
+            "SENTINEL2_L2A:",
+            "SENTINEL2_L2A:foo.xml:10m:EPSG_32632",
+            "SENTINEL2_L2A:%s" % filename_xml,
+            "SENTINEL2_L2A:%s:" % filename_xml,
+            "SENTINEL2_L2A:%s:10m" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:EPSG_" % filename_xml,
+            "SENTINEL2_L2A:%s:50m:EPSG_32632" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:EPSG_32633" % filename_xml,
     ]:
         with gdaltest.error_handler():
             ds = gdal.Open(name)
@@ -2134,7 +2240,8 @@ def test_sentinel2_l2a_5():
         "PRODUCT_START_TIME": "2018-08-18T09:40:31.024Z",
         "PRODUCT_STOP_TIME": "2018-08-18T09:40:31.024Z",
         "PRODUCT_TYPE": "S2MSI2A",
-        "PRODUCT_URI": "S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE",
+        "PRODUCT_URI":
+        "S2A_MSIL2A_20180818T094031_N0208_R036_T34VFJ_20180818T120345.SAFE",
         "RADIATIVE_TRANSFER_ACCURACY": "0.0",
         "RADIOMETRIC_QUALITY": "PASSED",
         "REFLECTANCE_CONVERSION_U": "0.97",
@@ -2225,7 +2332,8 @@ def test_sentinel2_l2a_6():
         "DATATAKE_1_SPACECRAFT_NAME": "Sentinel-2A",
         "DEGRADED_ANC_DATA_PERCENTAGE": "0",
         "DEGRADED_MSI_DATA_PERCENTAGE": "0",
-        "FOOTPRINT": "POLYGON((22.6 57.7, 24.5 57.6, 24.4 56.7, 22.6 56.7, 22.6 57.7))",
+        "FOOTPRINT":
+        "POLYGON((22.6 57.7, 24.5 57.6, 24.4 56.7, 22.6 56.7, 22.6 57.7))",
         "FORMAT_CORRECTNESS_FLAG": "PASSED",
         "GENERAL_QUALITY_FLAG": "PASSED",
         "GENERATION_TIME": "2017-08-25T08:50:10Z",
@@ -2249,8 +2357,10 @@ def test_sentinel2_l2a_6():
         "PRODUCT_START_TIME": "2017-08-23T09:40:31.026Z",
         "PRODUCT_STOP_TIME": "2017-08-23T09:40:31.026Z",
         "PRODUCT_TYPE": "S2MSI2Ap",
-        "PRODUCT_URI_1C": "S2A_MSIL1C_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
-        "PRODUCT_URI_2A": "S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
+        "PRODUCT_URI_1C":
+        "S2A_MSIL1C_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
+        "PRODUCT_URI_2A":
+        "S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
         "RADIATIVE_TRANSFER_ACCURAY": "0.0",
         "RADIOMETRIC_QUALITY_FLAG": "PASSED",
         "REFERENCE_BAND": "B1",
@@ -2273,14 +2383,22 @@ def test_sentinel2_l2a_6():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 with 10m resolution, UTM 34N",
-        "SUBDATASET_1_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:10m:EPSG_32634",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12, AOT, CLD, SCL, SNW, WVP with 20m resolution, UTM 34N",
-        "SUBDATASET_2_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:20m:EPSG_32634",
-        "SUBDATASET_3_DESC": "Bands B1, B9, AOT, CLD, SCL, SNW, WVP with 60m resolution, UTM 34N",
-        "SUBDATASET_3_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:60m:EPSG_32634",
-        "SUBDATASET_4_DESC": "True color image, UTM 34N",
-        "SUBDATASET_4_NAME": "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:TCI:EPSG_32634",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 with 10m resolution, UTM 34N",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:10m:EPSG_32634",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12, AOT, CLD, SCL, SNW, WVP with 20m resolution, UTM 34N",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:20m:EPSG_32634",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, AOT, CLD, SCL, SNW, WVP with 60m resolution, UTM 34N",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:60m:EPSG_32634",
+        "SUBDATASET_4_DESC":
+        "True color image, UTM 34N",
+        "SUBDATASET_4_NAME":
+        "SENTINEL2_L2A:data/fake_sentinel2_l2a_MSIL2Ap/S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE/MTD_MSIL2A.xml:TCI:EPSG_32634",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -2294,20 +2412,19 @@ def test_sentinel2_l2a_6():
         gdal.ErrorReset()
         ds = gdal.Open(got_md["SUBDATASET_%d_NAME" % (i + 1)])
         assert ds is not None and gdal.GetLastErrorMsg() == "", got_md[
-            "SUBDATASET_%d_NAME" % (i + 1)
-        ]
+            "SUBDATASET_%d_NAME" % (i + 1)]
 
     # Try various invalid subdataset names
     for name in [
-        "SENTINEL2_L2A:",
-        "SENTINEL2_L2A:foo.xml:10m:EPSG_32632",
-        "SENTINEL2_L2A:%s" % filename_xml,
-        "SENTINEL2_L2A:%s:" % filename_xml,
-        "SENTINEL2_L2A:%s:10m" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:EPSG_" % filename_xml,
-        "SENTINEL2_L2A:%s:50m:EPSG_32632" % filename_xml,
-        "SENTINEL2_L2A:%s:10m:EPSG_32633" % filename_xml,
+            "SENTINEL2_L2A:",
+            "SENTINEL2_L2A:foo.xml:10m:EPSG_32632",
+            "SENTINEL2_L2A:%s" % filename_xml,
+            "SENTINEL2_L2A:%s:" % filename_xml,
+            "SENTINEL2_L2A:%s:10m" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:EPSG_" % filename_xml,
+            "SENTINEL2_L2A:%s:50m:EPSG_32632" % filename_xml,
+            "SENTINEL2_L2A:%s:10m:EPSG_32633" % filename_xml,
     ]:
         with gdaltest.error_handler():
             ds = gdal.Open(name)
@@ -2363,8 +2480,10 @@ def test_sentinel2_l2a_7():
         "PRODUCT_START_TIME": "2017-08-23T09:40:31.026Z",
         "PRODUCT_STOP_TIME": "2017-08-23T09:40:31.026Z",
         "PRODUCT_TYPE": "S2MSI2Ap",
-        "PRODUCT_URI_1C": "S2A_MSIL1C_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
-        "PRODUCT_URI_2A": "S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
+        "PRODUCT_URI_1C":
+        "S2A_MSIL1C_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
+        "PRODUCT_URI_2A":
+        "S2A_MSIL2A_20170823T094031_N0205_R036_T34VFJ_20170823T094252.SAFE",
         "RADIATIVE_TRANSFER_ACCURAY": "0.0",
         "RADIOMETRIC_QUALITY_FLAG": "PASSED",
         "REFERENCE_BAND": "B1",
@@ -2478,14 +2597,22 @@ def test_sentinel2_l1c_safe_compact_1():
         pytest.fail()
 
     expected_md = {
-        "SUBDATASET_1_DESC": "Bands B2, B3, B4, B8 with 10m resolution, UTM 32N",
-        "SUBDATASET_1_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:10m:EPSG_32632",
-        "SUBDATASET_2_DESC": "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution, UTM 32N",
-        "SUBDATASET_2_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:20m:EPSG_32632",
-        "SUBDATASET_3_DESC": "Bands B1, B9, B10 with 60m resolution, UTM 32N",
-        "SUBDATASET_3_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:60m:EPSG_32632",
-        "SUBDATASET_4_DESC": "True color image, UTM 32N",
-        "SUBDATASET_4_NAME": "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:TCI:EPSG_32632",
+        "SUBDATASET_1_DESC":
+        "Bands B2, B3, B4, B8 with 10m resolution, UTM 32N",
+        "SUBDATASET_1_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:10m:EPSG_32632",
+        "SUBDATASET_2_DESC":
+        "Bands B5, B6, B7, B8A, B11, B12 with 20m resolution, UTM 32N",
+        "SUBDATASET_2_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:20m:EPSG_32632",
+        "SUBDATASET_3_DESC":
+        "Bands B1, B9, B10 with 60m resolution, UTM 32N",
+        "SUBDATASET_3_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:60m:EPSG_32632",
+        "SUBDATASET_4_DESC":
+        "True color image, UTM 32N",
+        "SUBDATASET_4_NAME":
+        "SENTINEL2_L1C:data/fake_sentinel2_l1c_safecompact/S2A_MSIL1C_test.SAFE/MTD_MSIL1C.xml:TCI:EPSG_32632",
     }
     got_md = ds.GetMetadata("SUBDATASETS")
     if got_md != expected_md:
@@ -2499,20 +2626,19 @@ def test_sentinel2_l1c_safe_compact_1():
         gdal.ErrorReset()
         ds = gdal.Open(got_md["SUBDATASET_%d_NAME" % (i + 1)])
         assert ds is not None and gdal.GetLastErrorMsg() == "", got_md[
-            "SUBDATASET_%d_NAME" % (i + 1)
-        ]
+            "SUBDATASET_%d_NAME" % (i + 1)]
 
     # Try various invalid subdataset names
     for name in [
-        "SENTINEL2_L1C:",
-        "SENTINEL2_L1C:foo.xml:10m:EPSG_32632",
-        "SENTINEL2_L1C:%s" % filename_xml,
-        "SENTINEL2_L1C:%s:" % filename_xml,
-        "SENTINEL2_L1C:%s:10m" % filename_xml,
-        "SENTINEL2_L1C:%s:10m:" % filename_xml,
-        "SENTINEL2_L1C:%s:10m:EPSG_" % filename_xml,
-        "SENTINEL2_L1C:%s:50m:EPSG_32632" % filename_xml,
-        "SENTINEL2_L1C:%s:10m:EPSG_32633" % filename_xml,
+            "SENTINEL2_L1C:",
+            "SENTINEL2_L1C:foo.xml:10m:EPSG_32632",
+            "SENTINEL2_L1C:%s" % filename_xml,
+            "SENTINEL2_L1C:%s:" % filename_xml,
+            "SENTINEL2_L1C:%s:10m" % filename_xml,
+            "SENTINEL2_L1C:%s:10m:" % filename_xml,
+            "SENTINEL2_L1C:%s:10m:EPSG_" % filename_xml,
+            "SENTINEL2_L1C:%s:50m:EPSG_32632" % filename_xml,
+            "SENTINEL2_L1C:%s:10m:EPSG_32633" % filename_xml,
     ]:
         with gdaltest.error_handler():
             ds = gdal.Open(name)

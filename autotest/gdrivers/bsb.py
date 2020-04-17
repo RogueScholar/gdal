@@ -154,15 +154,10 @@ def test_bsb_tmerc():
         0.015209115944776083,
         -1.267821834560455,
     ]
-    assert (
-        min(
-            [
-                gt[i] == pytest.approx(expected_gt[i], abs=1e-8 * abs(expected_gt[i]))
-                for i in range(6)
-            ]
-        )
-        == True
-    ), gt
+    assert (min([
+        gt[i] == pytest.approx(expected_gt[i], abs=1e-8 * abs(expected_gt[i]))
+        for i in range(6)
+    ]) == True), gt
     expected_wkt = """PROJCS["unnamed",
     GEOGCS["WGS 84",
         DATUM["WGS_1984",
@@ -194,13 +189,10 @@ def test_bsb_tmerc():
     gcps = ds.GetGCPs()
     assert len(gcps) == 3
 
-    assert (
-        gcps[0].GCPPixel == 25
-        and gcps[0].GCPLine == 577
-        and gcps[0].GCPX == pytest.approx(28524.670169107143, abs=1e-5)
-        and gcps[0].GCPY == pytest.approx(6538920.57567595, abs=1e-5)
-        and gcps[0].GCPZ == 0
-    )
+    assert (gcps[0].GCPPixel == 25 and gcps[0].GCPLine == 577
+            and gcps[0].GCPX == pytest.approx(28524.670169107143, abs=1e-5)
+            and gcps[0].GCPY == pytest.approx(6538920.57567595, abs=1e-5)
+            and gcps[0].GCPZ == 0)
 
 
 ###############################################################################
@@ -212,6 +204,6 @@ def test_bsb_cutline():
 
     ds = gdal.Open("data/australia4c.kap")
     assert (
-        ds.GetMetadataItem("BSB_CUTLINE")
-        == "POLYGON ((112.72859333333334 -8.25404666666667,156.57827333333333 -7.66159166666667,164.28394166666666 -40.89653000000000,106.53042166666667 -41.14970000000000))"
+        ds.GetMetadataItem("BSB_CUTLINE") ==
+        "POLYGON ((112.72859333333334 -8.25404666666667,156.57827333333333 -7.66159166666667,164.28394166666666 -40.89653000000000,106.53042166666667 -41.14970000000000))"
     )

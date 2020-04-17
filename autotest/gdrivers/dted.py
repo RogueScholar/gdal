@@ -57,23 +57,24 @@ def test_dted_2():
 
     max_error = 0.000001
 
-    assert (
-        gt[0] == pytest.approx((-80.004166666666663), abs=max_error)
-        and gt[1] == pytest.approx(0.0083333333333333332, abs=max_error)
-        and gt[2] == pytest.approx(0, abs=max_error)
-        and gt[3] == pytest.approx(44.00416666666667, abs=max_error)
-        and gt[4] == pytest.approx(0, abs=max_error)
-        and gt[5] == pytest.approx((-0.0083333333333333332), abs=max_error)
-    ), "DTED geotransform wrong."
+    assert (gt[0] == pytest.approx((-80.004166666666663), abs=max_error)
+            and gt[1] == pytest.approx(0.0083333333333333332, abs=max_error)
+            and gt[2] == pytest.approx(0, abs=max_error)
+            and gt[3] == pytest.approx(44.00416666666667, abs=max_error)
+            and gt[4] == pytest.approx(0, abs=max_error)
+            and gt[5] == pytest.approx(
+                (-0.0083333333333333332),
+                abs=max_error)), "DTED geotransform wrong."
 
     prj = ds.GetProjection()
     assert (
-        prj
-        == 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'
+        prj ==
+        'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'
     ), ("Projection does not match expected:\n%s" % prj)
 
     band1 = ds.GetRasterBand(1)
-    assert band1.GetNoDataValue() == -32767, "Grid NODATA value wrong or missing."
+    assert band1.GetNoDataValue(
+    ) == -32767, "Grid NODATA value wrong or missing."
 
     assert band1.DataType == gdal.GDT_Int16, "Data type is not Int16!"
 
@@ -175,7 +176,8 @@ def test_dted_7():
     prj = ds.GetProjection()
     gdal.PopErrorHandler()
 
-    assert gdal.GetLastErrorMsg() is not None, "An expected warning was not emitted"
+    assert gdal.GetLastErrorMsg(
+    ) is not None, "An expected warning was not emitted"
 
     assert prj.startswith('GEOGCS["WGS 72"')
 
@@ -198,7 +200,8 @@ def test_dted_8():
 
     gdal.SetConfigOption("DTED_VERIFY_CHECKSUM", "NO")
 
-    assert gdal.GetLastErrorMsg() is not None, "An expected warning was not emitted"
+    assert gdal.GetLastErrorMsg(
+    ) is not None, "An expected warning was not emitted"
 
     # 49187 is the checksum of data is the DTED is read without checking its checksum
     # so we should not get this value
@@ -220,16 +223,14 @@ def test_dted_9():
     dsDst.SetProjection(
         'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'
     )
-    dsDst.SetGeoTransform(
-        (
-            -80.0008333333333333,
-            0.001666666666667,
-            0,
-            54.0004166666666670,
-            0,
-            -0.0008333333333333,
-        )
-    )
+    dsDst.SetGeoTransform((
+        -80.0008333333333333,
+        0.001666666666667,
+        0,
+        54.0004166666666670,
+        0,
+        -0.0008333333333333,
+    ))
 
     bandDst = dsDst.GetRasterBand(1)
 
@@ -277,23 +278,24 @@ def test_dted_11():
 
     max_error = 0.000001
 
-    assert (
-        gt[0] == pytest.approx((-80.004166666666663), abs=max_error)
-        and gt[1] == pytest.approx(0.0083333333333333332, abs=max_error)
-        and gt[2] == pytest.approx(0, abs=max_error)
-        and gt[3] == pytest.approx(44.00416666666667, abs=max_error)
-        and gt[4] == pytest.approx(0, abs=max_error)
-        and gt[5] == pytest.approx((-0.0083333333333333332), abs=max_error)
-    ), "DTED geotransform wrong."
+    assert (gt[0] == pytest.approx((-80.004166666666663), abs=max_error)
+            and gt[1] == pytest.approx(0.0083333333333333332, abs=max_error)
+            and gt[2] == pytest.approx(0, abs=max_error)
+            and gt[3] == pytest.approx(44.00416666666667, abs=max_error)
+            and gt[4] == pytest.approx(0, abs=max_error)
+            and gt[5] == pytest.approx(
+                (-0.0083333333333333332),
+                abs=max_error)), "DTED geotransform wrong."
 
     prj = ds.GetProjection()
     assert (
-        prj
-        == 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'
+        prj ==
+        'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'
     ), ("Projection does not match expected:\n%s" % prj)
 
     band1 = ds.GetRasterBand(1)
-    assert band1.GetNoDataValue() == -32767, "Grid NODATA value wrong or missing."
+    assert band1.GetNoDataValue(
+    ) == -32767, "Grid NODATA value wrong or missing."
 
     assert band1.DataType == gdal.GDT_Int16, "Data type is not Int16!"
 
