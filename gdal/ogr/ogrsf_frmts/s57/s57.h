@@ -100,7 +100,7 @@ class S57ClassContentExplorer;
 
 class CPL_DLL S57AttrInfo
 {
-  public:
+public:
     CPLString    osName;
     CPLString    osAcronym;
     char         chType;
@@ -121,14 +121,14 @@ class CPL_DLL S57ClassRegistrar
     std::vector<int> anAttrIndex; // sorted by acronym.
 
     static bool        FindFile( const char *pszTarget, const char *pszDirectory,
-                          bool bReportErr, VSILFILE **fp );
+                                 bool bReportErr, VSILFILE **fp );
 
     const char *ReadLine( VSILFILE * fp );
     char      **papszNextLine;
 
 public:
-                S57ClassRegistrar();
-               ~S57ClassRegistrar();
+    S57ClassRegistrar();
+    ~S57ClassRegistrar();
 
     bool        LoadInfo( const char *, const char *, bool );
 
@@ -136,11 +136,17 @@ public:
     //int         GetMaxAttrIndex() { return nAttrMax; }
     const S57AttrInfo *GetAttrInfo( int i );
     const char *GetAttrName( int i )
-    { return GetAttrInfo(i) == nullptr ? nullptr : aoAttrInfos[i]->osName.c_str(); }
+    {
+        return GetAttrInfo(i) == nullptr ? nullptr : aoAttrInfos[i]->osName.c_str();
+    }
     const char *GetAttrAcronym( int i )
-    { return GetAttrInfo(i) == nullptr ? nullptr : aoAttrInfos[i]->osAcronym.c_str(); }
+    {
+        return GetAttrInfo(i) == nullptr ? nullptr : aoAttrInfos[i]->osAcronym.c_str();
+    }
     char        GetAttrType( int i )
-    { return GetAttrInfo(i) == nullptr ? '\0' : aoAttrInfos[i]->chType; }
+    {
+        return GetAttrInfo(i) == nullptr ? '\0' : aoAttrInfos[i]->chType;
+    }
 #define SAT_ENUM        'E'
 #define SAT_LIST        'L'
 #define SAT_FLOAT       'F'
@@ -149,7 +155,9 @@ public:
 #define SAT_FREE_TEXT   'S'
 
     char        GetAttrClass( int i )
-    { return GetAttrInfo(i) == nullptr ? '\0' : aoAttrInfos[i]->chClass; }
+    {
+        return GetAttrInfo(i) == nullptr ? '\0' : aoAttrInfos[i]->chClass;
+    }
     int         FindAttrByAcronym( const char * );
 };
 
@@ -169,16 +177,20 @@ class S57ClassContentExplorer
 
     char      **papszTempResult;
 
-    public:
+public:
     explicit    S57ClassContentExplorer(S57ClassRegistrar* poRegistrar);
-       ~S57ClassContentExplorer();
+    ~S57ClassContentExplorer();
 
     bool        SelectClassByIndex( int );
     bool        SelectClass( int );
     bool        SelectClass( const char * );
 
-    bool        Rewind() { return SelectClassByIndex(0); }
-    bool        NextClass() { return SelectClassByIndex(iCurrentClass+1); }
+    bool        Rewind() {
+        return SelectClassByIndex(0);
+    }
+    bool        NextClass() {
+        return SelectClassByIndex(iCurrentClass+1);
+    }
 
     int         GetOBJL();
     const char *GetDescription() const;
@@ -218,8 +230,8 @@ class CPL_DLL DDFRecordIndex
     void        Sort();
 
 public:
-                DDFRecordIndex();
-               ~DDFRecordIndex();
+    DDFRecordIndex();
+    ~DDFRecordIndex();
 
     void        AddRecord( int nKey, DDFRecord * );
     bool        RemoveRecord( int nKey );
@@ -230,7 +242,9 @@ public:
 
     void        Clear();
 
-    int         GetCount() { return nRecordCount; }
+    int         GetCount() {
+        return nRecordCount;
+    }
 
     DDFRecord  *GetByIndex( int i );
     void        *GetClientInfoByIndex( int i );
@@ -319,18 +333,24 @@ class CPL_DLL S57Reader
     bool                bMissingWarningIssued;
     bool                bAttrWarningIssued;
 
-  public:
+public:
     explicit            S57Reader( const char * );
-                       ~S57Reader();
+    ~S57Reader();
 
     void                SetClassBased( S57ClassRegistrar *, S57ClassContentExplorer* );
     bool                SetOptions( char ** );
-    int                 GetOptionFlags() { return nOptionFlags; }
+    int                 GetOptionFlags() {
+        return nOptionFlags;
+    }
 
     int                 Open( int bTestOpen );
     void                Close();
-    DDFModule           *GetModule() { return poModule; }
-    const char          *GetDSNM() { return pszDSNM; }
+    DDFModule           *GetModule() {
+        return poModule;
+    }
+    const char          *GetDSNM() {
+        return pszDSNM;
+    }
 
     bool                Ingest();
     bool                ApplyUpdates( DDFModule * );
@@ -352,7 +372,7 @@ class CPL_DLL S57Reader
     OGRErr              GetExtent( OGREnvelope *psExtent, int bForce );
 
     char               *RecodeByDSSI(const char *SourceString, bool LookAtAALL_NALL);
- };
+};
 
 /************************************************************************/
 /*                              S57Writer                               */
@@ -372,8 +392,8 @@ public:
     static const int nDEFAULT_COMF = 10000000;
     static const int nDEFAULT_SOMF = 10;
 
-                        S57Writer();
-                        ~S57Writer();
+    S57Writer();
+    ~S57Writer();
 
     void                SetClassBased( S57ClassRegistrar *, S57ClassContentExplorer* );
     bool                CreateS57File( const char *pszFilename );
@@ -425,8 +445,8 @@ private:
 void           CPL_DLL  S57GenerateStandardAttributes( OGRFeatureDefn *, int );
 OGRFeatureDefn CPL_DLL *S57GenerateGeomFeatureDefn( OGRwkbGeometryType, int );
 OGRFeatureDefn CPL_DLL *S57GenerateObjectClassDefn( S57ClassRegistrar *,
-                                                    S57ClassContentExplorer* poClassContentExplorer,
-                                                    int, int );
+        S57ClassContentExplorer* poClassContentExplorer,
+        int, int );
 OGRFeatureDefn CPL_DLL  *S57GenerateVectorPrimitiveFeatureDefn( int, int );
 OGRFeatureDefn CPL_DLL  *S57GenerateDSIDFeatureDefn( void );
 

@@ -39,24 +39,24 @@ CPL_CVSID("$Id$")
 /************************************************************************/
 
 OGRGeoJSONWriteLayer::OGRGeoJSONWriteLayer( const char* pszName,
-                                            OGRwkbGeometryType eGType,
-                                            char** papszOptions,
-                                            bool bWriteFC_BBOXIn,
-                                            OGRCoordinateTransformation* poCT,
-                                            OGRGeoJSONDataSource* poDS ) :
+        OGRwkbGeometryType eGType,
+        char** papszOptions,
+        bool bWriteFC_BBOXIn,
+        OGRCoordinateTransformation* poCT,
+        OGRGeoJSONDataSource* poDS ) :
     poDS_(poDS),
     poFeatureDefn_(new OGRFeatureDefn( pszName )),
     nOutCounter_(0),
     bWriteBBOX(CPLTestBool(
-        CSLFetchNameValueDef(papszOptions, "WRITE_BBOX", "FALSE"))),
+                   CSLFetchNameValueDef(papszOptions, "WRITE_BBOX", "FALSE"))),
     bBBOX3D(false),
     bWriteFC_BBOX(bWriteFC_BBOXIn),
     nCoordPrecision_(atoi(
-        CSLFetchNameValueDef(papszOptions, "COORDINATE_PRECISION", "-1"))),
+                         CSLFetchNameValueDef(papszOptions, "COORDINATE_PRECISION", "-1"))),
     nSignificantFigures_(atoi(
-        CSLFetchNameValueDef(papszOptions, "SIGNIFICANT_FIGURES", "-1"))),
+                             CSLFetchNameValueDef(papszOptions, "SIGNIFICANT_FIGURES", "-1"))),
     bRFC7946_(CPLTestBool(
-        CSLFetchNameValueDef(papszOptions, "RFC7946", "FALSE"))),
+                  CSLFetchNameValueDef(papszOptions, "RFC7946", "FALSE"))),
     poCT_(poCT)
 {
     poFeatureDefn_->Reference();
@@ -73,7 +73,7 @@ OGRGeoJSONWriteLayer::OGRGeoJSONWriteLayer( const char* pszName,
     }
     oWriteOptions_.SetIDOptions(papszOptions);
     oWriteOptions_.bAllowNonFiniteValues = CPLTestBool(
-        CSLFetchNameValueDef(papszOptions, "WRITE_NON_FINITE_VALUES", "FALSE"));
+            CSLFetchNameValueDef(papszOptions, "WRITE_NON_FINITE_VALUES", "FALSE"));
 }
 
 /************************************************************************/
@@ -114,7 +114,7 @@ OGRGeoJSONWriteLayer::~OGRGeoJSONWriteLayer()
         osBBOX += " ]";
 
         if( poDS_->GetFpOutputIsSeekable() &&
-            osBBOX.size() + 9 < OGRGeoJSONDataSource::SPACE_FOR_BBOX )
+                osBBOX.size() + 9 < OGRGeoJSONDataSource::SPACE_FOR_BBOX )
         {
             VSIFSeekL(fp, poDS_->GetBBOXInsertLocation(), SEEK_SET);
             VSIFPrintfL( fp, "\"bbox\": %s,", osBBOX.c_str() );
@@ -167,7 +167,7 @@ OGRErr OGRGeoJSONWriteLayer::ICreateFeature( OGRFeature* poFeature )
             OGREnvelope sEnvelope;
             poNewGeom->getEnvelope(&sEnvelope);
             if( sEnvelope.MinX < -180.0 || sEnvelope.MaxX > 180.0 ||
-                sEnvelope.MinY < -90.0 || sEnvelope.MaxY > 90.0 )
+                    sEnvelope.MinY < -90.0 || sEnvelope.MaxY > 90.0 )
             {
                 CPLError(CE_Failure, CPLE_AppDefined,
                          "Geometry extent outside of [-180.0,180.0]x[-90.0,90.0] bounds");
@@ -205,7 +205,7 @@ OGRErr OGRGeoJSONWriteLayer::ICreateFeature( OGRFeature* poFeature )
     if( poGeometry != nullptr && !poGeometry->IsEmpty() )
     {
         OGREnvelope3D sEnvelope = OGRGeoJSONGetBBox( poGeometry,
-                                                     oWriteOptions_ );
+                                  oWriteOptions_ );
         if( poGeometry->getCoordinateDimension() == 3 )
             bBBOX3D = true;
 
@@ -217,7 +217,7 @@ OGRErr OGRGeoJSONWriteLayer::ICreateFeature( OGRFeature* poFeature )
         {
             const bool bEnvelopeCrossAM = ( sEnvelope.MinX > sEnvelope.MaxX );
             const bool bEnvelopeLayerCrossAM =
-                                ( sEnvelopeLayer.MinX > sEnvelopeLayer.MaxX );
+                ( sEnvelopeLayer.MinX > sEnvelopeLayer.MaxX );
             if( bEnvelopeCrossAM )
             {
                 if( bEnvelopeLayerCrossAM )
@@ -294,12 +294,12 @@ OGRErr OGRGeoJSONWriteLayer::ICreateFeature( OGRFeature* poFeature )
 /************************************************************************/
 
 OGRErr OGRGeoJSONWriteLayer::CreateField( OGRFieldDefn* poField,
-                                          int /* bApproxOK */  )
+        int /* bApproxOK */  )
 {
     if( poFeatureDefn_->GetFieldIndexCaseSensitive(poField->GetNameRef()) >= 0 )
     {
         CPLDebug( "GeoJSON", "Field '%s' already present in schema",
-                    poField->GetNameRef() );
+                  poField->GetNameRef() );
 
         // TODO - mloskot: Is this return code correct?
         return OGRERR_NONE;

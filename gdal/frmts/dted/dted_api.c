@@ -95,9 +95,9 @@ DTEDInfo * DTEDOpen( const char * pszFilename,
 {
     VSILFILE* fp;
 
-/* -------------------------------------------------------------------- */
-/*      Open the physical file.                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Open the physical file.                                         */
+    /* -------------------------------------------------------------------- */
     if( EQUAL(pszAccess,"r") || EQUAL(pszAccess,"rb") )
         pszAccess = "rb";
     else
@@ -145,10 +145,10 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
     int bIsWeirdDTED;
     char chHemisphere;
 
-/* -------------------------------------------------------------------- */
-/*      Read, trying to find the UHL record.  Skip VOL or HDR           */
-/*      records if they are encountered.                                */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Read, trying to find the UHL record.  Skip VOL or HDR           */
+    /*      records if they are encountered.                                */
+    /* -------------------------------------------------------------------- */
     do
     {
         if( VSIFReadL( achRecord, 1, DTED_UHL_SIZE, fp ) != DTED_UHL_SIZE )
@@ -156,9 +156,9 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
             if( !bTestOpen )
             {
 #ifndef AVOID_CPL
-               CPLError( CE_Failure, CPLE_OpenFailed,
+                CPLError( CE_Failure, CPLE_OpenFailed,
 #else
-               fprintf( stderr,
+                fprintf( stderr,
 #endif
                           "Unable to read header, %s is not DTED.",
                           pszFilename );
@@ -185,9 +185,9 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
         return NULL;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Create and initialize the DTEDInfo structure.                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create and initialize the DTEDInfo structure.                   */
+    /* -------------------------------------------------------------------- */
     psDInfo = (DTEDInfo *) CPLCalloc(1,sizeof(DTEDInfo));
 
     psDInfo->fp = fp;
@@ -208,15 +208,15 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
     CPL_IGNORE_RET_VAL_SIZET(VSIFReadL( psDInfo->pachACCRecord, 1, DTED_ACC_SIZE, fp ));
 
     if( !STARTS_WITH_CI(psDInfo->pachDSIRecord, "DSI")
-        || !STARTS_WITH_CI(psDInfo->pachACCRecord, "ACC") )
+            || !STARTS_WITH_CI(psDInfo->pachACCRecord, "ACC") )
     {
 #ifndef AVOID_CPL
         CPLError( CE_Failure, CPLE_OpenFailed,
 #else
         fprintf( stderr,
 #endif
-                 "DSI or ACC record missing.  DTED access to\n%s failed.",
-                 pszFilename );
+                  "DSI or ACC record missing.  DTED access to\n%s failed.",
+                  pszFilename );
 
         DTEDClose(psDInfo);
         return NULL;
@@ -228,11 +228,11 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
     /* (co_elevation.zip) has really weird offsets that don't comply with the 89020B specification */
     bIsWeirdDTED = achRecord[4] == ' ';
 
-/* -------------------------------------------------------------------- */
-/*      Parse out position information.  Note that we are extracting    */
-/*      the top left corner of the top left pixel area, not the         */
-/*      center of the area.                                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Parse out position information.  Note that we are extracting    */
+    /*      the top left corner of the top left pixel area, not the         */
+    /*      center of the area.                                             */
+    /* -------------------------------------------------------------------- */
     if (!bIsWeirdDTED)
     {
         psDInfo->dfPixelSizeX =
@@ -263,8 +263,8 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
 #else
         fprintf( stderr,
 #endif
-                 "Invalid dimensions : %d x %d.  DTED access to\n%s failed.",
-                 psDInfo->nXSize, psDInfo->nYSize, pszFilename );
+                  "Invalid dimensions : %d x %d.  DTED access to\n%s failed.",
+                  psDInfo->nXSize, psDInfo->nYSize, pszFilename );
 
         DTEDClose(psDInfo);
         return NULL;
@@ -332,7 +332,7 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
 
     psDInfo->dfULCornerX = dfLLOriginX - 0.5 * psDInfo->dfPixelSizeX;
     psDInfo->dfULCornerY = dfLLOriginY - 0.5 * psDInfo->dfPixelSizeY
-        + psDInfo->nYSize * psDInfo->dfPixelSizeY;
+                           + psDInfo->nYSize * psDInfo->dfPixelSizeY;
 
     DTEDDetectVariantWithMissingColumns(psDInfo);
 
@@ -345,11 +345,11 @@ DTEDInfo * DTEDOpenEx( VSILFILE   *fp,
 
 static void DTEDDetectVariantWithMissingColumns(DTEDInfo* psDInfo)
 {
-/* -------------------------------------------------------------------- */
-/*      Some DTED files have only a subset of all possible columns.     */
-/*      They can declare for example 3601 columns, but in the file,     */
-/*      there are just columns 100->500. Detect that situation.         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Some DTED files have only a subset of all possible columns.     */
+    /*      They can declare for example 3601 columns, but in the file,     */
+    /*      there are just columns 100->500. Detect that situation.         */
+    /* -------------------------------------------------------------------- */
 
     GByte pabyRecordHeader[8];
     int nFirstDataBlockCount, nFirstLongitudeCount;
@@ -358,8 +358,8 @@ static void DTEDDetectVariantWithMissingColumns(DTEDInfo* psDInfo)
     int nColByteSize = 12 + psDInfo->nYSize*2;
 
     if (VSIFSeekL(psDInfo->fp, psDInfo->nDataOffset, SEEK_SET) < 0 ||
-        VSIFReadL(pabyRecordHeader, 1, 8, psDInfo->fp) != 8 ||
-        pabyRecordHeader[0] != 0252)
+            VSIFReadL(pabyRecordHeader, 1, 8, psDInfo->fp) != 8 ||
+            pabyRecordHeader[0] != 0252)
     {
         CPLDebug("DTED", "Cannot find signature of first column");
         return;
@@ -377,8 +377,8 @@ static void DTEDDetectVariantWithMissingColumns(DTEDInfo* psDInfo)
     }
 
     if (VSIFSeekL(psDInfo->fp, nSize - nColByteSize, SEEK_SET) < 0 ||
-        VSIFReadL(pabyRecordHeader, 1, 8, psDInfo->fp) != 8 ||
-        pabyRecordHeader[0] != 0252)
+            VSIFReadL(pabyRecordHeader, 1, 8, psDInfo->fp) != 8 ||
+            pabyRecordHeader[0] != 0252)
     {
         CPLDebug("DTED", "Cannot find signature of last column");
         return;
@@ -388,10 +388,10 @@ static void DTEDDetectVariantWithMissingColumns(DTEDInfo* psDInfo)
     nLastLongitudeCount = (pabyRecordHeader[4] << 8) | pabyRecordHeader[5];
 
     if (nFirstDataBlockCount == 0 &&
-        nFirstLongitudeCount == 0 &&
-        nLastDataBlockCount == psDInfo->nXSize - 1 &&
-        nLastLongitudeCount == psDInfo->nXSize - 1 &&
-        nSize - psDInfo->nDataOffset == psDInfo->nXSize * nColByteSize)
+            nFirstLongitudeCount == 0 &&
+            nLastDataBlockCount == psDInfo->nXSize - 1 &&
+            nLastLongitudeCount == psDInfo->nXSize - 1 &&
+            nSize - psDInfo->nDataOffset == psDInfo->nXSize * nColByteSize)
     {
         /* This is the most standard form of DTED. Return happily now. */
         return;
@@ -403,10 +403,10 @@ static void DTEDDetectVariantWithMissingColumns(DTEDInfo* psDInfo)
         (int*)CPLMalloc(psDInfo->nXSize * sizeof(int));
 
     if (nFirstDataBlockCount == 0 &&
-        nLastLongitudeCount - nFirstLongitudeCount ==
-                nLastDataBlockCount - nFirstDataBlockCount &&
-        nSize - psDInfo->nDataOffset ==
-                (nLastLongitudeCount - nFirstLongitudeCount + 1) * nColByteSize)
+            nLastLongitudeCount - nFirstLongitudeCount ==
+            nLastDataBlockCount - nFirstDataBlockCount &&
+            nSize - psDInfo->nDataOffset ==
+            (nLastLongitudeCount - nFirstLongitudeCount + 1) * nColByteSize)
     {
         int i;
 
@@ -446,8 +446,8 @@ static void DTEDDetectVariantWithMissingColumns(DTEDInfo* psDInfo)
             int nDataBlockCount, nLongitudeCount;
 
             if (VSIFSeekL(psDInfo->fp, psDInfo->nDataOffset + i * nColByteSize, SEEK_SET) < 0 ||
-                VSIFReadL(pabyRecordHeader, 1, 8, psDInfo->fp) != 8 ||
-                pabyRecordHeader[0] != 0252)
+                    VSIFReadL(pabyRecordHeader, 1, 8, psDInfo->fp) != 8 ||
+                    pabyRecordHeader[0] != 0252)
             {
                 CPLDebug("DTED", "Cannot find signature of physical column %d", i);
                 return;
@@ -513,7 +513,7 @@ int DTEDReadPoint( DTEDInfo * psDInfo, int nXOff, int nYOff, GInt16* panVal)
     nOffset += 8 + 2 * (psDInfo->nYSize-1-nYOff);
 
     if( VSIFSeekL( psDInfo->fp, nOffset, SEEK_SET ) != 0
-        || VSIFReadL( pabyData, 2, 1, psDInfo->fp ) != 1)
+            || VSIFReadL( pabyData, 2, 1, psDInfo->fp ) != 1)
     {
 #ifndef AVOID_CPL
         CPLError( CE_Failure, CPLE_FileIO,
@@ -549,9 +549,9 @@ int DTEDReadPoint( DTEDInfo * psDInfo, int nXOff, int nYOff, GInt16* panVal)
 #else
                 fprintf( stderr,
 #endif
-                            "The DTED driver found values less than -16000, and has adjusted\n"
-                            "them assuming they are improperly two-complemented.  No more warnings\n"
-                            "will be issued in this session about this operation." );
+                          "The DTED driver found values less than -16000, and has adjusted\n"
+                          "them assuming they are improperly two-complemented.  No more warnings\n"
+                          "will be issued in this session about this operation." );
             }
         }
     }
@@ -580,9 +580,9 @@ int DTEDReadProfileEx( DTEDInfo * psDInfo, int nColumnOffset,
     GByte       *pabyRecord;
     int         nLongitudeCount;
 
-/* -------------------------------------------------------------------- */
-/*      Read data record from disk.                                     */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Read data record from disk.                                     */
+    /* -------------------------------------------------------------------- */
     if (psDInfo->panMapLogicalColsToOffsets != NULL)
     {
         nOffset = psDInfo->panMapLogicalColsToOffsets[nColumnOffset];
@@ -601,7 +601,7 @@ int DTEDReadProfileEx( DTEDInfo * psDInfo, int nColumnOffset,
     pabyRecord = (GByte *) CPLMalloc(12 + psDInfo->nYSize*2);
 
     if( VSIFSeekL( psDInfo->fp, nOffset, SEEK_SET ) != 0
-        || VSIFReadL( pabyRecord, (12+psDInfo->nYSize*2), 1, psDInfo->fp ) != 1)
+            || VSIFReadL( pabyRecord, (12+psDInfo->nYSize*2), 1, psDInfo->fp ) != 1)
     {
 #ifndef AVOID_CPL
         CPLError( CE_Failure, CPLE_FileIO,
@@ -623,14 +623,14 @@ int DTEDReadProfileEx( DTEDInfo * psDInfo, int nColumnOffset,
 #else
         fprintf( stderr,
 #endif
-                 "Longitude count (%d) of column %d doesn't match expected value.\n",
-                 nLongitudeCount, nColumnOffset );
+                  "Longitude count (%d) of column %d doesn't match expected value.\n",
+                  nLongitudeCount, nColumnOffset );
     }
 
-/* -------------------------------------------------------------------- */
-/*      Translate data values from "signed magnitude" to standard       */
-/*      binary.                                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Translate data values from "signed magnitude" to standard       */
+    /*      binary.                                                         */
+    /* -------------------------------------------------------------------- */
     for( i = 0; i < psDInfo->nYSize; i++ )
     {
         panData[i] = ((pabyRecord[8+i*2] & 0x7f) << 8) | pabyRecord[8+i*2+1];
@@ -677,9 +677,9 @@ int DTEDReadProfileEx( DTEDInfo * psDInfo, int nColumnOffset,
             nCheckSum += pabyRecord[i];
 
         fileCheckSum = (pabyRecord[8+psDInfo->nYSize*2+0] << 24) |
-                        (pabyRecord[8+psDInfo->nYSize*2+1] << 16) |
-                        (pabyRecord[8+psDInfo->nYSize*2+2] << 8) |
-                        pabyRecord[8+psDInfo->nYSize*2+3];
+                       (pabyRecord[8+psDInfo->nYSize*2+1] << 16) |
+                       (pabyRecord[8+psDInfo->nYSize*2+2] << 8) |
+                       pabyRecord[8+psDInfo->nYSize*2+3];
 
         if (fileCheckSum > 0xff * (8+(unsigned int)psDInfo->nYSize*2))
         {
@@ -692,11 +692,11 @@ int DTEDReadProfileEx( DTEDInfo * psDInfo, int nColumnOffset,
 #else
                 fprintf( stderr,
 #endif
-                            "The DTED driver has read from the file a checksum "
-                            "with an impossible value (0x%X) at column %d.\n"
-                            "Check with your file producer.\n"
-                            "No more warnings will be issued in this session about this operation.",
-                            fileCheckSum, nColumnOffset);
+                          "The DTED driver has read from the file a checksum "
+                          "with an impossible value (0x%X) at column %d.\n"
+                          "Check with your file producer.\n"
+                          "No more warnings will be issued in this session about this operation.",
+                          fileCheckSum, nColumnOffset);
             }
         }
         else if (fileCheckSum != nCheckSum)
@@ -724,7 +724,7 @@ int DTEDReadProfileEx( DTEDInfo * psDInfo, int nColumnOffset,
 /************************************************************************/
 
 int DTEDWriteProfile( DTEDInfo * psDInfo, int nColumnOffset,
-                     GInt16 * panData )
+                      GInt16 * panData )
 
 {
     int         nOffset;
@@ -738,13 +738,13 @@ int DTEDWriteProfile( DTEDInfo * psDInfo, int nColumnOffset,
 #else
         fprintf( stderr,
 #endif
-                 "Write to partial file not supported.\n");
+                  "Write to partial file not supported.\n");
         return FALSE;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Format the data record.                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Format the data record.                                         */
+    /* -------------------------------------------------------------------- */
     pabyRecord = (GByte *) CPLMalloc(12 + psDInfo->nYSize*2);
 
     for( i = 0; i < psDInfo->nYSize; i++ )
@@ -766,9 +766,9 @@ int DTEDWriteProfile( DTEDInfo * psDInfo, int nColumnOffset,
     pabyRecord[6] = 0;
     pabyRecord[7] = 0;
 
-/* -------------------------------------------------------------------- */
-/*      Compute the checksum.                                           */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Compute the checksum.                                           */
+    /* -------------------------------------------------------------------- */
     for( i = 0; i < psDInfo->nYSize*2 + 8; i++ )
         nCheckSum += pabyRecord[i];
 
@@ -777,13 +777,13 @@ int DTEDWriteProfile( DTEDInfo * psDInfo, int nColumnOffset,
     pabyRecord[8+psDInfo->nYSize*2+2] = (GByte) ((nCheckSum >> 8) & 0xff);
     pabyRecord[8+psDInfo->nYSize*2+3] = (GByte) (nCheckSum & 0xff);
 
-/* -------------------------------------------------------------------- */
-/*      Write the record.                                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Write the record.                                               */
+    /* -------------------------------------------------------------------- */
     nOffset = psDInfo->nDataOffset + nColumnOffset * (12+psDInfo->nYSize*2);
 
     if( VSIFSeekL( psDInfo->fp, nOffset, SEEK_SET ) != 0
-        || VSIFWriteL( pabyRecord,(12+psDInfo->nYSize*2),1,psDInfo->fp ) != 1)
+            || VSIFWriteL( pabyRecord,(12+psDInfo->nYSize*2),1,psDInfo->fp ) != 1)
     {
 #ifndef AVOID_CPL
         CPLError( CE_Failure, CPLE_FileIO,
@@ -814,7 +814,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
 
     switch( eCode )
     {
-      case DTEDMD_ORIGINLONG:
+    case DTEDMD_ORIGINLONG:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachUHLRecord + 8;
         else
@@ -822,7 +822,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 8;
         break;
 
-      case DTEDMD_ORIGINLAT:
+    case DTEDMD_ORIGINLAT:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachUHLRecord + 24;
         else
@@ -830,7 +830,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 8;
         break;
 
-      case DTEDMD_VERTACCURACY_UHL:
+    case DTEDMD_VERTACCURACY_UHL:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachUHLRecord + 56;
         else
@@ -838,7 +838,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 4;
         break;
 
-      case DTEDMD_SECURITYCODE_UHL:
+    case DTEDMD_SECURITYCODE_UHL:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachUHLRecord + 60;
         else
@@ -846,7 +846,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 3;
         break;
 
-      case DTEDMD_UNIQUEREF_UHL:
+    case DTEDMD_UNIQUEREF_UHL:
         if (bIsWeirdDTED)
             *ppszLocation = NULL;
         else
@@ -854,7 +854,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 12;
         break;
 
-      case DTEDMD_DATA_EDITION:
+    case DTEDMD_DATA_EDITION:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 174;
         else
@@ -862,7 +862,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 2;
         break;
 
-      case DTEDMD_MATCHMERGE_VERSION:
+    case DTEDMD_MATCHMERGE_VERSION:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 176;
         else
@@ -870,7 +870,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 1;
         break;
 
-      case DTEDMD_MAINT_DATE:
+    case DTEDMD_MAINT_DATE:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 177;
         else
@@ -878,7 +878,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 4;
         break;
 
-      case DTEDMD_MATCHMERGE_DATE:
+    case DTEDMD_MATCHMERGE_DATE:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 181;
         else
@@ -886,7 +886,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 4;
         break;
 
-      case DTEDMD_MAINT_DESCRIPTION:
+    case DTEDMD_MAINT_DESCRIPTION:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 185;
         else
@@ -894,7 +894,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 4;
         break;
 
-      case DTEDMD_PRODUCER:
+    case DTEDMD_PRODUCER:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 189;
         else
@@ -902,7 +902,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 8;
         break;
 
-      case DTEDMD_VERTDATUM:
+    case DTEDMD_VERTDATUM:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 267;
         else
@@ -910,7 +910,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 3;
         break;
 
-      case DTEDMD_HORIZDATUM:
+    case DTEDMD_HORIZDATUM:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 270;
         else
@@ -918,7 +918,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 5;
         break;
 
-      case DTEDMD_DIGITIZING_SYS:
+    case DTEDMD_DIGITIZING_SYS:
         if (bIsWeirdDTED)
             *ppszLocation = NULL;
         else
@@ -926,7 +926,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 10;
         break;
 
-      case DTEDMD_COMPILATION_DATE:
+    case DTEDMD_COMPILATION_DATE:
         if (bIsWeirdDTED)
             *ppszLocation = NULL;
         else
@@ -934,32 +934,32 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 4;
         break;
 
-      case DTEDMD_HORIZACCURACY:
+    case DTEDMD_HORIZACCURACY:
         *ppszLocation = psDInfo->pachACCRecord + 3;
         *pnLength = 4;
         break;
 
-      case DTEDMD_REL_HORIZACCURACY:
+    case DTEDMD_REL_HORIZACCURACY:
         *ppszLocation = psDInfo->pachACCRecord + 11;
         *pnLength = 4;
         break;
 
-      case DTEDMD_REL_VERTACCURACY:
+    case DTEDMD_REL_VERTACCURACY:
         *ppszLocation = psDInfo->pachACCRecord + 15;
         *pnLength = 4;
         break;
 
-      case DTEDMD_VERTACCURACY_ACC:
+    case DTEDMD_VERTACCURACY_ACC:
         *ppszLocation = psDInfo->pachACCRecord + 7;
         *pnLength = 4;
         break;
 
-      case DTEDMD_SECURITYCODE_DSI:
+    case DTEDMD_SECURITYCODE_DSI:
         *ppszLocation = psDInfo->pachDSIRecord + 3;
         *pnLength = 1;
         break;
 
-      case DTEDMD_UNIQUEREF_DSI:
+    case DTEDMD_UNIQUEREF_DSI:
         if (bIsWeirdDTED)
             *ppszLocation = NULL;
         else
@@ -967,7 +967,7 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 15;
         break;
 
-      case DTEDMD_NIMA_DESIGNATOR:
+    case DTEDMD_NIMA_DESIGNATOR:
         if (bIsWeirdDTED)
             *ppszLocation = psDInfo->pachDSIRecord + 118;
         else
@@ -975,15 +975,15 @@ static void DTEDGetMetadataLocation( DTEDInfo *psDInfo,
         *pnLength = 5;
         break;
 
-     case DTEDMD_PARTIALCELL_DSI:
+    case DTEDMD_PARTIALCELL_DSI:
         if (bIsWeirdDTED)
-           *ppszLocation = NULL;
+            *ppszLocation = NULL;
         else
-           *ppszLocation = psDInfo->pachDSIRecord + 289;
+            *ppszLocation = psDInfo->pachDSIRecord + 289;
         *pnLength = 2;
         break;
 
-      default:
+    default:
         *ppszLocation = NULL;
         *pnLength = 0;
     }
@@ -1026,16 +1026,16 @@ int DTEDSetMetadata( DTEDInfo *psDInfo, DTEDMetaDataCode eCode,
     if( !psDInfo->bUpdate )
         return FALSE;
 
-/* -------------------------------------------------------------------- */
-/*      Get the location in the headers to update.                      */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Get the location in the headers to update.                      */
+    /* -------------------------------------------------------------------- */
     DTEDGetMetadataLocation( psDInfo, eCode, &pszFieldSrc, &nFieldLen );
     if( pszFieldSrc == NULL )
         return FALSE;
 
-/* -------------------------------------------------------------------- */
-/*      Update it, padding with spaces.                                 */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Update it, padding with spaces.                                 */
+    /* -------------------------------------------------------------------- */
     nLenToCopy = MIN((size_t)nFieldLen,strlen(pszNewValue));
     memcpy( pszFieldSrc, pszNewValue, nLenToCopy);
     if( nLenToCopy < (size_t)nFieldLen )
@@ -1057,9 +1057,9 @@ void DTEDClose( DTEDInfo * psDInfo )
 {
     if( psDInfo->bRewriteHeaders )
     {
-/* -------------------------------------------------------------------- */
-/*      Write all headers back to disk.                                 */
-/* -------------------------------------------------------------------- */
+        /* -------------------------------------------------------------------- */
+        /*      Write all headers back to disk.                                 */
+        /* -------------------------------------------------------------------- */
         CPL_IGNORE_RET_VAL_INT(VSIFSeekL( psDInfo->fp, psDInfo->nUHLOffset, SEEK_SET ));
         CPL_IGNORE_RET_VAL_SIZET(VSIFWriteL( psDInfo->pachUHLRecord, 1, DTED_UHL_SIZE, psDInfo->fp ));
 

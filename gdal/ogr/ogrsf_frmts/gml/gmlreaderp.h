@@ -65,18 +65,22 @@ class GFSTemplateItem;
 
 class GFSTemplateList
 {
-  private:
+private:
     bool            m_bSequentialLayers;
     GFSTemplateItem *pFirst;
     GFSTemplateItem *pLast;
     GFSTemplateItem *Insert( const char *pszName );
 
-  public:
-                    GFSTemplateList();
-                    ~GFSTemplateList();
+public:
+    GFSTemplateList();
+    ~GFSTemplateList();
     void            Update( const char *pszName, int bHasGeom );
-    GFSTemplateItem *GetFirst() { return pFirst; }
-    bool            HaveSequentialLayers() { return m_bSequentialLayers; }
+    GFSTemplateItem *GetFirst() {
+        return pFirst;
+    }
+    bool            HaveSequentialLayers() {
+        return m_bSequentialLayers;
+    }
     int             GetClassCount();
 };
 
@@ -223,7 +227,7 @@ class GMLXercesHandler final: public DefaultHandler, public GMLHandler
     CPLString  m_osAttrName;
     CPLString  m_osAttrValue;
 
-  public:
+public:
     explicit GMLXercesHandler( GMLReader *poReader );
 
     void startElement(
@@ -268,9 +272,13 @@ class GMLExpatHandler final: public GMLHandler
 public:
     GMLExpatHandler( GMLReader *poReader, XML_Parser oParser );
 
-    bool        HasStoppedParsing() { return m_bStopParsing; }
+    bool        HasStoppedParsing() {
+        return m_bStopParsing;
+    }
 
-    void        ResetDataHandlerCounter() { m_nDataHandlerCounter = 0; }
+    void        ResetDataHandlerCounter() {
+        m_nDataHandlerCounter = 0;
+    }
 
     virtual const char* GetFID(void* attr) override;
     virtual CPLXMLNode* AddAttributes(CPLXMLNode* psNode, void* attr) override;
@@ -325,7 +333,7 @@ public:
 
 class GMLReader final: public IGMLReader
 {
-  private:
+private:
     bool          m_bClassListLocked;
 
     int         m_nClassCount;
@@ -379,8 +387,8 @@ class GMLReader final: public IGMLReader
     bool          m_bGetSecondaryGeometryOption;
 
     int           ParseFeatureType(CPLXMLNode *psSchemaNode,
-                                const char* pszName,
-                                const char *pszType);
+                                   const char* pszName,
+                                   const char *pszType);
 
     char         *m_pszGlobalSRSName;
     bool          m_bCanUseGlobalSRSName;
@@ -407,21 +415,27 @@ class GMLReader final: public IGMLReader
                                     const int iSqliteCacheMB );
 
 public:
-                GMLReader(bool bExpatReader, bool bInvertAxisOrderIfLatLong,
-                          bool bConsiderEPSGAsURN,
-                          GMLSwapCoordinatesEnum eSwapCoordinates,
-                          bool bGetSecondaryGeometryOption);
+    GMLReader(bool bExpatReader, bool bInvertAxisOrderIfLatLong,
+              bool bConsiderEPSGAsURN,
+              GMLSwapCoordinatesEnum eSwapCoordinates,
+              bool bGetSecondaryGeometryOption);
     virtual     ~GMLReader();
 
-    bool             IsClassListLocked() const override { return m_bClassListLocked; }
+    bool             IsClassListLocked() const override {
+        return m_bClassListLocked;
+    }
     void             SetClassListLocked( bool bFlag ) override
-        { m_bClassListLocked = bFlag; }
+    {
+        m_bClassListLocked = bFlag;
+    }
 
     void             SetSourceFile( const char *pszFilename ) override;
     void             SetFP( VSILFILE* fp ) override;
     const char*      GetSourceFileName() override;
 
-    int              GetClassCount() const override { return m_nClassCount; }
+    int              GetClassCount() const override {
+        return m_nClassCount;
+    }
     GMLFeatureClass *GetClass( int i ) const override;
     GMLFeatureClass *GetClass( const char *pszName ) const override;
 
@@ -451,11 +465,15 @@ public:
 
 // ---
 
-    GMLReadState     *GetState() const { return m_poState; }
+    GMLReadState     *GetState() const {
+        return m_poState;
+    }
     void             PopState();
     void             PushState( GMLReadState * );
 
-    bool             ShouldLookForClassAtAnyLevel() { return m_bLookForClassAtAnyLevel; }
+    bool             ShouldLookForClassAtAnyLevel() {
+        return m_bLookForClassAtAnyLevel;
+    }
 
     int         GetFeatureElementIndex( const char *pszElement, int nLen, GMLAppSchemaType eAppSchemaType );
     int         GetAttributeElementIndex( const char *pszElement, int nLen, const char* pszAttrKey = nullptr );
@@ -470,31 +488,59 @@ public:
                                             int iPropertyIn,
                                             GMLPropertyType eType = GMLPT_Untyped );
 
-    void        SetWidthFlag(bool bFlag) { m_bSetWidthFlag = bFlag; }
+    void        SetWidthFlag(bool bFlag) {
+        m_bSetWidthFlag = bFlag;
+    }
 
-    bool        HasStoppedParsing() override { return m_bStopParsing; }
+    bool        HasStoppedParsing() override {
+        return m_bStopParsing;
+    }
 
-    bool       FetchAllGeometries() { return m_bFetchAllGeometries; }
+    bool       FetchAllGeometries() {
+        return m_bFetchAllGeometries;
+    }
 
     void        SetGlobalSRSName( const char* pszGlobalSRSName ) override ;
-    const char* GetGlobalSRSName() override { return m_pszGlobalSRSName; }
+    const char* GetGlobalSRSName() override {
+        return m_pszGlobalSRSName;
+    }
 
-    bool        CanUseGlobalSRSName() override { return m_bCanUseGlobalSRSName; }
+    bool        CanUseGlobalSRSName() override {
+        return m_bCanUseGlobalSRSName;
+    }
 
     bool        SetFilteredClassName(const char* pszClassName) override;
-    const char* GetFilteredClassName() override { return m_pszFilteredClassName; }
-    int         GetFilteredClassIndex() { return m_nFilteredClassIndex; }
+    const char* GetFilteredClassName() override {
+        return m_pszFilteredClassName;
+    }
+    int         GetFilteredClassIndex() {
+        return m_nFilteredClassIndex;
+    }
 
-    bool        IsSequentialLayers() const override { return m_nHasSequentialLayers == TRUE; }
+    bool        IsSequentialLayers() const override {
+        return m_nHasSequentialLayers == TRUE;
+    }
 
-    void        SetReportAllAttributes(bool bFlag) { m_bReportAllAttributes = bFlag; }
-    bool        ReportAllAttributes() const { return m_bReportAllAttributes; }
+    void        SetReportAllAttributes(bool bFlag) {
+        m_bReportAllAttributes = bFlag;
+    }
+    bool        ReportAllAttributes() const {
+        return m_bReportAllAttributes;
+    }
 
-    void             SetIsWFSJointLayer( bool bFlag ) { m_bIsWFSJointLayer = bFlag; }
-    bool             IsWFSJointLayer() const { return m_bIsWFSJointLayer; }
+    void             SetIsWFSJointLayer( bool bFlag ) {
+        m_bIsWFSJointLayer = bFlag;
+    }
+    bool             IsWFSJointLayer() const {
+        return m_bIsWFSJointLayer;
+    }
 
-    void             SetEmptyAsNull( bool bFlag ) { m_bEmptyAsNull = bFlag; }
-    bool             IsEmptyAsNull() const { return m_bEmptyAsNull; }
+    void             SetEmptyAsNull( bool bFlag ) {
+        m_bEmptyAsNull = bFlag;
+    }
+    bool             IsEmptyAsNull() const {
+        return m_bEmptyAsNull;
+    }
 
     static CPLMutex* hMutex;
 };

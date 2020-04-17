@@ -123,12 +123,12 @@ int OGRNASDataSource::Open( const char * pszNewName )
         {
             VSIStatBufL sNASStatBuf;
             if( VSIStatL( pszNewName, &sNASStatBuf ) == 0 &&
-                sNASStatBuf.st_mtime > sGFSStatBuf.st_mtime )
+                    sNASStatBuf.st_mtime > sGFSStatBuf.st_mtime )
             {
-                 CPLDebug( "NAS",
-                           "Found %s but ignoring because it appears "
-                           "be older than the associated NAS file.",
-                           pszGFSFilename );
+                CPLDebug( "NAS",
+                          "Found %s but ignoring because it appears "
+                          "be older than the associated NAS file.",
+                          pszGFSFilename );
             }
             else
             {
@@ -142,36 +142,36 @@ int OGRNASDataSource::Open( const char * pszNewName )
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Force a first pass to establish the schema.  The loaded schema  */
-/*      if any will be cleaned from any unavailable classes.            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Force a first pass to establish the schema.  The loaded schema  */
+    /*      if any will be cleaned from any unavailable classes.            */
+    /* -------------------------------------------------------------------- */
     CPLErrorReset();
     if( !bHaveSchema
-        && !poReader->PrescanForSchema( TRUE )
-        && CPLGetLastErrorType() == CE_Failure )
+            && !poReader->PrescanForSchema( TRUE )
+            && CPLGetLastErrorType() == CE_Failure )
     {
         // Assume an error has been reported.
         return FALSE;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Save the schema file if possible.  Do not make a fuss if we     */
-/*      cannot.  It could be read-only directory or something.          */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Save the schema file if possible.  Do not make a fuss if we     */
+    /*      cannot.  It could be read-only directory or something.          */
+    /* -------------------------------------------------------------------- */
     if( !bHaveSchema && poReader->GetClassCount() > 0 &&
-        !STARTS_WITH_CI(pszNewName, "/vsitar/") &&
-        !STARTS_WITH_CI(pszNewName, "/vsizip/") &&
-        !STARTS_WITH_CI(pszNewName, "/vsigzip/vsi") &&
-        !STARTS_WITH_CI(pszNewName, "/vsigzip//vsi") &&
-        !STARTS_WITH_CI(pszNewName, "/vsicurl/") &&
-        !STARTS_WITH_CI(pszNewName, "/vsicurl_streaming/") )
+            !STARTS_WITH_CI(pszNewName, "/vsitar/") &&
+            !STARTS_WITH_CI(pszNewName, "/vsizip/") &&
+            !STARTS_WITH_CI(pszNewName, "/vsigzip/vsi") &&
+            !STARTS_WITH_CI(pszNewName, "/vsigzip//vsi") &&
+            !STARTS_WITH_CI(pszNewName, "/vsicurl/") &&
+            !STARTS_WITH_CI(pszNewName, "/vsicurl_streaming/") )
     {
         VSILFILE *fp = nullptr;
 
         pszGFSFilename = CPLResetExtension( pszNewName, "gfs" );
         if( VSIStatL( pszGFSFilename, &sGFSStatBuf ) != 0
-            && (fp = VSIFOpenL( pszGFSFilename, "wt" )) != nullptr )
+                && (fp = VSIFOpenL( pszGFSFilename, "wt" )) != nullptr )
         {
             VSIFCloseL( fp );
             poReader->SaveClasses( pszGFSFilename );
@@ -184,11 +184,11 @@ int OGRNASDataSource::Open( const char * pszNewName )
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Translate the GMLFeatureClasses into layers.                    */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Translate the GMLFeatureClasses into layers.                    */
+    /* -------------------------------------------------------------------- */
     papoLayers = (OGRLayer **)
-        CPLCalloc( sizeof(OGRNASLayer *), poReader->GetClassCount()+1 );
+                 CPLCalloc( sizeof(OGRNASLayer *), poReader->GetClassCount()+1 );
     nLayers = 0;
 
     while( nLayers < poReader->GetClassCount() )
@@ -204,12 +204,12 @@ int OGRNASDataSource::Open( const char * pszNewName )
         // keep delete the last layer
         if( nLayers>0 && EQUAL( papoLayers[nLayers-1]->GetName(), "Delete" ) )
         {
-          papoLayers[nLayers]   = papoLayers[nLayers-1];
-          papoLayers[nLayers-1] = poRelationLayer;
+            papoLayers[nLayers]   = papoLayers[nLayers-1];
+            papoLayers[nLayers-1] = poRelationLayer;
         }
         else
         {
-          papoLayers[nLayers] = poRelationLayer;
+            papoLayers[nLayers] = poRelationLayer;
         }
 
         nLayers++;
@@ -225,9 +225,9 @@ int OGRNASDataSource::Open( const char * pszNewName )
 OGRNASLayer *OGRNASDataSource::TranslateNASSchema( GMLFeatureClass *poClass )
 
 {
-/* -------------------------------------------------------------------- */
-/*      Translate SRS.                                                  */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Translate SRS.                                                  */
+    /* -------------------------------------------------------------------- */
     const char* pszSRSName = poClass->GetSRSName();
     OGRSpatialReference* poSRS = nullptr;
     if (pszSRSName)
@@ -261,22 +261,22 @@ OGRNASLayer *OGRNASDataSource::TranslateNASSchema( GMLFeatureClass *poClass )
             if (poSRS->SetFromUserInput(pszSRSName) != OGRERR_NONE)
             {
                 CPLDebug( "NAS", "Failed to translate srsName='%s'",
-                        pszSRSName );
+                          pszSRSName );
                 delete poSRS;
                 poSRS = nullptr;
             }
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Create an empty layer.                                          */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create an empty layer.                                          */
+    /* -------------------------------------------------------------------- */
     OGRNASLayer *poLayer =
         new OGRNASLayer( poClass->GetName(), this );
 
-/* -------------------------------------------------------------------- */
-/*      Added attributes (properties).                                  */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Added attributes (properties).                                  */
+    /* -------------------------------------------------------------------- */
     for( int iField = 0; iField < poClass->GetPropertyCount(); iField++ )
     {
         GMLPropertyDefn *poProperty = poClass->GetProperty( iField );
@@ -301,7 +301,7 @@ OGRNASLayer *OGRNASDataSource::TranslateNASSchema( GMLFeatureClass *poClass )
 
         OGRFieldDefn oField( poProperty->GetName(), eFType );
         if ( STARTS_WITH_CI(oField.GetNameRef(), "ogr:") )
-          oField.SetName(poProperty->GetName()+4);
+            oField.SetName(poProperty->GetName()+4);
         if( poProperty->GetWidth() > 0 )
             oField.SetWidth( poProperty->GetWidth() );
 
@@ -309,17 +309,17 @@ OGRNASLayer *OGRNASDataSource::TranslateNASSchema( GMLFeatureClass *poClass )
     }
 
     for (int iField = 0;
-      iField < poClass->GetGeometryPropertyCount();
-      iField++)
+            iField < poClass->GetGeometryPropertyCount();
+            iField++)
     {
         GMLGeometryPropertyDefn *poProperty =
-                poClass->GetGeometryProperty(iField);
+            poClass->GetGeometryProperty(iField);
         OGRGeomFieldDefn oField(poProperty->GetName(),
-                        (OGRwkbGeometryType)poProperty->GetType());
+                                (OGRwkbGeometryType)poProperty->GetType());
         if (poClass->GetGeometryPropertyCount() == 1 &&
-            poClass->GetFeatureCount() == 0)
+                poClass->GetFeatureCount() == 0)
         {
-                    oField.SetType(wkbUnknown);
+            oField.SetType(wkbUnknown);
         }
 
         oField.SetSpatialRef(poSRS);
@@ -370,19 +370,19 @@ void OGRNASDataSource::PopulateRelations()
         char **papszOBProperties = poFeature->GetOBProperties();
 
         for( int i = 0;
-             papszOBProperties != nullptr && papszOBProperties[i] != nullptr;
-             i++ )
+                papszOBProperties != nullptr && papszOBProperties[i] != nullptr;
+                i++ )
         {
             const int nGMLIdIndex =
                 poFeature->GetClass()->GetPropertyIndex( "gml_id" );
             const GMLProperty *psGMLId =
-              (nGMLIdIndex >= 0) ? poFeature->GetProperty(nGMLIdIndex ) : nullptr;
+                (nGMLIdIndex >= 0) ? poFeature->GetProperty(nGMLIdIndex ) : nullptr;
             char *l_pszName = nullptr;
             const char *pszValue = CPLParseNameValue( papszOBProperties[i],
-                                                      &l_pszName );
+                                   &l_pszName );
 
             if( STARTS_WITH_CI(pszValue, "urn:adv:oid:")
-                && psGMLId != nullptr && psGMLId->nSubProperties == 1 )
+                    && psGMLId != nullptr && psGMLId->nSubProperties == 1 )
             {
                 poRelationLayer->AddRelation( psGMLId->papszSubProperties[0],
                                               l_pszName,

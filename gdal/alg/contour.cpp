@@ -44,8 +44,8 @@
 #include "ogr_geometry.h"
 
 static CPLErr OGRPolygonContourWriter( double dfLevelMin, double dfLevelMax,
-                                const OGRMultiPolygon& multipoly,
-                                void *pInfo )
+                                       const OGRMultiPolygon& multipoly,
+                                       void *pInfo )
 
 {
     OGRContourWriterInfo *poInfo = static_cast<OGRContourWriterInfo *>(pInfo);
@@ -66,7 +66,7 @@ static CPLErr OGRPolygonContourWriter( double dfLevelMin, double dfLevelMax,
 
     const bool bHasZ = wkbHasZ(OGR_FD_GetGeomType(hFDefn));
     OGRGeometryH hGeom = OGR_G_CreateGeometry(
-        bHasZ ? wkbMultiPolygon25D : wkbMultiPolygon );
+                             bHasZ ? wkbMultiPolygon25D : wkbMultiPolygon );
 
     for ( int iPart = 0; iPart < multipoly.getNumGeometries(); iPart++ )
     {
@@ -76,18 +76,18 @@ static CPLErr OGRPolygonContourWriter( double dfLevelMin, double dfLevelMax,
         for ( int iRing = 0; iRing < poPolygon->getNumInteriorRings() + 1; iRing++ )
         {
             const OGRLinearRing* poRing = iRing == 0 ?
-                poPolygon->getExteriorRing()
-                : poPolygon->getInteriorRing(iRing - 1);
+                                          poPolygon->getExteriorRing()
+                                          : poPolygon->getInteriorRing(iRing - 1);
 
             OGRLinearRing* poNewRing = new OGRLinearRing();
             for ( int iPoint = 0; iPoint < poRing->getNumPoints(); iPoint++ )
             {
                 const double dfX = poInfo->adfGeoTransform[0]
-                    + poInfo->adfGeoTransform[1] * poRing->getX(iPoint)
-                    + poInfo->adfGeoTransform[2] * poRing->getY(iPoint);
+                                   + poInfo->adfGeoTransform[1] * poRing->getX(iPoint)
+                                   + poInfo->adfGeoTransform[2] * poRing->getY(iPoint);
                 const double dfY = poInfo->adfGeoTransform[3]
-                    + poInfo->adfGeoTransform[4] * poRing->getX(iPoint)
-                    + poInfo->adfGeoTransform[5] * poRing->getY(iPoint);
+                                   + poInfo->adfGeoTransform[4] * poRing->getX(iPoint)
+                                   + poInfo->adfGeoTransform[5] * poRing->getY(iPoint);
                 if( bHasZ )
                     OGR_G_SetPoint( OGRGeometry::ToHandle( poNewRing ), iPoint, dfX, dfY, dfLevelMax );
                 else
@@ -164,16 +164,16 @@ struct PolygonContourWriter
     OGRPolygon* currentPart_ = nullptr;
     OGRContourWriterInfo* poInfo_ = nullptr;
     double currentLevel_ = 0;
-    double previousLevel_; 
+    double previousLevel_;
 };
 
 struct GDALRingAppender
 {
     CPL_DISALLOW_COPY_ASSIGN(GDALRingAppender)
-    
+
     GDALRingAppender(GDALContourWriter write, void *data)
-    : write_( write )
-    , data_( data )
+        : write_( write )
+        , data_( data )
     {}
 
     void addLine( double level, marching_squares::LineString& ls, bool /*closed*/ )
@@ -186,7 +186,7 @@ struct GDALRingAppender
             ys[i] = pt.y;
             i++;
         }
-        
+
         if ( write_(level, int(sz), &xs[0], &ys[0], data_) != CE_None )
             CPLError( CE_Failure, CPLE_AppDefined, "cannot write linestring" );
     }
@@ -226,16 +226,16 @@ CPLErr OGRContourWriter( double dfLevel,
 
     const bool bHasZ = wkbHasZ(OGR_FD_GetGeomType(hFDefn));
     OGRGeometryH hGeom = OGR_G_CreateGeometry(
-        bHasZ ? wkbLineString25D : wkbLineString );
+                             bHasZ ? wkbLineString25D : wkbLineString );
 
     for( int iPoint = nPoints - 1; iPoint >= 0; iPoint-- )
     {
         const double dfX = poInfo->adfGeoTransform[0]
-                        + poInfo->adfGeoTransform[1] * padfX[iPoint]
-                        + poInfo->adfGeoTransform[2] * padfY[iPoint];
+                           + poInfo->adfGeoTransform[1] * padfX[iPoint]
+                           + poInfo->adfGeoTransform[2] * padfY[iPoint];
         const double dfY = poInfo->adfGeoTransform[3]
-                        + poInfo->adfGeoTransform[4] * padfX[iPoint]
-                        + poInfo->adfGeoTransform[5] * padfY[iPoint];
+                           + poInfo->adfGeoTransform[4] * padfX[iPoint]
+                           + poInfo->adfGeoTransform[5] * padfY[iPoint];
         if( bHasZ )
             OGR_G_SetPoint( hGeom, iPoint, dfX, dfY, dfLevel );
         else
@@ -308,11 +308,11 @@ CPLErr OGRContourWriter( double dfLevel,
  */
 
 CPLErr GDALContourGenerate( GDALRasterBandH hBand,
-                                    double dfContourInterval, double dfContourBase,
-                                    int nFixedLevelCount, double *padfFixedLevels,
-                                    int bUseNoData, double dfNoDataValue,
-                                    void *hLayer, int iIDField, int iElevField,
-                                    GDALProgressFunc pfnProgress, void *pProgressArg )
+                            double dfContourInterval, double dfContourBase,
+                            int nFixedLevelCount, double *padfFixedLevels,
+                            int bUseNoData, double dfNoDataValue,
+                            void *hLayer, int iIDField, int iElevField,
+                            GDALProgressFunc pfnProgress, void *pProgressArg )
 {
     char** options = nullptr;
     if ( nFixedLevelCount > 0 ) {
@@ -463,7 +463,7 @@ an averaged value from the two nearby points (in this case (12+3+5)/3).
  * @param pProgressArg The callback data for the pfnProgress function.
  *
  * @param options List of options
- * 
+ *
  * Options:
  *
  *   LEVEL_INTERVAL=f
@@ -483,10 +483,10 @@ an averaged value from the two nearby points (in this case (12+3+5)/3).
  * where k is a positive integer.
  *
  *   FIXED_LEVELS=f[,f]*
- * 
+ *
  * The list of fixed contour levels at which contours should be generated.
  * This option has precedence on LEVEL_INTERVAL
- * 
+ *
  *   NODATA=f
  *
  * The value to use as a "nodata" value. That is, a pixel value which
@@ -521,8 +521,8 @@ an averaged value from the two nearby points (in this case (12+3+5)/3).
  * @return CE_None on success or CE_Failure if an error occurs.
  */
 CPLErr GDALContourGenerateEx( GDALRasterBandH hBand, void *hLayer,
-                                      CSLConstList options,
-                                      GDALProgressFunc pfnProgress, void *pProgressArg )
+                              CSLConstList options,
+                              GDALProgressFunc pfnProgress, void *pProgressArg )
 {
     VALIDATE_POINTER1( hBand, "GDALContourGenerateEx", CE_Failure );
 
@@ -624,7 +624,7 @@ CPLErr GDALContourGenerateEx( GDALRasterBandH hBand, void *hLayer,
     {
         if ( polygonize )
         {
-            int bSuccess; 
+            int bSuccess;
             PolygonContourWriter w( &oCWI, GDALGetRasterMinimum( hBand, &bSuccess ) );
             typedef PolygonRingAppender<PolygonContourWriter> RingAppender;
             RingAppender appender( w );
@@ -715,13 +715,13 @@ GDAL_CG_Create( int nWidth, int nHeight, int bNoDataSet, double dfNoDataValue,
 
 {
     auto cg = new marching_squares::ContourGeneratorOpaque( nWidth,
-                                                            nHeight,
-                                                            bNoDataSet,
-                                                            dfNoDataValue,
-                                                            dfContourInterval,
-                                                            dfContourBase,
-                                                            pfnWriter,
-                                                            pCBData );
+            nHeight,
+            bNoDataSet,
+            dfNoDataValue,
+            dfContourInterval,
+            dfContourBase,
+            pfnWriter,
+            pCBData );
 
     return reinterpret_cast<GDALContourGeneratorH>(cg);
 }

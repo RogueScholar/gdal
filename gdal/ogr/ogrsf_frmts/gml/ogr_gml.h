@@ -72,12 +72,12 @@ class OGRGMLLayer final: public OGRLayer
 
     bool                bFaceHoleNegative;
 
-  public:
-                        OGRGMLLayer( const char * pszName,
-                                     bool bWriter,
-                                     OGRGMLDataSource *poDS );
+public:
+    OGRGMLLayer( const char * pszName,
+                 bool bWriter,
+                 OGRGMLDataSource *poDS );
 
-                        virtual ~OGRGMLLayer();
+    virtual ~OGRGMLLayer();
 
     void                ResetReading() override;
     OGRFeature *        GetNextFeature() override;
@@ -85,16 +85,20 @@ class OGRGMLLayer final: public OGRLayer
     GIntBig             GetFeatureCount( int bForce = TRUE ) override;
     OGRErr              GetExtent(OGREnvelope *psExtent, int bForce = TRUE) override;
     virtual OGRErr      GetExtent(int iGeomField, OGREnvelope *psExtent, int bForce) override
-                { return OGRLayer::GetExtent(iGeomField, psExtent, bForce); }
+    {
+        return OGRLayer::GetExtent(iGeomField, psExtent, bForce);
+    }
 
     OGRErr              ICreateFeature( OGRFeature *poFeature ) override;
 
-    OGRFeatureDefn *    GetLayerDefn() override { return poFeatureDefn; }
+    OGRFeatureDefn *    GetLayerDefn() override {
+        return poFeatureDefn;
+    }
 
     virtual OGRErr      CreateField( OGRFieldDefn *poField,
                                      int bApproxOK = TRUE ) override;
     virtual OGRErr      CreateGeomField( OGRGeomFieldDefn *poField,
-                                     int bApproxOK = TRUE ) override;
+                                         int bApproxOK = TRUE ) override;
 
     int                 TestCapability( const char * ) override;
 };
@@ -169,51 +173,89 @@ class OGRGMLDataSource final: public OGRDataSource
 
     void                WriteTopElements();
 
-  public:
-                        OGRGMLDataSource();
-                        virtual ~OGRGMLDataSource();
+public:
+    OGRGMLDataSource();
+    virtual ~OGRGMLDataSource();
 
     bool                Open( GDALOpenInfo* poOpenInfo );
     bool                Create( const char *pszFile, char **papszOptions );
 
-    const char          *GetName() override { return pszName; }
-    int                 GetLayerCount() override { return nLayers; }
+    const char          *GetName() override {
+        return pszName;
+    }
+    int                 GetLayerCount() override {
+        return nLayers;
+    }
     OGRLayer            *GetLayer( int ) override;
 
     virtual OGRLayer    *ICreateLayer( const char *,
-                                      OGRSpatialReference * = nullptr,
-                                      OGRwkbGeometryType = wkbUnknown,
-                                      char ** = nullptr ) override;
+                                       OGRSpatialReference * = nullptr,
+                                       OGRwkbGeometryType = wkbUnknown,
+                                       char ** = nullptr ) override;
 
     int                 TestCapability( const char * ) override;
 
-    VSILFILE            *GetOutputFP() const { return fpOutput; }
-    IGMLReader          *GetReader() const { return poReader; }
+    VSILFILE            *GetOutputFP() const {
+        return fpOutput;
+    }
+    IGMLReader          *GetReader() const {
+        return poReader;
+    }
 
     void                GrowExtents( OGREnvelope3D *psGeomBounds, int nCoordDimension );
 
-    int                 ExposeId() const { return bExposeGMLId || bExposeFid; }
+    int                 ExposeId() const {
+        return bExposeGMLId || bExposeFid;
+    }
 
     static void         PrintLine(VSILFILE* fp, const char *fmt, ...) CPL_PRINT_FUNC_FORMAT (2, 3);
 
-    bool                IsGML3Output() const { return bIsOutputGML3; }
-    bool                IsGML3DeegreeOutput() const { return bIsOutputGML3Deegree; }
-    bool                IsGML32Output() const { return bIsOutputGML32; }
-    OGRGMLSRSNameFormat GetSRSNameFormat() const { return eSRSNameFormat; }
-    bool                WriteSpaceIndentation() const { return bWriteSpaceIndentation; }
+    bool                IsGML3Output() const {
+        return bIsOutputGML3;
+    }
+    bool                IsGML3DeegreeOutput() const {
+        return bIsOutputGML3Deegree;
+    }
+    bool                IsGML32Output() const {
+        return bIsOutputGML32;
+    }
+    OGRGMLSRSNameFormat GetSRSNameFormat() const {
+        return eSRSNameFormat;
+    }
+    bool                WriteSpaceIndentation() const {
+        return bWriteSpaceIndentation;
+    }
     const char         *GetGlobalSRSName();
 
-    bool                GetInvertAxisOrderIfLatLong() const { return m_bInvertAxisOrderIfLatLong; }
-    bool                GetConsiderEPSGAsURN() const { return m_bConsiderEPSGAsURN; }
-    GMLSwapCoordinatesEnum GetSwapCoordinates() const { return m_eSwapCoordinates; }
-    bool                GetSecondaryGeometryOption() const { return m_bGetSecondaryGeometryOption; }
+    bool                GetInvertAxisOrderIfLatLong() const {
+        return m_bInvertAxisOrderIfLatLong;
+    }
+    bool                GetConsiderEPSGAsURN() const {
+        return m_bConsiderEPSGAsURN;
+    }
+    GMLSwapCoordinatesEnum GetSwapCoordinates() const {
+        return m_eSwapCoordinates;
+    }
+    bool                GetSecondaryGeometryOption() const {
+        return m_bGetSecondaryGeometryOption;
+    }
 
-    ReadMode            GetReadMode() const { return eReadMode; }
-    void                SetStoredGMLFeature(GMLFeature* poStoredGMLFeatureIn) { poStoredGMLFeature = poStoredGMLFeatureIn; }
-    GMLFeature*         PeekStoredGMLFeature() const { return  poStoredGMLFeature; }
+    ReadMode            GetReadMode() const {
+        return eReadMode;
+    }
+    void                SetStoredGMLFeature(GMLFeature* poStoredGMLFeatureIn) {
+        poStoredGMLFeature = poStoredGMLFeatureIn;
+    }
+    GMLFeature*         PeekStoredGMLFeature() const {
+        return  poStoredGMLFeature;
+    }
 
-    OGRGMLLayer*        GetLastReadLayer() const { return poLastReadLayer; }
-    void                SetLastReadLayer(OGRGMLLayer* poLayer) { poLastReadLayer = poLayer; }
+    OGRGMLLayer*        GetLastReadLayer() const {
+        return poLastReadLayer;
+    }
+    void                SetLastReadLayer(OGRGMLLayer* poLayer) {
+        poLastReadLayer = poLayer;
+    }
 
     const char         *GetAppPrefix() const;
     bool                RemoveAppPrefix() const;

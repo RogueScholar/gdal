@@ -37,44 +37,44 @@
 
 class MyRasterBand: public GDALRasterBand
 {
-        int bBusy;
+    int bBusy;
 
-    public:
-        MyRasterBand()
-        {
-            nBlockXSize = 1;
-            nBlockYSize = 1;
-            bBusy = FALSE;
-        }
+public:
+    MyRasterBand()
+    {
+        nBlockXSize = 1;
+        nBlockYSize = 1;
+        bBusy = FALSE;
+    }
 
-        CPLErr IReadBlock(int, int, void*) CPL_OVERRIDE { CPLAssert(FALSE); return CE_Failure; }
-        CPLErr IWriteBlock(int nXBlock, int nYBlock, void*) CPL_OVERRIDE
-        {
-            printf("Entering IWriteBlock(%d, %d)\n", nXBlock, nYBlock);
-            assert(!bBusy);
-            bBusy = TRUE;
-            CPLSleep(0.5);
-            bBusy = FALSE;
-            printf("Leaving IWriteBlock(%d, %d)\n", nXBlock, nYBlock);
-            return CE_None;
-        }
+    CPLErr IReadBlock(int, int, void*) CPL_OVERRIDE { CPLAssert(FALSE); return CE_Failure; }
+    CPLErr IWriteBlock(int nXBlock, int nYBlock, void*) CPL_OVERRIDE
+    {
+        printf("Entering IWriteBlock(%d, %d)\n", nXBlock, nYBlock);
+        assert(!bBusy);
+        bBusy = TRUE;
+        CPLSleep(0.5);
+        bBusy = FALSE;
+        printf("Leaving IWriteBlock(%d, %d)\n", nXBlock, nYBlock);
+        return CE_None;
+    }
 };
 
 class MyDataset: public GDALDataset
 {
-    public:
-        MyDataset()
-        {
-            eAccess = GA_Update;
-            nRasterXSize = 2;
-            nRasterYSize = 1;
-            SetBand(1, new MyRasterBand());
-        }
+public:
+    MyDataset()
+    {
+        eAccess = GA_Update;
+        nRasterXSize = 2;
+        nRasterYSize = 1;
+        SetBand(1, new MyRasterBand());
+    }
 
-        ~MyDataset()
-        {
-            FlushCache();
-        }
+    ~MyDataset()
+    {
+        FlushCache();
+    }
 };
 
 static void thread_func1(void* /* unused */ )

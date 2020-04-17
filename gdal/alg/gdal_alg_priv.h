@@ -133,7 +133,7 @@ public:  // these are intended to be readonly.
 
 public:
     explicit GDALRasterPolygonEnumeratorT( int nConnectedness=4 );
-            ~GDALRasterPolygonEnumeratorT();
+    ~GDALRasterPolygonEnumeratorT();
 
     void     ProcessLine( DataType *panLastLineVal, DataType *panThisLineVal,
                           GInt32 *panLastLineId,  GInt32 *panThisLineId,
@@ -146,7 +146,9 @@ public:
 
 struct IntEqualityTest
 {
-    bool operator()(GInt32 a, GInt32 b) const { return a == b; }
+    bool operator()(GInt32 a, GInt32 b) const {
+        return a == b;
+    }
 };
 
 typedef GDALRasterPolygonEnumeratorT<GInt32, IntEqualityTest> GDALRasterPolygonEnumerator;
@@ -154,8 +156,8 @@ typedef GDALRasterPolygonEnumeratorT<GInt32, IntEqualityTest> GDALRasterPolygonE
 typedef void* (*GDALTransformDeserializeFunc)( CPLXMLNode *psTree );
 
 void CPL_DLL *GDALRegisterTransformDeserializer(const char* pszTransformName,
-                                       GDALTransformerFunc pfnTransformerFunc,
-                                       GDALTransformDeserializeFunc pfnDeserializeFunc);
+        GDALTransformerFunc pfnTransformerFunc,
+        GDALTransformDeserializeFunc pfnDeserializeFunc);
 void CPL_DLL GDALUnregisterTransformDeserializer(void* pData);
 
 void GDALCleanupTransformDeserializerMutex();
@@ -221,7 +223,9 @@ GBool GDALFloatEquals(float A, float B);
 
 struct FloatEqualityTest
 {
-    bool operator()(float a, float b) { return GDALFloatEquals(a,b) == TRUE; }
+    bool operator()(float a, float b) {
+        return GDALFloatEquals(a,b) == TRUE;
+    }
 };
 
 bool GDALComputeAreaOfInterest(OGRSpatialReference* poSRS,

@@ -68,7 +68,7 @@ class OGRESRIFeatureServiceLayer final: public OGRLayer
     bool            bOtherPage;
     bool            bUseSequentialFID;
 
-  public:
+public:
     explicit OGRESRIFeatureServiceLayer( OGRESRIFeatureServiceDataset* poDS );
     virtual ~OGRESRIFeatureServiceLayer();
 
@@ -78,9 +78,13 @@ class OGRESRIFeatureServiceLayer final: public OGRLayer
     OGRErr              GetExtent(OGREnvelope *psExtent, int bForce = TRUE) override;
     virtual OGRErr      GetExtent( int iGeomField, OGREnvelope *psExtent,
                                    int bForce) override
-            { return OGRLayer::GetExtent(iGeomField, psExtent, bForce); }
+    {
+        return OGRLayer::GetExtent(iGeomField, psExtent, bForce);
+    }
     int TestCapability( const char* pszCap ) override;
-    OGRFeatureDefn* GetLayerDefn() override { return poFeatureDefn; }
+    OGRFeatureDefn* GetLayerDefn() override {
+        return poFeatureDefn;
+    }
 };
 
 /************************************************************************/
@@ -97,21 +101,29 @@ class OGRESRIFeatureServiceDataset final: public GDALDataset
 
     int                     LoadPage();
 
-  public:
+public:
     OGRESRIFeatureServiceDataset( const CPLString &osURL,
                                   OGRGeoJSONDataSource* poFirst );
     ~OGRESRIFeatureServiceDataset();
 
-    int GetLayerCount() override { return 1; }
+    int GetLayerCount() override {
+        return 1;
+    }
     OGRLayer* GetLayer( int nLayer ) override
-        { return (nLayer == 0) ? poLayer : nullptr; }
+    {
+        return (nLayer == 0) ? poLayer : nullptr;
+    }
 
-    OGRLayer* GetUnderlyingLayer() { return poCurrent->GetLayer(0); }
+    OGRLayer* GetUnderlyingLayer() {
+        return poCurrent->GetLayer(0);
+    }
 
     int MyResetReading();
     int LoadNextPage();
 
-    const CPLString& GetURL() { return osURL; }
+    const CPLString& GetURL() {
+        return osURL;
+    }
 };
 
 /************************************************************************/
@@ -181,7 +193,7 @@ OGRFeature* OGRESRIFeatureServiceLayer::GetNextFeature()
                 return nullptr;
             bOtherPage = true;
             if( bWasInFirstPage && poSrcFeat->GetFID() != 0 &&
-                poSrcFeat->GetFID() == nFirstFID )
+                    poSrcFeat->GetFID() == nFirstFID )
             {
                 // End-less looping
                 CPLDebug("ESRIJSON", "Scrolling not working. Stopping");
@@ -189,7 +201,7 @@ OGRFeature* OGRESRIFeatureServiceLayer::GetNextFeature()
                 return nullptr;
             }
             if( bWasInFirstPage && poSrcFeat->GetFID() == 0 &&
-                nLastFID == nFeaturesRead - 1 )
+                    nLastFID == nFeaturesRead - 1 )
             {
                 bUseSequentialFID = true;
             }
@@ -208,9 +220,9 @@ OGRFeature* OGRESRIFeatureServiceLayer::GetNextFeature()
         delete poSrcFeat;
 
         if( (m_poFilterGeom == nullptr
-             || FilterGeometry( poFeature->GetGeometryRef() ) )
-            && (m_poAttrQuery == nullptr
-                || m_poAttrQuery->Evaluate( poFeature )) )
+                || FilterGeometry( poFeature->GetGeometryRef() ) )
+                && (m_poAttrQuery == nullptr
+                    || m_poAttrQuery->Evaluate( poFeature )) )
         {
             return poFeature;
         }
@@ -245,9 +257,9 @@ GIntBig OGRESRIFeatureServiceLayer::GetFeatureCount( int bForce )
         CPLErrorReset();
         CPLHTTPResult* pResult = CPLHTTPFetch( osNewURL, nullptr );
         if( pResult != nullptr &&
-            pResult->nDataLen != 0 &&
-            CPLGetLastErrorNo() == 0 &&
-            pResult->nStatus == 0 )
+                pResult->nDataLen != 0 &&
+                CPLGetLastErrorNo() == 0 &&
+                pResult->nStatus == 0 )
         {
             const char* pszCount =
                 strstr((const char*)pResult->pabyData, "\"count\"");
@@ -273,7 +285,7 @@ GIntBig OGRESRIFeatureServiceLayer::GetFeatureCount( int bForce )
 /************************************************************************/
 
 OGRErr OGRESRIFeatureServiceLayer::GetExtent( OGREnvelope *psExtent,
-                                              int bForce )
+        int bForce )
 {
     OGRErr eErr = OGRERR_FAILURE;
     CPLString osNewURL =
@@ -282,7 +294,7 @@ OGRErr OGRESRIFeatureServiceLayer::GetExtent( OGREnvelope *psExtent,
     CPLErrorReset();
     CPLHTTPResult* pResult = CPLHTTPFetch( osNewURL, nullptr );
     if( pResult != nullptr && pResult->nDataLen != 0 && CPLGetLastErrorNo() == 0 &&
-        pResult->nStatus == 0 )
+            pResult->nStatus == 0 )
     {
         const char* pszBBox =
             strstr((const char*)pResult->pabyData, "\"bbox\"");
@@ -407,7 +419,7 @@ int OGRESRIFeatureServiceDataset::LoadPage()
         nSrcType = ESRIJSONDriverGetSourceType( &oOpenInfo );
     if( !poDS->Open( &oOpenInfo, nSrcType,
                      poCurrent->GetJSonFlavor() ) ||
-        poDS->GetLayerCount() == 0 )
+            poDS->GetLayerCount() == 0 )
     {
         delete poDS;
         poDS = nullptr;
@@ -423,18 +435,18 @@ int OGRESRIFeatureServiceDataset::LoadPage()
 /************************************************************************/
 
 static int OGRGeoJSONDriverIdentifyInternal( GDALOpenInfo* poOpenInfo,
-                                             GeoJSONSourceType& nSrcType )
+        GeoJSONSourceType& nSrcType )
 {
-/* -------------------------------------------------------------------- */
-/*      Determine type of data source: text file (.geojson, .json),     */
-/*      Web Service or text passed directly and load data.              */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Determine type of data source: text file (.geojson, .json),     */
+    /*      Web Service or text passed directly and load data.              */
+    /* -------------------------------------------------------------------- */
 
     nSrcType = GeoJSONGetSourceType( poOpenInfo );
     if( nSrcType == eGeoJSONSourceUnknown )
         return FALSE;
     if( nSrcType == eGeoJSONSourceService &&
-        !STARTS_WITH_CI(poOpenInfo->pszFilename, "GeoJSON:") )
+            !STARTS_WITH_CI(poOpenInfo->pszFilename, "GeoJSON:") )
     {
         return -1;
     }
@@ -470,14 +482,14 @@ static GDALDataset* OGRGeoJSONDriverOpen( GDALOpenInfo* poOpenInfo )
 /************************************************************************/
 
 GDALDataset* OGRGeoJSONDriverOpenInternal( GDALOpenInfo* poOpenInfo,
-                                           GeoJSONSourceType nSrcType,
-                                           const char* pszJSonFlavor )
+        GeoJSONSourceType nSrcType,
+        const char* pszJSonFlavor )
 {
     OGRGeoJSONDataSource* poDS = new OGRGeoJSONDataSource();
 
-/* -------------------------------------------------------------------- */
-/*      Processing configuration options.                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Processing configuration options.                               */
+    /* -------------------------------------------------------------------- */
 
     // TODO: Currently, options are based on environment variables.
     //       This is workaround for not yet implemented Andrey's concept
@@ -499,9 +511,9 @@ GDALDataset* OGRGeoJSONDriverOpenInternal( GDALOpenInfo* poOpenInfo,
             OGRGeoJSONDataSource::eAttributesSkip );
     }
 
-/* -------------------------------------------------------------------- */
-/*      Open and start processing GeoJSON datasource to OGR objects.    */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Open and start processing GeoJSON datasource to OGR objects.    */
+    /* -------------------------------------------------------------------- */
     if( !poDS->Open( poOpenInfo, nSrcType, pszJSonFlavor ) )
     {
         delete poDS;
@@ -509,15 +521,15 @@ GDALDataset* OGRGeoJSONDriverOpenInternal( GDALOpenInfo* poOpenInfo,
     }
 
     if( poDS != nullptr && poDS->HasOtherPages() &&
-        (STARTS_WITH(poOpenInfo->pszFilename, "http") ||
-         STARTS_WITH(poOpenInfo->pszFilename, "/vsimem/")) )
+            (STARTS_WITH(poOpenInfo->pszFilename, "http") ||
+             STARTS_WITH(poOpenInfo->pszFilename, "/vsimem/")) )
     {
         const char* pszFSP = CSLFetchNameValue(poOpenInfo->papszOpenOptions,
                                                "FEATURE_SERVER_PAGING");
         const bool bHasResultOffset =
-          !CPLURLGetValue(poOpenInfo->pszFilename, "resultOffset").empty();
+            !CPLURLGetValue(poOpenInfo->pszFilename, "resultOffset").empty();
         if( (!bHasResultOffset && (pszFSP == nullptr || CPLTestBool(pszFSP))) ||
-            (bHasResultOffset && pszFSP != nullptr && CPLTestBool(pszFSP)) )
+                (bHasResultOffset && pszFSP != nullptr && CPLTestBool(pszFSP)) )
         {
             return new OGRESRIFeatureServiceDataset(poOpenInfo->pszFilename,
                                                     poDS);
@@ -532,11 +544,11 @@ GDALDataset* OGRGeoJSONDriverOpenInternal( GDALOpenInfo* poOpenInfo,
 /************************************************************************/
 
 static GDALDataset *OGRGeoJSONDriverCreate( const char * pszName,
-                                            int /* nBands */,
-                                            int /* nXSize */,
-                                            int /* nYSize */,
-                                            GDALDataType /* eDT */,
-                                            char **papszOptions )
+        int /* nBands */,
+        int /* nXSize */,
+        int /* nYSize */,
+        GDALDataType /* eDT */,
+        char **papszOptions )
 {
     OGRGeoJSONDataSource* poDS = new OGRGeoJSONDataSource();
 
@@ -635,37 +647,37 @@ void RegisterOGRGeoJSON()
     poDriver->SetMetadataItem( GDAL_DMD_HELPTOPIC, "drv_geojson.html" );
 
     poDriver->SetMetadataItem( GDAL_DMD_OPENOPTIONLIST,
-"<OpenOptionList>"
-"  <Option name='FLATTEN_NESTED_ATTRIBUTES' type='boolean' description='Whether to recursively explore nested objects and produce flatten OGR attributes' default='NO'/>"
-"  <Option name='NESTED_ATTRIBUTE_SEPARATOR' type='string' description='Separator between components of nested attributes' default='_'/>"
-"  <Option name='FEATURE_SERVER_PAGING' type='boolean' description='Whether to automatically scroll through results with a ArcGIS Feature Service endpoint'/>"
-"  <Option name='NATIVE_DATA' type='boolean' description='Whether to store the native JSon representation at FeatureCollection and Feature level' default='NO'/>"
-"  <Option name='ARRAY_AS_STRING' type='boolean' description='Whether to expose JSon arrays of strings, integers or reals as a OGR String' default='NO'/>"
-"  <Option name='DATE_AS_STRING' type='boolean' description='Whether to expose date/time/date-time content using dedicated OGR date/time/date-time types or as a OGR String' default='NO'/>"
-"</OpenOptionList>");
+                               "<OpenOptionList>"
+                               "  <Option name='FLATTEN_NESTED_ATTRIBUTES' type='boolean' description='Whether to recursively explore nested objects and produce flatten OGR attributes' default='NO'/>"
+                               "  <Option name='NESTED_ATTRIBUTE_SEPARATOR' type='string' description='Separator between components of nested attributes' default='_'/>"
+                               "  <Option name='FEATURE_SERVER_PAGING' type='boolean' description='Whether to automatically scroll through results with a ArcGIS Feature Service endpoint'/>"
+                               "  <Option name='NATIVE_DATA' type='boolean' description='Whether to store the native JSon representation at FeatureCollection and Feature level' default='NO'/>"
+                               "  <Option name='ARRAY_AS_STRING' type='boolean' description='Whether to expose JSon arrays of strings, integers or reals as a OGR String' default='NO'/>"
+                               "  <Option name='DATE_AS_STRING' type='boolean' description='Whether to expose date/time/date-time content using dedicated OGR date/time/date-time types or as a OGR String' default='NO'/>"
+                               "</OpenOptionList>");
 
     poDriver->SetMetadataItem( GDAL_DMD_CREATIONOPTIONLIST,
                                "<CreationOptionList/>");
 
     poDriver->SetMetadataItem( GDAL_DS_LAYER_CREATIONOPTIONLIST,
-"<LayerCreationOptionList>"
-"  <Option name='WRITE_BBOX' type='boolean' description='whether to write a bbox property with the bounding box of the geometries at the feature and feature collection level' default='NO'/>"
-"  <Option name='COORDINATE_PRECISION' type='int' description='Number of decimal for coordinates. Default is 15 for GJ2008 and 7 for RFC7946'/>"
-"  <Option name='SIGNIFICANT_FIGURES' type='int' description='Number of significant figures for floating-point values' default='17'/>"
-"  <Option name='NATIVE_DATA' type='string' description='FeatureCollection level elements.'/>"
-"  <Option name='NATIVE_MEDIA_TYPE' type='string' description='Format of NATIVE_DATA. Must be \"application/vnd.geo+json\", otherwise NATIVE_DATA will be ignored.'/>"
-"  <Option name='RFC7946' type='boolean' description='Whether to use RFC 7946 standard. Otherwise GeoJSON 2008 initial version will be used' default='NO'/>"
-"  <Option name='WRITE_NAME' type='boolean' description='Whether to write a &quot;name&quot; property at feature collection level with layer name' default='YES'/>"
-"  <Option name='DESCRIPTION' type='string' description='(Long) description to write in a &quot;description&quot; property at feature collection level'/>"
-"  <Option name='ID_FIELD' type='string' description='Name of the source field that must be used as the id member of Feature features'/>"
-"  <Option name='ID_TYPE' type='string-select' description='Type of the id member of Feature features'>"
-"    <Value>AUTO</Value>"
-"    <Value>String</Value>"
-"    <Value>Integer</Value>"
-"  </Option>"
-"  <Option name='ID_GENERATE' type='boolean' description='Auto-generate feature ids' />"
-"  <Option name='WRITE_NON_FINITE_VALUES' type='boolean' description='Whether to write NaN / Infinity values' default='NO'/>"
-"</LayerCreationOptionList>");
+                               "<LayerCreationOptionList>"
+                               "  <Option name='WRITE_BBOX' type='boolean' description='whether to write a bbox property with the bounding box of the geometries at the feature and feature collection level' default='NO'/>"
+                               "  <Option name='COORDINATE_PRECISION' type='int' description='Number of decimal for coordinates. Default is 15 for GJ2008 and 7 for RFC7946'/>"
+                               "  <Option name='SIGNIFICANT_FIGURES' type='int' description='Number of significant figures for floating-point values' default='17'/>"
+                               "  <Option name='NATIVE_DATA' type='string' description='FeatureCollection level elements.'/>"
+                               "  <Option name='NATIVE_MEDIA_TYPE' type='string' description='Format of NATIVE_DATA. Must be \"application/vnd.geo+json\", otherwise NATIVE_DATA will be ignored.'/>"
+                               "  <Option name='RFC7946' type='boolean' description='Whether to use RFC 7946 standard. Otherwise GeoJSON 2008 initial version will be used' default='NO'/>"
+                               "  <Option name='WRITE_NAME' type='boolean' description='Whether to write a &quot;name&quot; property at feature collection level with layer name' default='YES'/>"
+                               "  <Option name='DESCRIPTION' type='string' description='(Long) description to write in a &quot;description&quot; property at feature collection level'/>"
+                               "  <Option name='ID_FIELD' type='string' description='Name of the source field that must be used as the id member of Feature features'/>"
+                               "  <Option name='ID_TYPE' type='string-select' description='Type of the id member of Feature features'>"
+                               "    <Value>AUTO</Value>"
+                               "    <Value>String</Value>"
+                               "    <Value>Integer</Value>"
+                               "  </Option>"
+                               "  <Option name='ID_GENERATE' type='boolean' description='Auto-generate feature ids' />"
+                               "  <Option name='WRITE_NON_FINITE_VALUES' type='boolean' description='Whether to write NaN / Infinity values' default='NO'/>"
+                               "</LayerCreationOptionList>");
 
     poDriver->SetMetadataItem( GDAL_DCAP_VIRTUALIO, "YES" );
     poDriver->SetMetadataItem( GDAL_DMD_CREATIONFIELDDATATYPES,

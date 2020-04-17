@@ -59,10 +59,10 @@ OGRDWGLayer::OGRDWGLayer( OGRDWGDataSource *poDSIn )
         poFeatureDefn->AddFieldDefn( &oBlockAngleField );
     }
 
-/* -------------------------------------------------------------------- */
-/*      Find the *Paper_Space block, which seems to contain all the     */
-/*      regular entities.                                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Find the *Paper_Space block, which seems to contain all the     */
+    /*      regular entities.                                               */
+    /* -------------------------------------------------------------------- */
     OdDbBlockTablePtr pTable = poDS->GetDB()->getBlockTableId().safeOpenObject();
     OdDbSymbolTableIteratorPtr pBlkIter = pTable->newIterator();
 
@@ -160,7 +160,7 @@ void OGRDWGLayer::ResetReading()
 /************************************************************************/
 
 void OGRDWGLayer::TranslateGenericProperties( OGRFeature *poFeature,
-                                              OdDbEntityPtr poEntity )
+        OdDbEntityPtr poEntity )
 
 {
     poFeature->SetField( "Layer", TextUnescape(poEntity->layer(), false) );
@@ -179,9 +179,9 @@ void OGRDWGLayer::TranslateGenericProperties( OGRFeature *poFeature,
         oStyleProperties["Color"] = osValue.c_str();
     }
 
-/* -------------------------------------------------------------------- */
-/*      Collect the subclasses.                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Collect the subclasses.                                         */
+    /* -------------------------------------------------------------------- */
     CPLString osSubClasses;
     OdRxClass *poClass = poEntity->isA();
 
@@ -199,9 +199,9 @@ void OGRDWGLayer::TranslateGenericProperties( OGRFeature *poFeature,
 
     poFeature->SetField( "SubClasses", osSubClasses.c_str() );
 
-/* -------------------------------------------------------------------- */
-/*      Collect Xdata.                                                  */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Collect Xdata.                                                  */
+    /* -------------------------------------------------------------------- */
     OdResBufPtr poResBufBase = poEntity->xData();
     OdResBuf *poResBuf = poResBufBase;
     CPLString osFullXData;
@@ -212,63 +212,63 @@ void OGRDWGLayer::TranslateGenericProperties( OGRFeature *poFeature,
 
         switch (OdDxfCode::_getType(poResBuf->restype()))
         {
-          case OdDxfCode::Name:
-          case OdDxfCode::String:
-          case OdDxfCode::LayerName:
+        case OdDxfCode::Name:
+        case OdDxfCode::String:
+        case OdDxfCode::LayerName:
             osXDataItem = (const char *) poResBuf->getString();
             break;
 
-          case OdDxfCode::Bool:
+        case OdDxfCode::Bool:
             if( poResBuf->getBool() )
                 osXDataItem = "true";
             else
                 osXDataItem = "false";
             break;
 
-          case OdDxfCode::Integer8:
+        case OdDxfCode::Integer8:
             osXDataItem.Printf( "%d", (int) poResBuf->getInt8() );
             break;
 
-          case OdDxfCode::Integer16:
+        case OdDxfCode::Integer16:
             osXDataItem.Printf( "%d", (int) poResBuf->getInt16() );
             break;
 
-          case OdDxfCode::Integer32:
+        case OdDxfCode::Integer32:
             osXDataItem.Printf( "%d", (int) poResBuf->getInt32() );
             break;
 
-          case OdDxfCode::Double:
-          case OdDxfCode::Angle:
+        case OdDxfCode::Double:
+        case OdDxfCode::Angle:
             osXDataItem.Printf( "%g", poResBuf->getDouble() );
             break;
 
-          case OdDxfCode::Point:
-          {
-              OdGePoint3d oPoint = poResBuf->getPoint3d();
-              osXDataItem.Printf( "(%g,%g,%g)", oPoint.x, oPoint.y, oPoint.z );
-          }
-          break;
+        case OdDxfCode::Point:
+        {
+            OdGePoint3d oPoint = poResBuf->getPoint3d();
+            osXDataItem.Printf( "(%g,%g,%g)", oPoint.x, oPoint.y, oPoint.z );
+        }
+        break;
 
-          case OdDxfCode::BinaryChunk:
-          {
-              OdBinaryData oBinData = poResBuf->getBinaryChunk();
-              char *pszAsHex = CPLBinaryToHex( oBinData.size(),
-                                               (GByte*) oBinData.asArrayPtr() );
-              osXDataItem = pszAsHex;
-              CPLFree( pszAsHex );
-          }
-          break;
+        case OdDxfCode::BinaryChunk:
+        {
+            OdBinaryData oBinData = poResBuf->getBinaryChunk();
+            char *pszAsHex = CPLBinaryToHex( oBinData.size(),
+                                             (GByte*) oBinData.asArrayPtr() );
+            osXDataItem = pszAsHex;
+            CPLFree( pszAsHex );
+        }
+        break;
 
-          case OdDxfCode::ObjectId:
-          case OdDxfCode::SoftPointerId:
-          case OdDxfCode::HardPointerId:
-          case OdDxfCode::SoftOwnershipId:
-          case OdDxfCode::HardOwnershipId:
-          case OdDxfCode::Handle:
+        case OdDxfCode::ObjectId:
+        case OdDxfCode::SoftPointerId:
+        case OdDxfCode::HardPointerId:
+        case OdDxfCode::SoftOwnershipId:
+        case OdDxfCode::HardOwnershipId:
+        case OdDxfCode::Handle:
             osXDataItem = (const char *) poResBuf->getHandle().ascii();
             break;
 
-          default:
+        default:
             break;
         }
 
@@ -280,22 +280,22 @@ void OGRDWGLayer::TranslateGenericProperties( OGRFeature *poFeature,
     poFeature->SetField( "ExtendedEntity", osFullXData );
 
 #ifdef notdef
-      // OCS vector.
-      case 210:
-        oStyleProperties["210_N.dX"] = pszValue;
-        break;
+    // OCS vector.
+case 210:
+    oStyleProperties["210_N.dX"] = pszValue;
+    break;
 
-      case 220:
-        oStyleProperties["220_N.dY"] = pszValue;
-        break;
+case 220:
+    oStyleProperties["220_N.dY"] = pszValue;
+    break;
 
-      case 230:
-        oStyleProperties["230_N.dZ"] = pszValue;
-        break;
+case 230:
+    oStyleProperties["230_N.dZ"] = pszValue;
+    break;
 
-      default:
-        break;
-    }
+default:
+    break;
+}
 #endif
 }
 
@@ -308,15 +308,15 @@ void OGRDWGLayer::PrepareLineStyle( OGRFeature *poFeature )
 {
     CPLString osLayer = poFeature->GetFieldAsString("Layer");
 
-/* -------------------------------------------------------------------- */
-/*      Is the layer disabled/hidden/frozen/off?                        */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Is the layer disabled/hidden/frozen/off?                        */
+    /* -------------------------------------------------------------------- */
     int bHidden =
         EQUAL(poDS->LookupLayerProperty( osLayer, "Hidden" ), "1");
 
-/* -------------------------------------------------------------------- */
-/*      Work out the color for this feature.                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Work out the color for this feature.                            */
+    /* -------------------------------------------------------------------- */
     int nColor = 256;
 
     if( oStyleProperties.count("Color") > 0 )
@@ -333,9 +333,9 @@ void OGRDWGLayer::PrepareLineStyle( OGRFeature *poFeature )
     if( nColor < 1 || nColor > 255 )
         return;
 
-/* -------------------------------------------------------------------- */
-/*      Get line weight if available.                                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Get line weight if available.                                   */
+    /* -------------------------------------------------------------------- */
     double dfWeight = 0.0;
 
     if( oStyleProperties.count("LineWeight") > 0 )
@@ -348,15 +348,15 @@ void OGRDWGLayer::PrepareLineStyle( OGRFeature *poFeature )
         dfWeight = CPLAtof(osWeight) / 100.0;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Do we have a dash/dot line style?                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Do we have a dash/dot line style?                               */
+    /* -------------------------------------------------------------------- */
     const char *pszPattern = poDS->LookupLineType(
-        poFeature->GetFieldAsString("Linetype") );
+                                 poFeature->GetFieldAsString("Linetype") );
 
-/* -------------------------------------------------------------------- */
-/*      Format the style string.                                        */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Format the style string.                                        */
+    /* -------------------------------------------------------------------- */
     CPLString osStyle;
     const unsigned char *pabyDWGColors = ACGetColorTable();
 
@@ -402,17 +402,17 @@ OGRFeature *OGRDWGLayer::TranslateMTEXT( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Set the location.                                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Set the location.                                               */
+    /* -------------------------------------------------------------------- */
     OdGePoint3d oLocation = poMTE->location();
 
     poFeature->SetGeometryDirectly(
         new OGRPoint( oLocation.x, oLocation.y, oLocation.z ) );
 
-/* -------------------------------------------------------------------- */
-/*      Apply text after stripping off any extra terminating newline.   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Apply text after stripping off any extra terminating newline.   */
+    /* -------------------------------------------------------------------- */
     CPLString osText = TextUnescape( poMTE->contents(), true );
 
     if( !osText.empty() && osText.back() == '\n' )
@@ -420,10 +420,10 @@ OGRFeature *OGRDWGLayer::TranslateMTEXT( OdDbEntityPtr poEntity )
 
     poFeature->SetField( "Text", osText );
 
-/* -------------------------------------------------------------------- */
-/*      We need to escape double quotes with backslashes before they    */
-/*      can be inserted in the style string.                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      We need to escape double quotes with backslashes before they    */
+    /*      can be inserted in the style string.                            */
+    /* -------------------------------------------------------------------- */
     if( strchr( osText, '"') != nullptr )
     {
         CPLString osEscaped;
@@ -439,9 +439,9 @@ OGRFeature *OGRDWGLayer::TranslateMTEXT( OdDbEntityPtr poEntity )
         osText = osEscaped;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Work out the color for this feature.                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Work out the color for this feature.                            */
+    /* -------------------------------------------------------------------- */
     int nColor = 256;
 
     if( oStyleProperties.count("Color") > 0 )
@@ -456,9 +456,9 @@ OGRFeature *OGRDWGLayer::TranslateMTEXT( OdDbEntityPtr poEntity )
             nColor = atoi(pszValue);
     }
 
-/* -------------------------------------------------------------------- */
-/*      Prepare style string.                                           */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Prepare style string.                                           */
+    /* -------------------------------------------------------------------- */
     double dfAngle = poMTE->rotation() * 180 / M_PI;
     double dfHeight = poMTE->textHeight();
     int nAttachmentPoint = (int) poMTE->attachment();
@@ -490,7 +490,7 @@ OGRFeature *OGRDWGLayer::TranslateMTEXT( OdDbEntityPtr poEntity )
     if( nAttachmentPoint >= 0 && nAttachmentPoint <= 9 )
     {
         const static int anAttachmentMap[10] =
-            { -1, 7, 8, 9, 4, 5, 6, 1, 2, 3 };
+        { -1, 7, 8, 9, 4, 5, 6, 1, 2, 3 };
 
         osStyle +=
             CPLString().Printf(",p:%d", anAttachmentMap[nAttachmentPoint]);
@@ -525,17 +525,17 @@ OGRFeature *OGRDWGLayer::TranslateTEXT( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Set the location.                                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Set the location.                                               */
+    /* -------------------------------------------------------------------- */
     OdGePoint3d oLocation = poText->position();
 
     poFeature->SetGeometryDirectly(
         new OGRPoint( oLocation.x, oLocation.y, oLocation.z ) );
 
-/* -------------------------------------------------------------------- */
-/*      Apply text after stripping off any extra terminating newline.   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Apply text after stripping off any extra terminating newline.   */
+    /* -------------------------------------------------------------------- */
     CPLString osText = TextUnescape( poText->textString(), false );
 
     if( !osText.empty() && osText.back() == '\n' )
@@ -543,10 +543,10 @@ OGRFeature *OGRDWGLayer::TranslateTEXT( OdDbEntityPtr poEntity )
 
     poFeature->SetField( "Text", osText );
 
-/* -------------------------------------------------------------------- */
-/*      We need to escape double quotes with backslashes before they    */
-/*      can be inserted in the style string.                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      We need to escape double quotes with backslashes before they    */
+    /*      can be inserted in the style string.                            */
+    /* -------------------------------------------------------------------- */
     if( strchr( osText, '"') != nullptr )
     {
         CPLString osEscaped;
@@ -562,17 +562,17 @@ OGRFeature *OGRDWGLayer::TranslateTEXT( OdDbEntityPtr poEntity )
         osText = osEscaped;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Is the layer disabled/hidden/frozen/off?                        */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Is the layer disabled/hidden/frozen/off?                        */
+    /* -------------------------------------------------------------------- */
     CPLString osLayer = poFeature->GetFieldAsString("Layer");
 
     int bHidden =
         EQUAL(poDS->LookupLayerProperty( osLayer, "Hidden" ), "1");
 
-/* -------------------------------------------------------------------- */
-/*      Work out the color for this feature.                            */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Work out the color for this feature.                            */
+    /* -------------------------------------------------------------------- */
     int nColor = 256;
 
     if( oStyleProperties.count("Color") > 0 )
@@ -589,9 +589,9 @@ OGRFeature *OGRDWGLayer::TranslateTEXT( OdDbEntityPtr poEntity )
     if( nColor < 1 || nColor > 255 )
         nColor = 8;
 
-/* -------------------------------------------------------------------- */
-/*      Prepare style string.                                           */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Prepare style string.                                           */
+    /* -------------------------------------------------------------------- */
     double dfAngle = poText->rotation() * 180 / M_PI;
     double dfHeight = poText->height();
 
@@ -668,9 +668,9 @@ OGRFeature *OGRDWGLayer::TranslateLWPOLYLINE( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Collect polyline details.                                       */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Collect polyline details.                                       */
+    /* -------------------------------------------------------------------- */
     DXFSmoothPolyline   oSmoothPolyline;
 
     for (unsigned int i = 0; i < poPL->numVerts(); i++)
@@ -679,7 +679,7 @@ OGRFeature *OGRDWGLayer::TranslateLWPOLYLINE( OdDbEntityPtr poEntity )
         poPL->getPointAt( i, oPoint );
 
         oSmoothPolyline.AddPoint( oPoint.x, oPoint.y, 0.0,
-                                 poPL->getBulgeAt( i ) );
+                                  poPL->getBulgeAt( i ) );
     }
 
     if(oSmoothPolyline.IsEmpty())
@@ -711,9 +711,9 @@ OGRFeature *OGRDWGLayer::Translate2DPOLYLINE( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Create a polyline geometry from the vertices.                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create a polyline geometry from the vertices.                   */
+    /* -------------------------------------------------------------------- */
     OGRLineString *poLS = new OGRLineString();
     OdDbObjectIteratorPtr poIter = poPL->vertexIterator();
 
@@ -744,9 +744,9 @@ OGRFeature *OGRDWGLayer::Translate3DPOLYLINE( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Create a polyline geometry from the vertices.                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create a polyline geometry from the vertices.                   */
+    /* -------------------------------------------------------------------- */
     OGRLineString *poLS = new OGRLineString();
     OdDbObjectIteratorPtr poIter = poPL->vertexIterator();
 
@@ -777,9 +777,9 @@ OGRFeature *OGRDWGLayer::TranslateLINE( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Create a polyline geometry from the vertices.                   */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create a polyline geometry from the vertices.                   */
+    /* -------------------------------------------------------------------- */
     OGRLineString *poLS = new OGRLineString();
     OdGePoint3d oPoint;
 
@@ -808,15 +808,15 @@ OGRFeature *OGRDWGLayer::TranslateCIRCLE( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Get geometry information.                                       */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Get geometry information.                                       */
+    /* -------------------------------------------------------------------- */
     OdGePoint3d oCenter = poC->center();
     double dfRadius = poC->radius();
 
-/* -------------------------------------------------------------------- */
-/*      Create geometry                                                 */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create geometry                                                 */
+    /* -------------------------------------------------------------------- */
     OGRGeometry *poCircle =
         OGRGeometryFactory::approximateArcAngles(
             oCenter.x, oCenter.y, oCenter.z,
@@ -872,9 +872,9 @@ OGRFeature *OGRDWGLayer::TranslateELLIPSE( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Get some details.                                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Get some details.                                               */
+    /* -------------------------------------------------------------------- */
     double dfStartAngle, dfEndAngle, dfRatio;
     OdGePoint3d oCenter;
     OdGeVector3d oMajorAxis, oUnitNormal;
@@ -886,23 +886,23 @@ OGRFeature *OGRDWGLayer::TranslateELLIPSE( OdDbEntityPtr poEntity )
     dfStartAngle = -1 * dfStartAngle * 180 / M_PI;
     dfEndAngle   = -1 * dfEndAngle * 180 / M_PI;
 
-/* -------------------------------------------------------------------- */
-/*      The DWG SDK expresses the angles as the angle to a real         */
-/*      point on the ellipse while DXF and the OGR "arc angles" API     */
-/*      work in terms of an angle of rotation on the ellipse as if      */
-/*      the ellipse were actually circular.  So we need to "correct"    */
-/*      for the ratio.                                                  */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      The DWG SDK expresses the angles as the angle to a real         */
+    /*      point on the ellipse while DXF and the OGR "arc angles" API     */
+    /*      work in terms of an angle of rotation on the ellipse as if      */
+    /*      the ellipse were actually circular.  So we need to "correct"    */
+    /*      for the ratio.                                                  */
+    /* -------------------------------------------------------------------- */
     dfStartAngle = AngleCorrect( dfStartAngle, dfRatio );
     dfEndAngle = AngleCorrect( dfEndAngle, dfRatio );
 
     if( dfStartAngle > dfEndAngle )
         dfEndAngle += 360.0;
 
-/* -------------------------------------------------------------------- */
-/*      Compute primary and secondary axis lengths, and the angle of    */
-/*      rotation for the ellipse.                                       */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Compute primary and secondary axis lengths, and the angle of    */
+    /*      rotation for the ellipse.                                       */
+    /* -------------------------------------------------------------------- */
     double dfPrimaryRadius, dfSecondaryRadius;
     double dfRotation;
 
@@ -914,9 +914,9 @@ OGRFeature *OGRDWGLayer::TranslateELLIPSE( OdDbEntityPtr poEntity )
 
     dfRotation = -1 * atan2( oMajorAxis.y, oMajorAxis.x ) * 180 / M_PI;
 
-/* -------------------------------------------------------------------- */
-/*      Create geometry                                                 */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create geometry                                                 */
+    /* -------------------------------------------------------------------- */
     OGRGeometry *poEllipse =
         OGRGeometryFactory::approximateArcAngles(
             oCenter.x, oCenter.y, oCenter.z,
@@ -942,17 +942,17 @@ OGRFeature *OGRDWGLayer::TranslateARC( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Collect parameters.                                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Collect parameters.                                             */
+    /* -------------------------------------------------------------------- */
     double dfEndAngle = -1 * poAE->startAngle() * 180 / M_PI;
     double dfStartAngle = -1 * poAE->endAngle() * 180 / M_PI;
     double dfRadius = poAE->radius();
     OdGePoint3d oCenter = poAE->center();
 
-/* -------------------------------------------------------------------- */
-/*      Create geometry                                                 */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Create geometry                                                 */
+    /* -------------------------------------------------------------------- */
     if( dfStartAngle > dfEndAngle )
         dfEndAngle += 360.0;
 
@@ -987,9 +987,9 @@ OGRFeature *OGRDWGLayer::TranslateSPLINE( OdDbEntityPtr poEntity )
 
     nDegree = poSpline->degree();
 
-/* -------------------------------------------------------------------- */
-/*      Collect the control points in our vector.                       */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Collect the control points in our vector.                       */
+    /* -------------------------------------------------------------------- */
     int nControlPoints = poSpline->numControlPoints();
 
     adfControlPoints.push_back( 0.0 ); // some sort of control info.
@@ -1005,9 +1005,9 @@ OGRFeature *OGRDWGLayer::TranslateSPLINE( OdDbEntityPtr poEntity )
         adfControlPoints.push_back( 0.0 );
     }
 
-/* -------------------------------------------------------------------- */
-/*      Process values.                                                 */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Process values.                                                 */
+    /* -------------------------------------------------------------------- */
     if( poSpline->isClosed() )
     {
         for( i = 0; i < nDegree; i++ )
@@ -1018,9 +1018,9 @@ OGRFeature *OGRDWGLayer::TranslateSPLINE( OdDbEntityPtr poEntity )
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Interpolate spline                                              */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Interpolate spline                                              */
+    /* -------------------------------------------------------------------- */
     std::vector<double> h, p;
 
     h.push_back(1.0);
@@ -1042,9 +1042,9 @@ OGRFeature *OGRDWGLayer::TranslateSPLINE( OdDbEntityPtr poEntity )
         rbspline( nControlPoints, nDegree+1, p1, &(adfControlPoints[0]),
                   &(h[0]), &(p[0]) );
 
-/* -------------------------------------------------------------------- */
-/*      Turn into OGR geometry.                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Turn into OGR geometry.                                         */
+    /* -------------------------------------------------------------------- */
     OGRLineString *poLS = new OGRLineString();
 
     poLS->setNumPoints( p1 );
@@ -1066,9 +1066,9 @@ class GeometryInsertTransformer : public OGRCoordinateTransformation
 {
 public:
     GeometryInsertTransformer() :
-            dfXOffset(0),dfYOffset(0),dfZOffset(0),
-            dfXScale(1.0),dfYScale(1.0),dfZScale(1.0),
-            dfAngle(0.0) {}
+        dfXOffset(0),dfYOffset(0),dfZOffset(0),
+        dfXScale(1.0),dfYScale(1.0),dfZScale(1.0),
+        dfAngle(0.0) {}
 
     double dfXOffset;
     double dfYOffset;
@@ -1078,42 +1078,48 @@ public:
     double dfZScale;
     double dfAngle;
 
-    OGRSpatialReference *GetSourceCS() override { return nullptr; }
-    OGRSpatialReference *GetTargetCS() override { return nullptr; }
+    OGRSpatialReference *GetSourceCS() override {
+        return nullptr;
+    }
+    OGRSpatialReference *GetTargetCS() override {
+        return nullptr;
+    }
 
-    OGRCoordinateTransformation* Clone() const override { return new GeometryInsertTransformer(*this); }
+    OGRCoordinateTransformation* Clone() const override {
+        return new GeometryInsertTransformer(*this);
+    }
 
     int Transform( int nCount,
-                     double *x, double *y, double *z = nullptr,
-                     double * /*t*/ = nullptr,
-                     int *pabSuccess = nullptr ) override
+                   double *x, double *y, double *z = nullptr,
+                   double * /*t*/ = nullptr,
+                   int *pabSuccess = nullptr ) override
+    {
+        int i;
+        for( i = 0; i < nCount; i++ )
         {
-            int i;
-            for( i = 0; i < nCount; i++ )
-            {
-                double dfXNew, dfYNew;
+            double dfXNew, dfYNew;
 
-                x[i] *= dfXScale;
-                y[i] *= dfYScale;
-                if( z )
-                    z[i] *= dfZScale;
+            x[i] *= dfXScale;
+            y[i] *= dfYScale;
+            if( z )
+                z[i] *= dfZScale;
 
-                dfXNew = x[i] * cos(dfAngle) - y[i] * sin(dfAngle);
-                dfYNew = x[i] * sin(dfAngle) + y[i] * cos(dfAngle);
+            dfXNew = x[i] * cos(dfAngle) - y[i] * sin(dfAngle);
+            dfYNew = x[i] * sin(dfAngle) + y[i] * cos(dfAngle);
 
-                x[i] = dfXNew;
-                y[i] = dfYNew;
+            x[i] = dfXNew;
+            y[i] = dfYNew;
 
-                x[i] += dfXOffset;
-                y[i] += dfYOffset;
-                if( z )
-                    z[i] += dfZOffset;
+            x[i] += dfXOffset;
+            y[i] += dfYOffset;
+            if( z )
+                z[i] += dfZOffset;
 
-                if( pabSuccess )
-                    pabSuccess[i] = TRUE;
-            }
-            return TRUE;
+            if( pabSuccess )
+                pabSuccess[i] = TRUE;
         }
+        return TRUE;
+    }
 };
 
 /************************************************************************/
@@ -1128,9 +1134,9 @@ OGRFeature *OGRDWGLayer::TranslateINSERT( OdDbEntityPtr poEntity )
 
     TranslateGenericProperties( poFeature, poEntity );
 
-/* -------------------------------------------------------------------- */
-/*      Collect parameters from the object.                             */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Collect parameters from the object.                             */
+    /* -------------------------------------------------------------------- */
     GeometryInsertTransformer oTransformer;
     CPLString osBlockName;
     double dfAngle = poRef->rotation() * 180 / M_PI;
@@ -1151,10 +1157,10 @@ OGRFeature *OGRDWGLayer::TranslateINSERT( OdDbEntityPtr poEntity )
     if (poBlockRec.get())
         osBlockName = (const char *) poBlockRec->getName();
 
-/* -------------------------------------------------------------------- */
-/*      In the case where we do not inlined blocks we just capture      */
-/*      info on a point feature.                                        */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      In the case where we do not inlined blocks we just capture      */
+    /*      info on a point feature.                                        */
+    /* -------------------------------------------------------------------- */
     if( !poDS->InlineBlocks() )
     {
         poFeature->SetGeometryDirectly(
@@ -1170,9 +1176,9 @@ OGRFeature *OGRDWGLayer::TranslateINSERT( OdDbEntityPtr poEntity )
         return poFeature;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Lookup the block.                                               */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Lookup the block.                                               */
+    /* -------------------------------------------------------------------- */
     DWGBlockDefinition *poBlock = poDS->LookupBlock( osBlockName );
 
     if( poBlock == nullptr )
@@ -1181,9 +1187,9 @@ OGRFeature *OGRDWGLayer::TranslateINSERT( OdDbEntityPtr poEntity )
         return nullptr;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Transform the geometry.                                         */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Transform the geometry.                                         */
+    /* -------------------------------------------------------------------- */
     if( poBlock->poGeometry != nullptr )
     {
         OGRGeometry *poGeometry = poBlock->poGeometry->clone();
@@ -1193,14 +1199,14 @@ OGRFeature *OGRDWGLayer::TranslateINSERT( OdDbEntityPtr poEntity )
         poFeature->SetGeometryDirectly( poGeometry );
     }
 
-/* -------------------------------------------------------------------- */
-/*      If we have complete features associated with the block, push    */
-/*      them on the pending feature stack copying over key override     */
-/*      information.                                                    */
-/*                                                                      */
-/*      Note that while we transform the geometry of the features we    */
-/*      don't adjust subtle things like text angle.                     */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      If we have complete features associated with the block, push    */
+    /*      them on the pending feature stack copying over key override     */
+    /*      information.                                                    */
+    /*                                                                      */
+    /*      Note that while we transform the geometry of the features we    */
+    /*      don't adjust subtle things like text angle.                     */
+    /* -------------------------------------------------------------------- */
     unsigned int iSubFeat;
 
     for( iSubFeat = 0; iSubFeat < poBlock->apoFeatures.size(); iSubFeat++ )
@@ -1224,10 +1230,10 @@ OGRFeature *OGRDWGLayer::TranslateINSERT( OdDbEntityPtr poEntity )
         apoPendingFeatures.push( poSubFeature );
     }
 
-/* -------------------------------------------------------------------- */
-/*      If we have attributes, insert them on the stack at this         */
-/*      point too.                                                      */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      If we have attributes, insert them on the stack at this         */
+    /*      point too.                                                      */
+    /* -------------------------------------------------------------------- */
     OdDbObjectIteratorPtr pIter = poRef->attributeIterator();
     for (; !pIter->done(); pIter->step())
     {
@@ -1243,11 +1249,11 @@ OGRFeature *OGRDWGLayer::TranslateINSERT( OdDbEntityPtr poEntity )
         }
     }
 
-/* -------------------------------------------------------------------- */
-/*      Return the working feature if we had geometry, otherwise        */
-/*      return NULL and let the machinery find the rest of the          */
-/*      features in the pending feature stack.                          */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Return the working feature if we had geometry, otherwise        */
+    /*      return NULL and let the machinery find the rest of the          */
+    /*      features in the pending feature stack.                          */
+    /* -------------------------------------------------------------------- */
     if( poBlock->poGeometry == nullptr )
     {
         delete poFeature;
@@ -1268,9 +1274,9 @@ OGRFeature *OGRDWGLayer::GetNextUnfilteredFeature()
 {
     OGRFeature *poFeature = nullptr;
 
-/* -------------------------------------------------------------------- */
-/*      If we have pending features, return one of them.                */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      If we have pending features, return one of them.                */
+    /* -------------------------------------------------------------------- */
     if( !apoPendingFeatures.empty() )
     {
         poFeature = apoPendingFeatures.front();
@@ -1280,9 +1286,9 @@ OGRFeature *OGRDWGLayer::GetNextUnfilteredFeature()
         return poFeature;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Fetch the next entity.                                          */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Fetch the next entity.                                          */
+    /* -------------------------------------------------------------------- */
     while( poFeature == nullptr && !poEntIter->done() )
     {
 
@@ -1292,16 +1298,16 @@ OGRFeature *OGRDWGLayer::GetNextUnfilteredFeature()
         if (poEntity.isNull())
             return nullptr;
 
-/* -------------------------------------------------------------------- */
-/*      What is the class name for this entity?                         */
-/* -------------------------------------------------------------------- */
+        /* -------------------------------------------------------------------- */
+        /*      What is the class name for this entity?                         */
+        /* -------------------------------------------------------------------- */
         OdRxClass *poClass = poEntity->isA();
         const OdString osName = poClass->name();
         const char *pszEntityClassName = (const char *) osName;
 
-/* -------------------------------------------------------------------- */
-/*      Handle the entity.                                              */
-/* -------------------------------------------------------------------- */
+        /* -------------------------------------------------------------------- */
+        /*      Handle the entity.                                              */
+        /* -------------------------------------------------------------------- */
         oStyleProperties.clear();
 
         if( EQUAL(pszEntityClassName,"AcDbPoint") )
@@ -1380,9 +1386,9 @@ OGRFeature *OGRDWGLayer::GetNextUnfilteredFeature()
         poEntIter->step();
     }
 
-/* -------------------------------------------------------------------- */
-/*      Set FID.                                                        */
-/* -------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------- */
+    /*      Set FID.                                                        */
+    /* -------------------------------------------------------------------- */
     if( poFeature != nullptr )
     {
         poFeature->SetFID( iNextFID++ );
@@ -1407,9 +1413,9 @@ OGRFeature *OGRDWGLayer::GetNextFeature()
             return nullptr;
 
         if( (m_poFilterGeom == nullptr
-             || FilterGeometry( poFeature->GetGeometryRef() ) )
-            && (m_poAttrQuery == nullptr
-                || m_poAttrQuery->Evaluate( poFeature ) ) )
+                || FilterGeometry( poFeature->GetGeometryRef() ) )
+                && (m_poAttrQuery == nullptr
+                    || m_poAttrQuery->Evaluate( poFeature ) ) )
         {
             return poFeature;
         }

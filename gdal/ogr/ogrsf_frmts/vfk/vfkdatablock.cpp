@@ -135,7 +135,7 @@ void IVFKDataBlock::SetProperties(const char *poLine)
 
             /* add property */
             if (pszName && *pszName != '\0' &&
-                *pszType != '\0')
+                    *pszType != '\0')
                 AddProperty(pszName, pszType);
 
             poProp = ++poChar;
@@ -154,7 +154,7 @@ void IVFKDataBlock::SetProperties(const char *poLine)
 
     /* add property */
     if (pszName && *pszName != '\0' &&
-        *pszType != '\0')
+            *pszType != '\0')
         AddProperty(pszName, pszType);
 
     CPLFree(pszName);
@@ -174,17 +174,17 @@ int IVFKDataBlock::AddProperty(const char *pszName, const char *pszType)
     /* Force text attributes to avoid int64 overflow
        see https://github.com/OSGeo/gdal/issues/672 */
     if( EQUAL( m_pszName, "VLA" ) &&
-        ( EQUAL( pszName, "PODIL_CITATEL" ) ||
-          EQUAL( pszName, "PODIL_JMENOVATEL" ) ) )
+            ( EQUAL( pszName, "PODIL_CITATEL" ) ||
+              EQUAL( pszName, "PODIL_JMENOVATEL" ) ) )
         pszType = "T30";
 
     VFKPropertyDefn *poNewProperty = new VFKPropertyDefn(pszName, pszType,
-                                                         m_poReader->IsLatin2());
+            m_poReader->IsLatin2());
 
     m_nPropertyCount++;
 
     m_papoProperty = (VFKPropertyDefn **)
-        CPLRealloc(m_papoProperty, sizeof (VFKPropertyDefn *) * m_nPropertyCount);
+                     CPLRealloc(m_papoProperty, sizeof (VFKPropertyDefn *) * m_nPropertyCount);
     m_papoProperty[m_nPropertyCount-1] = poNewProperty;
 
     return m_nPropertyCount;
@@ -278,7 +278,7 @@ IVFKFeature *IVFKDataBlock::GetPreviousFeature()
     }
 
     if (m_bGeometryPerBlock && !m_bGeometry) {
-       LoadGeometry();
+        LoadGeometry();
     }
 
     if (m_iNextFeature < 0)
@@ -365,11 +365,11 @@ OGRwkbGeometryType IVFKDataBlock::SetGeometryType(bool bSuppressGeometry)
     }
 
     if (EQUAL (m_pszName, "SOBR") ||
-        EQUAL (m_pszName, "OBBP") ||
-        EQUAL (m_pszName, "SPOL") ||
-        EQUAL (m_pszName, "OB") ||
-        EQUAL (m_pszName, "OP") ||
-        EQUAL (m_pszName, "OBPEJ"))
+            EQUAL (m_pszName, "OBBP") ||
+            EQUAL (m_pszName, "SPOL") ||
+            EQUAL (m_pszName, "OB") ||
+            EQUAL (m_pszName, "OP") ||
+            EQUAL (m_pszName, "OBPEJ"))
         m_nGeometryType = wkbPoint;
 
     else if (EQUAL (m_pszName, "SBP") ||
@@ -460,11 +460,11 @@ int IVFKDataBlock::LoadGeometry()
     }
 
     if (EQUAL (m_pszName, "SOBR") ||
-        EQUAL (m_pszName, "SPOL") ||
-        EQUAL (m_pszName, "OP") ||
-        EQUAL (m_pszName, "OBPEJ") ||
-        EQUAL (m_pszName, "OB") ||
-        EQUAL (m_pszName, "OBBP")) {
+            EQUAL (m_pszName, "SPOL") ||
+            EQUAL (m_pszName, "OP") ||
+            EQUAL (m_pszName, "OBPEJ") ||
+            EQUAL (m_pszName, "OB") ||
+            EQUAL (m_pszName, "OBBP")) {
         /* -> wkbPoint */
         nInvalid = LoadGeometryPoint();
     }
@@ -551,7 +551,7 @@ bool IVFKDataBlock::AppendLineToRing(PointListArray *papoRing, const OGRLineStri
             return false;
 
         if (oFirstNew.getX() == poLast->getX() &&
-            oFirstNew.getY() == poLast->getY()) {
+                oFirstNew.getY() == poLast->getY()) {
             PointList oList;
             FillPointList(&oList, poLine);
             /* forward, skip first point */
@@ -560,8 +560,8 @@ bool IVFKDataBlock::AppendLineToRing(PointListArray *papoRing, const OGRLineStri
         }
 
         if (bBackward &&
-            oFirstNew.getX() == poFirst->getX() &&
-            oFirstNew.getY() == poFirst->getY()) {
+                oFirstNew.getX() == poFirst->getX() &&
+                oFirstNew.getY() == poFirst->getY()) {
             PointList oList;
             FillPointList(&oList, poLine);
             /* backward, skip last point */
@@ -570,7 +570,7 @@ bool IVFKDataBlock::AppendLineToRing(PointListArray *papoRing, const OGRLineStri
         }
 
         if (oLastNew.getX() == poLast->getX() &&
-            oLastNew.getY() == poLast->getY()) {
+                oLastNew.getY() == poLast->getY()) {
             PointList oList;
             FillPointList(&oList, poLine);
             /* backward, skip first point */
@@ -579,8 +579,8 @@ bool IVFKDataBlock::AppendLineToRing(PointListArray *papoRing, const OGRLineStri
         }
 
         if (bBackward &&
-            oLastNew.getX() == poFirst->getX() &&
-            oLastNew.getY() == poFirst->getY()) {
+                oLastNew.getX() == poFirst->getX() &&
+                oLastNew.getY() == poFirst->getY()) {
             PointList oList;
             FillPointList(&oList, poLine);
             /* forward, skip last point */
@@ -621,7 +621,7 @@ void IVFKDataBlock::AddFeature(IVFKFeature *poNewFeature)
     m_nFeatureCount++;
 
     m_papoFeature = (IVFKFeature **)
-        CPLRealloc(m_papoFeature, sizeof (IVFKFeature *) * m_nFeatureCount);
+                    CPLRealloc(m_papoFeature, sizeof (IVFKFeature *) * m_nFeatureCount);
     m_papoFeature[m_nFeatureCount-1] = poNewFeature;
 }
 
@@ -662,8 +662,8 @@ VFKFeature *VFKDataBlock::GetFeature(int idx, GUIntBig value, VFKFeatureList *po
 {
     if (poList) {
         for( VFKFeatureList::iterator i = poList->begin(), e = poList->end();
-             i != e;
-             ++i )
+                i != e;
+                ++i )
         {
             VFKFeature *poVfkFeature = *i;
             const GUIntBig iPropertyValue =
@@ -1000,7 +1000,7 @@ int VFKDataBlock::LoadGeometryPolygon()
             std::vector<VFKFeature *> poLineListOb;
             poLineListOb = poDataBlockLines1->GetFeatures(idxBud, id);
             for (std::vector<VFKFeature *>::const_iterator iOb = poLineListOb.begin(), eOb = poLineListOb.end();
-                 iOb != eOb; ++iOb) {
+                    iOb != eOb; ++iOb) {
                 poLineOb = (*iOb);
                 GUIntBig idOb = strtoul(poLineOb->GetProperty(idxIdOb)->GetValueS(), nullptr, 0);
                 poLineSbp = poDataBlockLines2->GetFeature(idxOb, idOb);
@@ -1023,7 +1023,7 @@ int VFKDataBlock::LoadGeometryPolygon()
             bool bNewRing = !bFound;
             bFound = false;
             for (VFKFeatureList::iterator iHp = poLineList.begin(), eHp = poLineList.end();
-                 iHp != eHp; ++iHp) {
+                    iHp != eHp; ++iHp) {
                 auto pGeom = (*iHp)->GetGeometry();
                 if (pGeom && AppendLineToRing(&poRingList, pGeom->toLineString(), bNewRing)) {
                     bFound = true;
@@ -1035,11 +1035,11 @@ int VFKDataBlock::LoadGeometryPolygon()
         }
         /* create rings */
         for (PointListArray::const_iterator iRing = poRingList.begin(), eRing = poRingList.end();
-             iRing != eRing; ++iRing) {
+                iRing != eRing; ++iRing) {
             PointList *poList = *iRing;
             ogrRing.empty();
             for (PointList::iterator iPoint = poList->begin(), ePoint = poList->end();
-                 iPoint != ePoint; ++iPoint) {
+                    iPoint != ePoint; ++iPoint) {
                 ogrRing.addPoint(&(*iPoint));
             }
             ogrPolygon.addRing(&ogrRing);
@@ -1052,7 +1052,7 @@ int VFKDataBlock::LoadGeometryPolygon()
 
     /* free ring list */
     for (PointListArray::iterator iRing = poRingList.begin(),
-             eRing = poRingList.end(); iRing != eRing; ++iRing) {
+            eRing = poRingList.end(); iRing != eRing; ++iRing) {
         delete (*iRing);
         *iRing = nullptr;
     }

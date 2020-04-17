@@ -51,17 +51,17 @@ extern "C++"
 #include <limits>
 #endif
 
-/**
- * Simple container for a bounding region (rectangle)
- */
-class CPL_DLL OGREnvelope
-{
-  public:
+    /**
+     * Simple container for a bounding region (rectangle)
+     */
+    class CPL_DLL OGREnvelope
+    {
+    public:
         /** Default constructor. Defines an empty rectangle  */
         OGREnvelope() : MinX(std::numeric_limits<double>::infinity()),
-                        MaxX(-std::numeric_limits<double>::infinity()),
-                        MinY(std::numeric_limits<double>::infinity()),
-                        MaxY(-std::numeric_limits<double>::infinity())
+            MaxX(-std::numeric_limits<double>::infinity()),
+            MinY(std::numeric_limits<double>::infinity()),
+            MaxY(-std::numeric_limits<double>::infinity())
         {
         }
 
@@ -74,84 +74,84 @@ class CPL_DLL OGREnvelope
         /** Assignment operator */
         OGREnvelope& operator=(const OGREnvelope&) = default;
 
-    /** Minimum X value */
-    double      MinX;
+        /** Minimum X value */
+        double      MinX;
 
-    /** Maximum X value */
-    double      MaxX;
+        /** Maximum X value */
+        double      MaxX;
 
-    /** Minimum Y value */
-    double      MinY;
+        /** Minimum Y value */
+        double      MinY;
 
-    /** Maximum Y value */
-    double      MaxY;
+        /** Maximum Y value */
+        double      MaxY;
 
 #ifdef HAVE_GCC_DIAGNOSTIC_PUSH
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif
-    /** Return whether the object has been initialized, that is, is non empty */
-    int  IsInit() const { return MinX != std::numeric_limits<double>::infinity(); }
+        /** Return whether the object has been initialized, that is, is non empty */
+        int  IsInit() const { return MinX != std::numeric_limits<double>::infinity(); }
 
 #ifdef HAVE_GCC_DIAGNOSTIC_PUSH
 #pragma GCC diagnostic pop
 #endif
 
-    /** Update the current object by computing its union with the other rectangle */
-    void Merge( OGREnvelope const& sOther ) {
-        MinX = MIN(MinX,sOther.MinX);
-        MaxX = MAX(MaxX,sOther.MaxX);
-        MinY = MIN(MinY,sOther.MinY);
-        MaxY = MAX(MaxY,sOther.MaxY);
-    }
+        /** Update the current object by computing its union with the other rectangle */
+        void Merge( OGREnvelope const& sOther ) {
+            MinX = MIN(MinX,sOther.MinX);
+            MaxX = MAX(MaxX,sOther.MaxX);
+            MinY = MIN(MinY,sOther.MinY);
+            MaxY = MAX(MaxY,sOther.MaxY);
+        }
 
-    /** Update the current object by computing its union with the provided point */
-    void Merge( double dfX, double dfY ) {
-        MinX = MIN(MinX,dfX);
-        MaxX = MAX(MaxX,dfX);
-        MinY = MIN(MinY,dfY);
-        MaxY = MAX(MaxY,dfY);
-    }
+        /** Update the current object by computing its union with the provided point */
+        void Merge( double dfX, double dfY ) {
+            MinX = MIN(MinX,dfX);
+            MaxX = MAX(MaxX,dfX);
+            MinY = MIN(MinY,dfY);
+            MaxY = MAX(MaxY,dfY);
+        }
 
-    /** Update the current object by computing its intersection with the other rectangle */
-    void Intersect( OGREnvelope const& sOther ) {
-        if(Intersects(sOther))
-        {
-            if( IsInit() )
+        /** Update the current object by computing its intersection with the other rectangle */
+        void Intersect( OGREnvelope const& sOther ) {
+            if(Intersects(sOther))
             {
-                MinX = MAX(MinX,sOther.MinX);
-                MaxX = MIN(MaxX,sOther.MaxX);
-                MinY = MAX(MinY,sOther.MinY);
-                MaxY = MIN(MaxY,sOther.MaxY);
+                if( IsInit() )
+                {
+                    MinX = MAX(MinX,sOther.MinX);
+                    MaxX = MIN(MaxX,sOther.MaxX);
+                    MinY = MAX(MinY,sOther.MinY);
+                    MaxY = MIN(MaxY,sOther.MaxY);
+                }
+                else
+                {
+                    MinX = sOther.MinX;
+                    MaxX = sOther.MaxX;
+                    MinY = sOther.MinY;
+                    MaxY = sOther.MaxY;
+                }
             }
             else
             {
-                MinX = sOther.MinX;
-                MaxX = sOther.MaxX;
-                MinY = sOther.MinY;
-                MaxY = sOther.MaxY;
+                *this = OGREnvelope();
             }
         }
-        else
+
+        /** Return whether the current object intersects with the other rectangle */
+        int Intersects(OGREnvelope const& other) const
         {
-            *this = OGREnvelope();
+            return MinX <= other.MaxX && MaxX >= other.MinX &&
+            MinY <= other.MaxY && MaxY >= other.MinY;
         }
-    }
 
-    /** Return whether the current object intersects with the other rectangle */
-    int Intersects(OGREnvelope const& other) const
-    {
-        return MinX <= other.MaxX && MaxX >= other.MinX &&
-               MinY <= other.MaxY && MaxY >= other.MinY;
-    }
-
-    /** Return whether the current object contains the other rectangle */
-    int Contains(OGREnvelope const& other) const
-    {
-        return MinX <= other.MinX && MinY <= other.MinY &&
-               MaxX >= other.MaxX && MaxY >= other.MaxY;
-    }
-};
+        /** Return whether the current object contains the other rectangle */
+        int Contains(OGREnvelope const& other) const
+        {
+            return MinX <= other.MinX && MinY <= other.MinY &&
+            MaxX >= other.MaxX && MaxY >= other.MaxY;
+        }
+    };
 
 } // extern "C++"
 
@@ -169,110 +169,110 @@ typedef struct
 
 extern "C++" {
 
-/**
- * Simple container for a bounding region in 3D.
- */
-class CPL_DLL OGREnvelope3D : public OGREnvelope
-{
-  public:
+    /**
+     * Simple container for a bounding region in 3D.
+     */
+    class CPL_DLL OGREnvelope3D : public OGREnvelope
+    {
+    public:
         /** Default constructor. Defines an empty rectangle  */
         OGREnvelope3D() : OGREnvelope(),
-                          MinZ(std::numeric_limits<double>::infinity()),
-                          MaxZ(-std::numeric_limits<double>::infinity())
+            MinZ(std::numeric_limits<double>::infinity()),
+            MaxZ(-std::numeric_limits<double>::infinity())
         {
         }
 
         /** Copy constructor */
         OGREnvelope3D(const OGREnvelope3D& oOther) :
-                            OGREnvelope(oOther),
-                            MinZ(oOther.MinZ), MaxZ(oOther.MaxZ)
+            OGREnvelope(oOther),
+            MinZ(oOther.MinZ), MaxZ(oOther.MaxZ)
         {
         }
 
         /** Assignment operator */
         OGREnvelope3D& operator=(const OGREnvelope3D&) = default;
 
-    /** Minimum Z value */
-    double      MinZ;
+        /** Minimum Z value */
+        double      MinZ;
 
-    /** Maximum Z value */
-    double      MaxZ;
+        /** Maximum Z value */
+        double      MaxZ;
 
 #ifdef HAVE_GCC_DIAGNOSTIC_PUSH
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif
-    /** Return whether the object has been initialized, that is, is non empty */
-    int  IsInit() const { return MinX != std::numeric_limits<double>::infinity(); }
+        /** Return whether the object has been initialized, that is, is non empty */
+        int  IsInit() const { return MinX != std::numeric_limits<double>::infinity(); }
 #ifdef HAVE_GCC_DIAGNOSTIC_PUSH
 #pragma GCC diagnostic pop
 #endif
 
-    /** Update the current object by computing its union with the other rectangle */
-    void Merge( OGREnvelope3D const& sOther ) {
-        MinX = MIN(MinX,sOther.MinX);
-        MaxX = MAX(MaxX,sOther.MaxX);
-        MinY = MIN(MinY,sOther.MinY);
-        MaxY = MAX(MaxY,sOther.MaxY);
-        MinZ = MIN(MinZ,sOther.MinZ);
-        MaxZ = MAX(MaxZ,sOther.MaxZ);
-    }
+        /** Update the current object by computing its union with the other rectangle */
+        void Merge( OGREnvelope3D const& sOther ) {
+            MinX = MIN(MinX,sOther.MinX);
+            MaxX = MAX(MaxX,sOther.MaxX);
+            MinY = MIN(MinY,sOther.MinY);
+            MaxY = MAX(MaxY,sOther.MaxY);
+            MinZ = MIN(MinZ,sOther.MinZ);
+            MaxZ = MAX(MaxZ,sOther.MaxZ);
+        }
 
-    /** Update the current object by computing its union with the provided point */
-    void Merge( double dfX, double dfY, double dfZ ) {
-        MinX = MIN(MinX,dfX);
-        MaxX = MAX(MaxX,dfX);
-        MinY = MIN(MinY,dfY);
-        MaxY = MAX(MaxY,dfY);
-        MinZ = MIN(MinZ,dfZ);
-        MaxZ = MAX(MaxZ,dfZ);
-    }
+        /** Update the current object by computing its union with the provided point */
+        void Merge( double dfX, double dfY, double dfZ ) {
+            MinX = MIN(MinX,dfX);
+            MaxX = MAX(MaxX,dfX);
+            MinY = MIN(MinY,dfY);
+            MaxY = MAX(MaxY,dfY);
+            MinZ = MIN(MinZ,dfZ);
+            MaxZ = MAX(MaxZ,dfZ);
+        }
 
-    /** Update the current object by computing its intersection with the other rectangle */
-    void Intersect( OGREnvelope3D const& sOther ) {
-        if(Intersects(sOther))
-        {
-            if( IsInit() )
+        /** Update the current object by computing its intersection with the other rectangle */
+        void Intersect( OGREnvelope3D const& sOther ) {
+            if(Intersects(sOther))
             {
-                MinX = MAX(MinX,sOther.MinX);
-                MaxX = MIN(MaxX,sOther.MaxX);
-                MinY = MAX(MinY,sOther.MinY);
-                MaxY = MIN(MaxY,sOther.MaxY);
-                MinZ = MAX(MinZ,sOther.MinZ);
-                MaxZ = MIN(MaxZ,sOther.MaxZ);
+                if( IsInit() )
+                {
+                    MinX = MAX(MinX,sOther.MinX);
+                    MaxX = MIN(MaxX,sOther.MaxX);
+                    MinY = MAX(MinY,sOther.MinY);
+                    MaxY = MIN(MaxY,sOther.MaxY);
+                    MinZ = MAX(MinZ,sOther.MinZ);
+                    MaxZ = MIN(MaxZ,sOther.MaxZ);
+                }
+                else
+                {
+                    MinX = sOther.MinX;
+                    MaxX = sOther.MaxX;
+                    MinY = sOther.MinY;
+                    MaxY = sOther.MaxY;
+                    MinZ = sOther.MinZ;
+                    MaxZ = sOther.MaxZ;
+                }
             }
             else
             {
-                MinX = sOther.MinX;
-                MaxX = sOther.MaxX;
-                MinY = sOther.MinY;
-                MaxY = sOther.MaxY;
-                MinZ = sOther.MinZ;
-                MaxZ = sOther.MaxZ;
+                *this = OGREnvelope3D();
             }
         }
-        else
+
+        /** Return whether the current object intersects with the other rectangle */
+        int Intersects(OGREnvelope3D const& other) const
         {
-            *this = OGREnvelope3D();
+            return MinX <= other.MaxX && MaxX >= other.MinX &&
+            MinY <= other.MaxY && MaxY >= other.MinY &&
+            MinZ <= other.MaxZ && MaxZ >= other.MinZ;
         }
-    }
 
-    /** Return whether the current object intersects with the other rectangle */
-    int Intersects(OGREnvelope3D const& other) const
-    {
-        return MinX <= other.MaxX && MaxX >= other.MinX &&
-               MinY <= other.MaxY && MaxY >= other.MinY &&
-               MinZ <= other.MaxZ && MaxZ >= other.MinZ;
-    }
-
-    /** Return whether the current object contains the other rectangle */
-    int Contains(OGREnvelope3D const& other) const
-    {
-        return MinX <= other.MinX && MinY <= other.MinY &&
-               MaxX >= other.MaxX && MaxY >= other.MaxY &&
-               MinZ <= other.MinZ && MaxZ >= other.MaxZ;
-    }
-};
+        /** Return whether the current object contains the other rectangle */
+        int Contains(OGREnvelope3D const& other) const
+        {
+            return MinX <= other.MinX && MinY <= other.MinY &&
+            MaxX >= other.MaxX && MaxY >= other.MaxY &&
+            MinZ <= other.MinZ && MaxZ >= other.MaxZ;
+        }
+    };
 
 } // extern "C++"
 
@@ -504,10 +504,10 @@ typedef enum
 
 const char CPL_DLL * OGRGeometryTypeToName( OGRwkbGeometryType eType );
 OGRwkbGeometryType CPL_DLL OGRMergeGeometryTypes( OGRwkbGeometryType eMain,
-                                                  OGRwkbGeometryType eExtra );
+        OGRwkbGeometryType eExtra );
 OGRwkbGeometryType CPL_DLL OGRMergeGeometryTypesEx( OGRwkbGeometryType eMain,
-                                                    OGRwkbGeometryType eExtra,
-                                                    int bAllowPromotingToCurves );
+        OGRwkbGeometryType eExtra,
+        int bAllowPromotingToCurves );
 OGRwkbGeometryType CPL_DLL OGR_GT_Flatten( OGRwkbGeometryType eType );
 OGRwkbGeometryType CPL_DLL OGR_GT_SetZ( OGRwkbGeometryType eType );
 OGRwkbGeometryType CPL_DLL OGR_GT_SetM( OGRwkbGeometryType eType );
@@ -515,7 +515,7 @@ OGRwkbGeometryType CPL_DLL OGR_GT_SetModifier( OGRwkbGeometryType eType, int bSe
 int                CPL_DLL OGR_GT_HasZ( OGRwkbGeometryType eType );
 int                CPL_DLL OGR_GT_HasM( OGRwkbGeometryType eType );
 int                CPL_DLL OGR_GT_IsSubClassOf( OGRwkbGeometryType eType,
-                                                OGRwkbGeometryType eSuperType );
+        OGRwkbGeometryType eSuperType );
 int                CPL_DLL OGR_GT_IsCurve( OGRwkbGeometryType );
 int                CPL_DLL OGR_GT_IsSurface( OGRwkbGeometryType );
 int                CPL_DLL OGR_GT_IsNonLinear( OGRwkbGeometryType );
@@ -631,21 +631,21 @@ typedef enum
 
 typedef enum
 {
-  /** Simple 32bit integer */                   OFTInteger = 0,
-  /** List of 32bit integers */                 OFTIntegerList = 1,
-  /** Double Precision floating point */        OFTReal = 2,
-  /** List of doubles */                        OFTRealList = 3,
-  /** String of ASCII chars */                  OFTString = 4,
-  /** Array of strings */                       OFTStringList = 5,
-  /** deprecated */                             OFTWideString = 6,
-  /** deprecated */                             OFTWideStringList = 7,
-  /** Raw Binary data */                        OFTBinary = 8,
-  /** Date */                                   OFTDate = 9,
-  /** Time */                                   OFTTime = 10,
-  /** Date and Time */                          OFTDateTime = 11,
-  /** Single 64bit integer */                   OFTInteger64 = 12,
-  /** List of 64bit integers */                 OFTInteger64List = 13,
-                                                OFTMaxType = 13
+    /** Simple 32bit integer */                   OFTInteger = 0,
+    /** List of 32bit integers */                 OFTIntegerList = 1,
+    /** Double Precision floating point */        OFTReal = 2,
+    /** List of doubles */                        OFTRealList = 3,
+    /** String of ASCII chars */                  OFTString = 4,
+    /** Array of strings */                       OFTStringList = 5,
+    /** deprecated */                             OFTWideString = 6,
+    /** deprecated */                             OFTWideStringList = 7,
+    /** Raw Binary data */                        OFTBinary = 8,
+    /** Date */                                   OFTDate = 9,
+    /** Time */                                   OFTTime = 10,
+    /** Date and Time */                          OFTDateTime = 11,
+    /** Single 64bit integer */                   OFTInteger64 = 12,
+    /** List of 64bit integers */                 OFTInteger64List = 13,
+    OFTMaxType = 13
 } OGRFieldType;
 
 /**
@@ -661,16 +661,16 @@ typedef enum
 {
     /** No subtype. This is the default value */        OFSTNone = 0,
     /** Boolean integer. Only valid for OFTInteger and OFTIntegerList.*/
-                                                        OFSTBoolean = 1,
+    OFSTBoolean = 1,
     /** Signed 16-bit integer. Only valid for OFTInteger and OFTIntegerList. */
-                                                        OFSTInt16 = 2,
+    OFSTInt16 = 2,
     /** Single precision (32 bit) floating point. Only valid for OFTReal and OFTRealList. */
-                                                        OFSTFloat32 = 3,
+    OFSTFloat32 = 3,
     /** JSON content. Only valid for OFTString.
      * @since GDAL 2.4
      */
-                                                        OFSTJSON = 4,
-                                                        OFSTMaxSubType = 4
+    OFSTJSON = 4,
+    OFSTMaxSubType = 4
 } OGRFieldSubType;
 
 /**
@@ -719,7 +719,7 @@ typedef enum
  */
 
 typedef union {
-/*! @cond Doxygen_Suppress */
+    /*! @cond Doxygen_Suppress */
     int         Integer;
     GIntBig     Integer64;
     double      Real;
@@ -767,17 +767,17 @@ typedef union {
         GByte   Reserved; /* must be set to 0 */
         float   Second; /* with millisecond accuracy. at the end of the structure, so as to keep it 12 bytes on 32 bit */
     } Date;
-/*! @endcond */
+    /*! @endcond */
 } OGRField;
 
 #ifdef __cplusplus
 /** Return the number of milliseconds from a datetime with decimal seconds */
 inline int OGR_GET_MS(float fSec) {
-  if( CPLIsNan(fSec) ) return 0;
-  if( fSec >= 999 ) return 999;
-  if( fSec <= 0 ) return 0;
-  const float fValue = (fSec - static_cast<int>(fSec)) * 1000 + 0.5f;
-  return static_cast<int>(fValue);
+    if( CPLIsNan(fSec) ) return 0;
+    if( fSec >= 999 ) return 999;
+    if( fSec <= 0 ) return 0;
+    const float fValue = (fSec - static_cast<int>(fSec)) * 1000 + 0.5f;
+    return static_cast<int>(fValue);
 }
 #endif  // __cplusplus
 
@@ -976,7 +976,7 @@ const char CPL_DLL * CPL_STDCALL GDALVersionInfo( const char * );
                                    the calling component.
   */
 int CPL_DLL CPL_STDCALL GDALCheckVersion( int nVersionMajor, int nVersionMinor,
-                                          const char* pszCallingComponentName);
+        const char* pszCallingComponentName);
 
 /** Helper macro for GDALCheckVersion */
 #define GDAL_CHECK_VERSION(pszCallingComponentName) \

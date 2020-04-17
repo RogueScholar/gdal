@@ -58,7 +58,7 @@ json_object CPL_DLL *json_object_new_double_with_precision(double dfVal, int nCo
 
 /* %.XXXg formatting */
 json_object CPL_DLL* json_object_new_double_with_significant_figures(double dfVal,
-                                                                     int nSignificantFigures);
+        int nSignificantFigures);
 CPL_C_END
 
 /************************************************************************/
@@ -70,22 +70,22 @@ class OGRCoordinateTransformation;
 /*! @cond Doxygen_Suppress */
 class OGRGeoJSONWriteOptions
 {
-    public:
-        bool bWriteBBOX = false;
-        bool bBBOXRFC7946 = false;
-        int  nCoordPrecision = -1;
-        int  nSignificantFigures = -1;
-        bool bPolygonRightHandRule = false;
-        bool bCanPatchCoordinatesWithNativeData = true;
-        bool bHonourReservedRFC7946Members = false;
-        CPLString osIDField{};
-        bool bForceIDFieldType = false;
-        bool bGenerateID = false;
-        OGRFieldType eForcedIDFieldType = OFTString;
-        bool bAllowNonFiniteValues = false;
+public:
+    bool bWriteBBOX = false;
+    bool bBBOXRFC7946 = false;
+    int  nCoordPrecision = -1;
+    int  nSignificantFigures = -1;
+    bool bPolygonRightHandRule = false;
+    bool bCanPatchCoordinatesWithNativeData = true;
+    bool bHonourReservedRFC7946Members = false;
+    CPLString osIDField{};
+    bool bForceIDFieldType = false;
+    bool bGenerateID = false;
+    OGRFieldType eForcedIDFieldType = OFTString;
+    bool bAllowNonFiniteValues = false;
 
-        void SetRFC7946Settings();
-        void SetIDOptions(CSLConstList papszOptions);
+    void SetRFC7946Settings();
+    void SetIDOptions(CSLConstList papszOptions);
 };
 /*! @endcond */
 

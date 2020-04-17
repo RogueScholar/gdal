@@ -87,10 +87,18 @@ public:
     VFKProperty& operator=(VFKProperty const&) = default;
     VFKProperty& operator=(VFKProperty&&) = default;
 
-    bool                    IsNull()      const { return m_bIsNull; }
-    int                     GetValueI()   const { return static_cast<int> (m_iValue); }
-    GIntBig                 GetValueI64() const { return m_iValue; }
-    double                  GetValueD()   const { return m_dValue; }
+    bool                    IsNull()      const {
+        return m_bIsNull;
+    }
+    int                     GetValueI()   const {
+        return static_cast<int> (m_iValue);
+    }
+    GIntBig                 GetValueI64() const {
+        return m_iValue;
+    }
+    double                  GetValueD()   const {
+        return m_dValue;
+    }
     const char             *GetValueS( bool = false ) const;
 };
 
@@ -116,14 +124,22 @@ public:
     explicit IVFKFeature(IVFKDataBlock *);
     virtual ~IVFKFeature();
 
-    GIntBig              GetFID() const { return m_nFID; }
+    GIntBig              GetFID() const {
+        return m_nFID;
+    }
     void                 SetFID(GIntBig);
     void                 SetGeometryType(OGRwkbGeometryType);
 
-    bool                 IsValid() const { return m_bValid; }
+    bool                 IsValid() const {
+        return m_bValid;
+    }
 
-    IVFKDataBlock       *GetDataBlock() const { return m_poDataBlock; }
-    OGRwkbGeometryType   GetGeometryType() const { return m_nGeometryType; }
+    IVFKDataBlock       *GetDataBlock() const {
+        return m_poDataBlock;
+    }
+    OGRwkbGeometryType   GetGeometryType() const {
+        return m_nGeometryType;
+    }
     bool                 SetGeometry(OGRGeometry *, const char * = nullptr);
     OGRGeometry         *GetGeometry();
 
@@ -208,12 +224,22 @@ public:
     VFKPropertyDefn(const char*, const char *, bool);
     virtual ~VFKPropertyDefn();
 
-    const char       *GetName() const  { return m_pszName; }
-    int               GetWidth() const { return m_nWidth;  }
-    int               GetPrecision() const { return m_nPrecision;  }
-    OGRFieldType      GetType() const  { return m_eFType;  }
+    const char       *GetName() const  {
+        return m_pszName;
+    }
+    int               GetWidth() const {
+        return m_nWidth;
+    }
+    int               GetPrecision() const {
+        return m_nPrecision;
+    }
+    OGRFieldType      GetType() const  {
+        return m_eFType;
+    }
     CPLString         GetTypeSQL() const;
-    const char       *GetEncoding() const { return  m_pszEncoding; }
+    const char       *GetEncoding() const {
+        return  m_pszEncoding;
+    }
 };
 
 /************************************************************************/
@@ -263,9 +289,13 @@ public:
     IVFKDataBlock(const char *, const IVFKReader *);
     virtual ~IVFKDataBlock();
 
-    const char        *GetName() const { return m_pszName; }
+    const char        *GetName() const {
+        return m_pszName;
+    }
 
-    int                GetPropertyCount() const { return m_nPropertyCount; }
+    int                GetPropertyCount() const {
+        return m_nPropertyCount;
+    }
     VFKPropertyDefn   *GetProperty(int) const;
     void               SetProperties(const char *);
     int                GetPropertyIndex(const char *) const;
@@ -291,7 +321,9 @@ public:
     virtual OGRErr     LoadProperties() = 0;
     virtual OGRErr     CleanProperties() = 0;
 
-    IVFKReader        *GetReader() const { return m_poReader; }
+    IVFKReader        *GetReader() const {
+        return m_poReader;
+    }
     int                GetRecordCount(RecordType = RecordValid)  const;
     void               SetIncRecordCount(RecordType);
 };
@@ -316,8 +348,12 @@ public:
 
     GIntBig            GetFeatureCount(const char *, const char *);
 
-    OGRErr             LoadProperties() override { return OGRERR_UNSUPPORTED_OPERATION; }
-    OGRErr             CleanProperties() override { return OGRERR_UNSUPPORTED_OPERATION; }
+    OGRErr             LoadProperties() override {
+        return OGRERR_UNSUPPORTED_OPERATION;
+    }
+    OGRErr             CleanProperties() override {
+        return OGRERR_UNSUPPORTED_OPERATION;
+    }
 };
 
 /************************************************************************/
@@ -329,8 +365,8 @@ private:
     sqlite3_stmt        *m_hStmt;
 
     bool                 SetGeometryLineString(VFKFeatureSQLite *, OGRLineString *,
-                                               bool&, const char *,
-                                               std::vector<int>&, int&);
+            bool&, const char *,
+            std::vector<int>&, int&);
 
     int                  LoadGeometryPoint() override;
     int                  LoadGeometryLineStringSBP() override;
