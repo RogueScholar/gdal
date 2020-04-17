@@ -29,13 +29,11 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
 import os
-from osgeo import gdal
-
 
 import gdaltest
 import pytest
+from osgeo import gdal
 
 ###############################################################################
 # Perform simple read test.

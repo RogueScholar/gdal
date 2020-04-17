@@ -27,13 +27,10 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
-from osgeo import gdal
-from osgeo import osr
-
-
 import gdaltest
 import pytest
+from osgeo import gdal
+from osgeo import osr
 
 ###############################################################################
 # Test driver availability

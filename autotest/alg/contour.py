@@ -27,16 +27,14 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
 import array
 import os
 
-
-from osgeo import gdal
-from osgeo import ogr
 import gdaltest
 import ogrtest
 import pytest
+from osgeo import gdal
+from osgeo import ogr
 
 ###############################################################################
 # Test with -a and -i options

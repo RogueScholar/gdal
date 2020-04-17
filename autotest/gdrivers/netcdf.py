@@ -30,22 +30,17 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
 import os
-import sys
 import shutil
 import struct
+import sys
+
+import gdaltest
+import pytest
+import test_cli_utilities
 from osgeo import gdal
 from osgeo import ogr
 from osgeo import osr
-
-
-import pytest
-
-import gdaltest
-
-import test_cli_utilities
-
 from uffd import uffd_compare
 
 ###############################################################################

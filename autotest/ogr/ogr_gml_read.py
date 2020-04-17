@@ -29,18 +29,16 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
 import os
+import shutil
 import sys
 
-
-import shutil
 import gdaltest
 import ogrtest
+import pytest
 from osgeo import gdal
 from osgeo import ogr
 from osgeo import osr
-import pytest
 
 ###############################################################################
 # Test reading geometry and attribute from ionic wfs gml file.

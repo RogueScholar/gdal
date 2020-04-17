@@ -28,11 +28,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
-
 import gdaltest
-from osgeo import gdal
 import pytest
+from osgeo import gdal
 
 ###############################################################################
 # verify that we can load Numeric python, and find the Numpy driver.

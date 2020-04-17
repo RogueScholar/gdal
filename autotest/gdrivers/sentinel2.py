@@ -28,14 +28,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 ###############################################################################
-
 import os
 import sys
-from osgeo import gdal
-
 
 import gdaltest
 import pytest
+from osgeo import gdal
 
 ###############################################################################
 # Test opening a L1C product

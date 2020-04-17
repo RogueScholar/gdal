@@ -27,19 +27,16 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 ###############################################################################
-
 import json
 import math
 import os
 
-
-from osgeo import osr
-from osgeo import ogr
-from osgeo import gdal
-
 import gdaltest
 import ogrtest
 import pytest
+from osgeo import gdal
+from osgeo import ogr
+from osgeo import osr
 
 pytestmark = [
     pytest.mark.require_driver("GeoJSON"),

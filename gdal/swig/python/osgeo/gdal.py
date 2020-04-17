@@ -3,13 +3,14 @@
 #
 # Do not make changes to this file unless you know what you are doing--modify
 # the SWIG interface file instead.
-
-from . import osr
-from . import ogr
 import sys
+from sys import version_info as _swig_python_version_info
+
 from osgeo import gdalconst
 from osgeo.gdalconst import *
-from sys import version_info as _swig_python_version_info
+
+from . import ogr
+from . import osr
 
 if _swig_python_version_info >= (2, 7, 0):
 
