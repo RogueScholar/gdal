@@ -147,7 +147,6 @@ Example:
     [.sentinel_s2_l1c]
     path=/vsis3/sentinel-s2-l1c
     AWS_REQUEST_PAYER=requester
-    \endverbatim
 
 
 
@@ -928,8 +927,9 @@ Networking options
 
 -  .. config:: GDAL_HTTP_USERAGENT
 
-      When set this string will be used to set the ``User-Agent`` header in the http
+      This string will be used to set the ``User-Agent`` header in the HTTP
       request sent to the remote server.
+      Defaults to "GDAL/x.y.z" where x.y.z is the GDAL build version.
 
 -  .. config:: GDAL_HTTP_UNSAFESSL
       :choices: YES, NO
@@ -1067,8 +1067,8 @@ PROJ options
 
 .. _list_config_options:
 
-List of configuration options and where they apply
---------------------------------------------------
+List of configuration options and where they are documented
+-----------------------------------------------------------
 
 .. config_index::
    :types: config

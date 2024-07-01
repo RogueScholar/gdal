@@ -106,7 +106,8 @@ int GTiffDataset::GetJPEGOverviewCount()
     GByte abyFFD8[] = {0xFF, 0xD8};
     if (TIFFGetField(m_hTIFF, TIFFTAG_JPEGTABLES, &nJPEGTableSize, &pJPEGTable))
     {
-        if (pJPEGTable == nullptr || nJPEGTableSize > INT_MAX ||
+        if (pJPEGTable == nullptr || nJPEGTableSize < 2 ||
+            nJPEGTableSize > INT_MAX ||
             static_cast<GByte *>(pJPEGTable)[nJPEGTableSize - 1] != 0xD9)
         {
             m_nJPEGOverviewCount = 0;
@@ -750,11 +751,33 @@ static void CPL_STDCALL ThreadDecompressionFuncErrorHandler(
                              psContext->nYCrbCrSubSampling1);
             }
         }
-        if (psContext->pExtraSamples)
+        if (poDS->m_nPlanarConfig == PLANARCONFIG_CONTIG)
         {
-            TIFFSetField(hTIFFTmp, TIFFTAG_EXTRASAMPLES,
-                         psContext->nExtraSampleCount,
-                         psContext->pExtraSamples);
+            if (psContext->pExtraSamples)
+            {
+                TIFFSetField(hTIFFTmp, TIFFTAG_EXTRASAMPLES,
+                             psContext->nExtraSampleCount,
+                             psContext->pExtraSamples);
+            }
+            else
+            {
+                const int nSamplesAccountedFor =
+                    poDS->m_nPhotometric == PHOTOMETRIC_RGB          ? 3
+                    : poDS->m_nPhotometric == PHOTOMETRIC_MINISBLACK ? 1
+                                                                     : 0;
+                if (nSamplesAccountedFor > 0 &&
+                    poDS->m_nSamplesPerPixel > nSamplesAccountedFor)
+                {
+                    // If the input image is not compliant regarndig ExtraSamples,
+                    // generate a synthetic one to avoid gazillons of warnings
+                    const auto nExtraSampleCount = static_cast<uint16_t>(
+                        poDS->m_nSamplesPerPixel - nSamplesAccountedFor);
+                    std::vector<uint16_t> anExtraSamples(
+                        nExtraSampleCount, EXTRASAMPLE_UNSPECIFIED);
+                    TIFFSetField(hTIFFTmp, TIFFTAG_EXTRASAMPLES,
+                                 nExtraSampleCount, anExtraSamples.data());
+                }
+            }
         }
         TIFFWriteCheck(hTIFFTmp, FALSE, "ThreadDecompressionFunc");
         TIFFWriteDirectory(hTIFFTmp);
