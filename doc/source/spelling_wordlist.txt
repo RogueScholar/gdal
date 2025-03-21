@@ -267,6 +267,7 @@ bPixelIsPoint
 bpw
 branche
 Brashear
+bRelativeToReferencePath
 Bresenham
 bReversed
 Brezenham
@@ -364,6 +365,7 @@ checksums
 Cheeseman
 Christoph
 Chroma
+chrominance
 chs
 chSep
 cid
@@ -522,6 +524,7 @@ cvs
 Cxx
 Cygwin
 dall
+dan
 DanB
 DanielM
 danlittle
@@ -798,6 +801,7 @@ Erdas
 eRequestedInputDT
 erer
 eResampleAlg
+Errno
 erroring
 errorMsg
 ers
@@ -947,6 +951,7 @@ fs
 fSecond
 fseek
 fsiz
+fsspec
 ftell
 FTimesBold
 FTimesRoman
@@ -998,6 +1003,7 @@ gdaldem
 gdaldriver
 gdalenhance
 gdalframework
+gdalg
 gdalgmlcoverage
 GDALGridDataMetricsOptions
 GDALGridInverseDistanceToAPowerNearestNeighborOptions
@@ -1500,6 +1506,7 @@ Julien
 Jupyter
 Jürgen
 Kadaster
+Ka
 kak
 kakadu
 Kakadu
@@ -2148,6 +2155,7 @@ objdir
 objectclasses
 OBJECTID
 objektkoordinaten
+observability
 oci
 OCI
 odbc
@@ -2223,6 +2231,7 @@ orthocorrection
 orthorectification
 Orthorectified
 orthorectifying
+os
 osAfter
 osBefore
 osgeo
@@ -2495,6 +2504,7 @@ poOtherGeom
 poppler
 Poppler
 poRootGroup
+pos
 positionName
 posix
 Posix
@@ -2654,6 +2664,7 @@ pszPath
 pszPreferredAuthority
 pszPrefix
 pszProj
+pszReferencePath
 pszRequest
 pszSource
 pszSrc
@@ -3142,7 +3153,7 @@ subsetted
 subsetting
 Subsetting
 subsettings
-substituable
+substitutable
 substring
 subsubgroup
 subtelty
@@ -3257,6 +3268,7 @@ tim
 timePosition
 timesheet
 TinZ
+timezones
 tippecanoe
 tm
 tmerc
@@ -3424,6 +3436,7 @@ utf
 UTF
 utils
 utm
+utmsmall
 va
 Vaisala
 valgrind

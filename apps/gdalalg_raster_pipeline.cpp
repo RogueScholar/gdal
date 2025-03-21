@@ -41,6 +41,8 @@ GDALRasterPipelineStepAlgorithm::GDALRasterPipelineStepAlgorithm(
 {
     if (m_standaloneStep)
     {
+        m_supportsStreamedOutput = true;
+
         AddInputArgs(false, false);
         AddProgressArg();
         AddOutputArgs(false);
@@ -76,7 +78,8 @@ void GDALRasterPipelineStepAlgorithm::AddInputArgs(
 
 void GDALRasterPipelineStepAlgorithm::AddOutputArgs(bool hiddenForCLI)
 {
-    AddOutputFormatArg(&m_format)
+    AddOutputFormatArg(&m_format, /* bStreamAllowed = */ true,
+                       /* bGDALGAllowed = */ true)
         .AddMetadataItem(GAAMDI_REQUIRED_CAPABILITIES,
                          {GDAL_DCAP_RASTER, GDAL_DCAP_CREATECOPY})
         .SetHiddenForCLI(hiddenForCLI);
@@ -119,6 +122,16 @@ bool GDALRasterPipelineStepAlgorithm::RunImpl(GDALProgressFunc pfnProgress,
             }
         }
 
+        if (m_executionForStreamOutput && !EQUAL(m_format.c_str(), "stream"))
+        {
+            // For security reasons, to avoid that reading a .gdalg.json file
+            // writes a file on the file system.
+            ReportError(CE_Failure, CPLE_NotSupported,
+                        "gdal raster pipeline in streamed execution should use "
+                        "--format stream");
+            return false;
+        }
+
         bool ret = false;
         if (readAlg.Run())
         {
@@ -126,12 +139,20 @@ bool GDALRasterPipelineStepAlgorithm::RunImpl(GDALProgressFunc pfnProgress,
             m_outputDataset.Set(nullptr);
             if (RunStep(nullptr, nullptr))
             {
-                writeAlg.m_inputDataset.Set(m_outputDataset.GetDatasetRef());
-                if (writeAlg.Run(pfnProgress, pProgressData))
+                if (m_format == "stream")
                 {
-                    m_outputDataset.Set(
-                        writeAlg.m_outputDataset.GetDatasetRef());
                     ret = true;
+                }
+                else
+                {
+                    writeAlg.m_inputDataset.Set(
+                        m_outputDataset.GetDatasetRef());
+                    if (writeAlg.Run(pfnProgress, pProgressData))
+                    {
+                        m_outputDataset.Set(
+                            writeAlg.m_outputDataset.GetDatasetRef());
+                        ret = true;
+                    }
                 }
             }
         }
@@ -145,6 +166,44 @@ bool GDALRasterPipelineStepAlgorithm::RunImpl(GDALProgressFunc pfnProgress,
 }
 
 /************************************************************************/
+/*                          ProcessGDALGOutput()                        */
+/************************************************************************/
+
+GDALAlgorithm::ProcessGDALGOutputRet
+GDALRasterPipelineStepAlgorithm::ProcessGDALGOutput()
+{
+    if (m_standaloneStep)
+    {
+        return GDALAlgorithm::ProcessGDALGOutput();
+    }
+    else
+    {
+        // GDALAbstractPipelineAlgorithm<StepAlgorithm>::RunStep() might
+        // actually detect a GDALG output request and process it.
+        return GDALAlgorithm::ProcessGDALGOutputRet::NOT_GDALG;
+    }
+}
+
+/************************************************************************/
+/*      GDALRasterPipelineStepAlgorithm::CheckSafeForStreamOutput()     */
+/************************************************************************/
+
+bool GDALRasterPipelineStepAlgorithm::CheckSafeForStreamOutput()
+{
+    if (m_standaloneStep)
+    {
+        return GDALAlgorithm::CheckSafeForStreamOutput();
+    }
+    else
+    {
+        // The check is actually done in
+        // GDALAbstractPipelineAlgorithm<StepAlgorithm>::RunStep()
+        // so return true for now.
+        return true;
+    }
+}
+
+/************************************************************************/
 /*        GDALRasterPipelineAlgorithm::GDALRasterPipelineAlgorithm()    */
 /************************************************************************/
 
@@ -154,6 +213,8 @@ GDALRasterPipelineAlgorithm::GDALRasterPipelineAlgorithm(
           NAME, DESCRIPTION, HELP_URL,
           /*standaloneStep=*/false)
 {
+    m_supportsStreamedOutput = true;
+
     AddInputArgs(openForMixedRasterVector, /* hiddenForCLI = */ true);
     AddProgressArg();
     AddArg("pipeline", 0, _("Pipeline string"), &m_pipeline)
@@ -178,7 +239,14 @@ bool GDALRasterPipelineAlgorithm::ParseCommandLineArguments(
 {
     if (args.size() == 1 && (args[0] == "-h" || args[0] == "--help" ||
                              args[0] == "help" || args[0] == "--json-usage"))
+    {
         return GDALAlgorithm::ParseCommandLineArguments(args);
+    }
+    else if (args.size() == 1 && STARTS_WITH(args[0].c_str(), "--help-doc="))
+    {
+        m_helpDocCategory = args[0].substr(strlen("--help-doc="));
+        return GDALAlgorithm::ParseCommandLineArguments({"--help-doc"});
+    }
 
     for (const auto &arg : args)
     {
@@ -262,7 +330,8 @@ bool GDALRasterPipelineAlgorithm::ParseCommandLineArguments(
         else
         {
 #ifdef GDAL_PIPELINE_PROJ_NOSTALGIA
-            if (!arg.empty() && arg[0] == '+')
+            if (!arg.empty() && arg[0] == '+' &&
+                arg.find(' ') == std::string::npos)
             {
                 curStep.args.push_back("--" + arg.substr(1));
                 continue;
@@ -277,6 +346,18 @@ bool GDALRasterPipelineAlgorithm::ParseCommandLineArguments(
     // the pipeline with a '!' separator.
     if (!steps.back().alg)
         steps.pop_back();
+
+    // Automatically add a final write step if none in m_executionForStreamOutput
+    // mode
+    if (m_executionForStreamOutput && !steps.empty() &&
+        steps.back().alg->GetName() != GDALRasterWriteAlgorithm::NAME)
+    {
+        steps.resize(steps.size() + 1);
+        steps.back().alg = GetStepAlg(GDALRasterWriteAlgorithm::NAME);
+        steps.back().args.push_back("--output-format");
+        steps.back().args.push_back("stream");
+        steps.back().args.push_back("streamed_dataset");
+    }
 
     if (steps.size() < 2)
     {
@@ -316,6 +397,12 @@ bool GDALRasterPipelineAlgorithm::ParseCommandLineArguments(
                         GDALRasterWriteAlgorithm::NAME);
             return false;
         }
+    }
+
+    for (auto &step : steps)
+    {
+        step.alg->SetReferencePathForRelativePaths(
+            GetReferencePathForRelativePaths());
     }
 
     if (!m_pipeline.empty())
@@ -386,21 +473,46 @@ bool GDALRasterPipelineAlgorithm::ParseCommandLineArguments(
 std::string GDALRasterPipelineAlgorithm::GetUsageForCLI(
     bool shortUsage, const UsageOptions &usageOptions) const
 {
+    UsageOptions stepUsageOptions;
+    stepUsageOptions.isPipelineStep = true;
+
+    if (!m_helpDocCategory.empty() && m_helpDocCategory != "main")
+    {
+        auto alg = GetStepAlg(m_helpDocCategory);
+        std::string ret;
+        if (alg)
+        {
+            alg->SetCallPath({m_helpDocCategory});
+            alg->GetArg("help-doc")->Set(true);
+            return alg->GetUsageForCLI(shortUsage, stepUsageOptions);
+        }
+        else
+        {
+            fprintf(stderr, "ERROR: unknown pipeline step '%s'\n",
+                    m_helpDocCategory.c_str());
+            return CPLSPrintf("ERROR: unknown pipeline step '%s'\n",
+                              m_helpDocCategory.c_str());
+        }
+    }
+
     std::string ret = GDALAlgorithm::GetUsageForCLI(shortUsage, usageOptions);
     if (shortUsage)
         return ret;
 
     ret += "\n<PIPELINE> is of the form: read [READ-OPTIONS] "
            "( ! <STEP-NAME> [STEP-OPTIONS] )* ! write [WRITE-OPTIONS]\n";
+
+    if (m_helpDocCategory == "main")
+    {
+        return ret;
+    }
+
     ret += '\n';
     ret += "Example: 'gdal raster pipeline --progress ! read in.tif ! \\\n";
     ret += "               reproject --dst-crs=EPSG:32632 ! ";
     ret += "write out.tif --overwrite'\n";
     ret += '\n';
     ret += "Potential steps are:\n";
-
-    UsageOptions stepUsageOptions;
-    stepUsageOptions.isPipelineStep = true;
 
     for (const std::string &name : m_stepRegistry.GetNames())
     {
